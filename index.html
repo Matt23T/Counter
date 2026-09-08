@@ -10,12 +10,11 @@
     :root {
         --bg: #f5f5f7;
         --card: #ffffff;
-        --text: #1c1c1e;
-        --secondary: #8e8e93;
-        --blue: #007aff;
-        --countdown-blue: #5ac8fa;
-        --countdown-bg: #eaf7fd;
-        --ochre: #b8860b;
+        --text: #000000;
+        --secondary: #000000;
+        --blue: #000000;
+        --countdown-blue: #dff3e5;
+        --ochre: #000000;
         --red: #ff3b30;
         --border: rgba(60,60,67,0.18);
         --shadow: 0 4px 18px rgba(0,0,0,0.06);
@@ -35,7 +34,7 @@
         font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
                      "SF Pro Text", Helvetica, Arial, sans-serif;
         background: var(--bg);
-        color: var(--text);
+        color: #000000;
     }
 
     body {
@@ -72,7 +71,7 @@
         height: 42px;
         border: none;
         border-radius: 50%;
-        background: var(--blue);
+        background: #000000;
         color: white;
         font-size: 29px;
         line-height: 42px;
@@ -80,7 +79,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 12px rgba(0,122,255,0.22);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.18);
         transition: transform .12s ease, opacity .12s ease;
         user-select: none;
         -webkit-user-select: none;
@@ -93,7 +92,7 @@
 
     .empty {
         text-align: center;
-        color: var(--secondary);
+        color: #000000;
         padding: 70px 20px;
         font-size: 17px;
         user-select: none;
@@ -113,18 +112,12 @@
         background: var(--red);
         user-select: none;
         -webkit-user-select: none;
-        -webkit-touch-callout: none;
     }
 
     .activity-wrapper.reorder-active {
         z-index: 20;
-        background: transparent;
     }
 
-    /*
-       Durante il riordino il sottofondo "Elimina"
-       viene completamente nascosto.
-    */
     .activity-wrapper.reorder-active .delete-reveal {
         display: none;
     }
@@ -142,7 +135,6 @@
         z-index: 1;
         user-select: none;
         -webkit-user-select: none;
-        -webkit-touch-callout: none;
     }
 
     .delete-button {
@@ -156,7 +148,6 @@
         padding: 0;
         user-select: none;
         -webkit-user-select: none;
-        -webkit-touch-callout: none;
     }
 
     .activity-row {
@@ -172,9 +163,8 @@
         border: 1px solid rgba(60,60,67,0.08);
         border-radius: 18px;
         box-shadow: var(--shadow);
-        transform: translate3d(0, 0, 0);
-        transition: transform .22s cubic-bezier(.25,.8,.25,1),
-                    box-shadow .18s ease;
+        transform: translateX(0);
+        transition: transform .22s cubic-bezier(.25,.8,.25,1);
         touch-action: pan-y;
 
         user-select: none;
@@ -183,31 +173,19 @@
     }
 
     /*
-       TUTTA LA SEZIONE "QUANTO MANCA"
-       è azzurra, non solo il pulsante.
+       INTERA SEZIONE CONTA QUANTO MANCA
+       VERDE CHIARO.
     */
     .activity-row.countdown {
-        background: var(--countdown-bg);
+        background: var(--countdown-blue);
     }
 
-    /*
-       Stato durante il trascinamento:
-       la scheda diventa solida e si solleva visivamente.
-    */
     .activity-row.reorder-active {
         opacity: 1;
-        box-shadow:
-            0 14px 34px rgba(0,0,0,.18),
-            0 4px 10px rgba(0,0,0,.08);
+        box-shadow: 0 10px 28px rgba(0,0,0,.18);
         transition: none;
-        z-index: 30;
         user-select: none;
         -webkit-user-select: none;
-        -webkit-touch-callout: none;
-    }
-
-    .activity-row.reorder-active.countdown {
-        background: var(--countdown-bg);
     }
 
     .activity-info {
@@ -221,7 +199,7 @@
         background: transparent;
         padding: 0;
         text-align: left;
-        color: var(--text);
+        color: #000000;
         border-radius: 12px;
         transition: background .12s ease;
 
@@ -245,10 +223,10 @@
         min-width: 190px;
         height: 44px;
         padding: 0 12px;
-        border: 1.5px solid var(--blue);
+        border: 1.5px solid #000000;
         border-radius: 12px;
         background: #ffffff;
-        color: var(--blue);
+        color: #000000;
         font-size: 16px;
         font-weight: 600;
         white-space: nowrap;
@@ -269,24 +247,24 @@
     }
 
     /*
-       QUANTO MANCA:
-       il pulsante resta delimitato,
-       ma lascia vedere l'azzurro della sezione.
+       CONTA QUANTO MANCA:
+       TASTO DELIMITATO, VERDE CHIARO,
+       TESTO NERO.
     */
     .activity-name-button.countdown {
-        border-color: var(--ochre);
-        background: transparent;
-        color: var(--ochre);
+        border-color: #000000;
+        background: var(--countdown-blue);
+        color: #000000;
     }
 
     .activity-name-button:active {
         transform: scale(.96);
-        background: var(--blue);
+        background: #000000;
         color: white;
     }
 
     .activity-name-button.countdown:active {
-        background: var(--ochre);
+        background: #000000;
         color: white;
     }
 
@@ -298,7 +276,7 @@
         font-weight: 600;
         letter-spacing: -0.2px;
         white-space: nowrap;
-        color: var(--text);
+        color: #000000;
 
         user-select: none;
         -webkit-user-select: none;
@@ -306,11 +284,11 @@
     }
 
     .counter.countdown {
-        color: var(--ochre);
+        color: #000000;
     }
 
     .counter.expired {
-        color: var(--red);
+        color: #000000;
     }
 
     /* ========================================
@@ -342,6 +320,7 @@
         padding: 22px;
         box-shadow: 0 10px 45px rgba(0,0,0,.2);
         animation: modalUp .22s ease-out;
+        color: #000000;
     }
 
     @keyframes modalUp {
@@ -361,12 +340,13 @@
         font-weight: 700;
         margin-bottom: 20px;
         letter-spacing: -.5px;
+        color: #000000;
     }
 
     .field-label {
         display: block;
         margin-bottom: 7px;
-        color: var(--secondary);
+        color: #000000;
         font-size: 14px;
         font-weight: 500;
     }
@@ -379,7 +359,7 @@
         border: 1px solid var(--border);
         border-radius: 13px;
         background: white;
-        color: var(--text);
+        color: #000000;
         outline: none;
         font-size: 16px;
         margin-bottom: 17px;
@@ -387,8 +367,8 @@
 
     .text-input:focus,
     .date-input:focus {
-        border-color: var(--blue);
-        box-shadow: 0 0 0 3px rgba(0,122,255,.12);
+        border-color: #000000;
+        box-shadow: 0 0 0 3px rgba(0,0,0,.10);
     }
 
     .mode-selector {
@@ -403,7 +383,7 @@
         border-radius: 12px;
         border: 1px solid var(--border);
         background: white;
-        color: var(--text);
+        color: #000000;
         font-size: 14px;
         font-weight: 600;
         transition: .12s ease;
@@ -412,9 +392,9 @@
     }
 
     .mode-button.selected {
-        border-color: var(--blue);
-        background: rgba(0,122,255,.09);
-        color: var(--blue);
+        border-color: #000000;
+        background: rgba(0,0,0,.07);
+        color: #000000;
     }
 
     .modal-actions {
@@ -427,9 +407,9 @@
         flex: 1;
         height: 48px;
         border-radius: 13px;
-        border: 1.5px solid var(--blue);
+        border: 1.5px solid #000000;
         background: transparent;
-        color: var(--blue);
+        color: #000000;
         font-size: 16px;
         font-weight: 600;
         transition: .1s ease;
@@ -439,21 +419,21 @@
 
     .outline-button:active {
         transform: scale(.97);
-        background: rgba(0,122,255,.08);
+        background: rgba(0,0,0,.08);
     }
 
     .cancel-button {
-        border-color: var(--border);
-        color: var(--secondary);
+        border-color: #000000;
+        color: #000000;
     }
 
     .danger-button {
-        border-color: var(--red);
-        color: var(--red);
+        border-color: #000000;
+        color: #000000;
     }
 
     .danger-button:active {
-        background: rgba(255,59,48,.08);
+        background: rgba(0,0,0,.08);
     }
 
     /* ========================================
@@ -491,7 +471,7 @@
     .back-button {
         border: none;
         background: transparent;
-        color: var(--blue);
+        color: #000000;
         font-size: 17px;
         font-weight: 500;
         padding: 8px 4px;
@@ -509,6 +489,7 @@
         word-break: break-word;
         user-select: none;
         -webkit-user-select: none;
+        color: #000000;
     }
 
     .detail-card {
@@ -520,6 +501,7 @@
         text-align: center;
         margin-bottom: 18px;
         overflow: hidden;
+        color: #000000;
     }
 
     .detail-exact {
@@ -532,10 +514,11 @@
         margin: 0 0 27px;
         user-select: none;
         -webkit-user-select: none;
+        color: #000000;
     }
 
     .detail-date {
-        color: var(--secondary);
+        color: #000000;
         font-size: 15px;
         line-height: 1.5;
         user-select: none;
@@ -574,10 +557,11 @@
         margin-bottom: 10px;
         user-select: none;
         -webkit-user-select: none;
+        color: #000000;
     }
 
     .confirmation-text {
-        color: var(--secondary);
+        color: #000000;
         font-size: 15px;
         line-height: 1.4;
         margin-bottom: 22px;
@@ -1663,7 +1647,6 @@ function renderActivities() {
             row.className =
                 "activity-row";
 
-
             if (
                 activity.mode === "down"
             ) {
@@ -1712,7 +1695,7 @@ function renderActivities() {
                         event.stopPropagation();
 
                         row.style.transform =
-                            "translate3d(0,0,0)";
+                            "translateX(0)";
 
                         return;
                     }
@@ -1732,7 +1715,6 @@ function renderActivities() {
             nameButton.className =
                 "activity-name-button";
 
-
             if (
                 activity.mode === "down"
             ) {
@@ -1741,7 +1723,6 @@ function renderActivities() {
                     "countdown"
                 );
             }
-
 
             nameButton.textContent =
                 activity.name;
@@ -1789,7 +1770,6 @@ function renderActivities() {
             counter.className =
                 "counter";
 
-
             if (
                 activity.mode === "down"
             ) {
@@ -1798,7 +1778,6 @@ function renderActivities() {
                     "countdown"
                 );
             }
-
 
             counter.dataset.counterId =
                 activity.id;
@@ -1920,14 +1899,6 @@ function enableSwipe(row) {
         function(event) {
 
             if (
-                row.classList.contains(
-                    "reorder-active"
-                )
-            ) {
-                return;
-            }
-
-            if (
                 !event.touches ||
                 !event.touches.length
             ) {
@@ -1965,12 +1936,7 @@ function enableSwipe(row) {
         "touchmove",
         function(event) {
 
-            if (
-                !dragging ||
-                row.classList.contains(
-                    "reorder-active"
-                )
-            ) {
+            if (!dragging) {
                 return;
             }
 
@@ -2042,7 +2008,7 @@ function enableSwipe(row) {
 
 
             row.style.transform =
-                `translate3d(${translate}px,0,0)`;
+                `translateX(${translate}px)`;
 
         },
         {
@@ -2077,20 +2043,20 @@ function enableSwipe(row) {
                 if (finalX < -45) {
 
                     row.style.transform =
-                        "translate3d(-88px,0,0)";
+                        "translateX(-88px)";
 
                 } else {
 
                     row.style.transform =
-                        "translate3d(0,0,0)";
+                        "translateX(0)";
                 }
 
             } else {
 
                 row.style.transform =
                     finalX < -45
-                        ? "translate3d(-88px,0,0)"
-                        : "translate3d(0,0,0)";
+                        ? "translateX(-88px)"
+                        : "translateX(0)";
             }
 
         },
@@ -2125,12 +2091,6 @@ function enableReorder(
     let moved =
         false;
 
-    let originalTop =
-        0;
-
-    let originalHeight =
-        0;
-
 
     function clearPressTimer() {
 
@@ -2154,15 +2114,6 @@ function enableReorder(
         moved =
             false;
 
-        const rect =
-            wrapper.getBoundingClientRect();
-
-        originalTop =
-            rect.top;
-
-        originalHeight =
-            rect.height;
-
         wrapper.classList.add(
             "reorder-active"
         );
@@ -2175,7 +2126,7 @@ function enableReorder(
             "none";
 
         row.style.transform =
-            "translate3d(0,0,0)";
+            "translateX(0)";
 
         wrapper.dataset.reordering =
             "true";
@@ -2184,9 +2135,6 @@ function enableReorder(
             "none";
 
         document.body.style.webkitUserSelect =
-            "none";
-
-        document.body.style.webkitTouchCallout =
             "none";
     }
 
@@ -2214,7 +2162,7 @@ function enableReorder(
             "transform .22s cubic-bezier(.25,.8,.25,1)";
 
         row.style.transform =
-            "translate3d(0,0,0)";
+            "translateX(0)";
 
         wrapper.dataset.reordering =
             "false";
@@ -2223,9 +2171,6 @@ function enableReorder(
             "";
 
         document.body.style.webkitUserSelect =
-            "";
-
-        document.body.style.webkitTouchCallout =
             "";
 
 
@@ -2322,13 +2267,12 @@ function enableReorder(
 
             event.preventDefault();
 
-
             const dy =
                 currentY - startY;
 
 
             if (
-                Math.abs(dy) > 6
+                Math.abs(dy) > 8
             ) {
 
                 moved =
@@ -2336,20 +2280,11 @@ function enableReorder(
             }
 
 
-            /*
-               Il centro della scheda segue il dito.
-            */
-            const draggedCenter =
-                originalTop +
-                originalHeight / 2 +
-                dy;
+            if (!moved) {
+                return;
+            }
 
 
-            /*
-               Cerchiamo la posizione corretta
-               confrontando il centro della scheda
-               con il centro delle altre sezioni.
-            */
             const container =
                 document.getElementById(
                     "activitiesList"
@@ -2368,8 +2303,8 @@ function enableReorder(
                 );
 
 
-            let insertedBefore =
-                null;
+            let inserted =
+                false;
 
 
             for (
@@ -2386,52 +2321,28 @@ function enableReorder(
 
 
                 if (
-                    draggedCenter < midpoint
+                    currentY < midpoint
                 ) {
 
-                    insertedBefore =
-                        otherWrapper;
+                    container.insertBefore(
+                        wrapper,
+                        otherWrapper
+                    );
+
+                    inserted =
+                        true;
 
                     break;
                 }
             }
 
 
-            if (insertedBefore) {
-
-                container.insertBefore(
-                    wrapper,
-                    insertedBefore
-                );
-
-            } else {
+            if (!inserted) {
 
                 container.appendChild(
                     wrapper
                 );
             }
-
-
-            /*
-               Dopo lo spostamento nel DOM,
-               ricalcoliamo la posizione visuale
-               necessaria per tenere la scheda
-               esattamente sotto al dito.
-            */
-            const newRect =
-                wrapper.getBoundingClientRect();
-
-            const newCenter =
-                newRect.top +
-                newRect.height / 2;
-
-            const visualOffset =
-                draggedCenter -
-                newCenter;
-
-
-            row.style.transform =
-                `translate3d(0,${visualOffset}px,0)`;
 
         },
         {
@@ -2445,7 +2356,6 @@ function enableReorder(
         function() {
 
             finishReorder();
-
         },
         {
             passive: true
@@ -2458,7 +2368,6 @@ function enableReorder(
         function() {
 
             finishReorder();
-
         },
         {
             passive: true
@@ -2529,7 +2438,7 @@ function updateActivitiesOrder() {
 
 
 /* ========================================
-   LEGGI TRASLAZIONE ORIZZONTALE
+   LEGGI TRASLAZIONE
    ======================================== */
 
 function getRowTranslateX(
@@ -2551,36 +2460,17 @@ function getRowTranslateX(
 
     const match =
         transform.match(
-            /matrix3d\(([^)]+)\)/
-        );
-
-
-    if (match) {
-
-        const values =
-            match[1].split(",");
-
-        return (
-            parseFloat(
-                values[12]
-            ) || 0
-        );
-    }
-
-
-    const matrix2d =
-        transform.match(
             /matrix\(([^)]+)\)/
         );
 
 
-    if (!matrix2d) {
+    if (!match) {
         return 0;
     }
 
 
     const values =
-        matrix2d[1].split(",");
+        match[1].split(",");
 
 
     return (
@@ -2627,7 +2517,7 @@ document.addEventListener(
                     ) {
 
                         row.style.transform =
-                            "translate3d(0,0,0)";
+                            "translateX(0)";
                     }
                 }
             }
@@ -2898,10 +2788,10 @@ function requestResetActivity(id) {
         "Ricomincia";
 
     confirmButton.style.borderColor =
-        "var(--blue)";
+        "#000000";
 
     confirmButton.style.color =
-        "var(--blue)";
+        "#000000";
 
 
     document.getElementById(
@@ -3096,10 +2986,10 @@ function requestDeleteActivity(
         "Elimina";
 
     confirmButton.style.borderColor =
-        "var(--red)";
+        "#000000";
 
     confirmButton.style.color =
-        "var(--red)";
+        "#000000";
 
 
     document.getElementById(
