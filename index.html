@@ -173,33 +173,35 @@
         background: rgba(0,0,0,0.05);
     }
 
+    /*
+       TUTTI I TASTI NOME HANNO ESATTAMENTE
+       LA STESSA DIMENSIONE.
+       Il testo non modifica la larghezza del tasto.
+    */
     .activity-name-button {
-        flex: 0 1 auto;
-        min-width: 0;
-        max-width: 48%;
-        height: 38px;
-        padding: 0 13px;
+        flex: 0 0 190px;
+        width: 190px;
+        max-width: 190px;
+        min-width: 190px;
+        height: 44px;
+        padding: 0 12px;
         border: 1.5px solid var(--blue);
-        border-radius: 11px;
+        border-radius: 12px;
         background: #ffffff;
         color: var(--blue);
-        font-size: 15px;
+        font-size: 16px;
         font-weight: 600;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         transition:
             transform .1s ease,
             background .1s ease,
             color .1s ease;
-    }
-
-    .activity-name-button.small {
-        font-size: 13px;
-    }
-
-    .activity-name-button.tiny {
-        font-size: 11px;
     }
 
     .activity-name-button:active {
@@ -403,9 +405,6 @@
         padding: 8px 4px;
     }
 
-    /*
-       TITOLO ATTIVITÀ PIÙ GRANDE
-    */
     .detail-title {
         text-align: center;
         font-size: 31px;
@@ -427,10 +426,6 @@
         overflow: hidden;
     }
 
-    /*
-       Il grande numero dei giorni è stato rimosso.
-       Rimane solo il contatore preciso.
-    */
     .detail-exact {
         width: 100%;
         font-size: 18px;
@@ -447,10 +442,6 @@
         line-height: 1.5;
     }
 
-    /*
-       TASTI DEL DETTAGLIO:
-       leggermente più piccoli rispetto alla versione precedente.
-    */
     .detail-actions {
         display: flex;
         flex-direction: column;
@@ -499,7 +490,7 @@
         flex: 1;
     }
 
-    @media (max-width: 420px) {
+    @media (max-width: 500px) {
 
         .app {
             padding-left: 12px;
@@ -512,10 +503,19 @@
             padding-right: 10px;
         }
 
+        /*
+           Su schermi piccoli il tasto resta comunque
+           identico per tutte le attività, ma viene
+           ridotto a una misura fissa che entra bene
+           insieme al contatore.
+        */
         .activity-name-button {
-            max-width: 46%;
-            padding-left: 10px;
-            padding-right: 10px;
+            flex: 0 0 155px;
+            width: 155px;
+            max-width: 155px;
+            min-width: 155px;
+            height: 44px;
+            font-size: 15px;
         }
 
         .counter {
@@ -545,6 +545,22 @@
         .detail-actions .outline-button {
             height: 52px;
             min-height: 52px;
+        }
+    }
+
+    @media (max-width: 370px) {
+
+        .activity-name-button {
+            flex: 0 0 135px;
+            width: 135px;
+            max-width: 135px;
+            min-width: 135px;
+            font-size: 14px;
+        }
+
+        .counter {
+            font-size: 15px;
+            min-width: 62px;
         }
     }
 </style>
@@ -696,10 +712,6 @@
 
         <div class="detail-card">
 
-            <!--
-                Contatore unico e preciso.
-                Rimane sempre su una sola riga.
-            -->
             <div
                 id="detailExact"
                 class="detail-exact"
@@ -1076,10 +1088,6 @@ function saveActivity() {
     }
 
 
-    /* ==============================
-       MODIFICA
-       ============================== */
-
     if (editingId) {
 
         const activity =
@@ -1167,12 +1175,7 @@ function saveActivity() {
             delete activity.startTimestamp;
         }
 
-
     } else {
-
-        /* ==============================
-           NUOVA ATTIVITÀ
-           ============================== */
 
         const id =
             Date.now().toString(36) +
@@ -1252,37 +1255,6 @@ function saveActivity() {
     if (detailId) {
 
         updateDetail();
-    }
-}
-
-
-/* ========================================
-   ADATTA TESTO PULSANTE
-   ======================================== */
-
-function adaptButtonText(button) {
-
-    const length =
-        button.textContent
-            .trim()
-            .length;
-
-    button.classList.remove(
-        "small",
-        "tiny"
-    );
-
-    if (length > 24) {
-
-        button.classList.add(
-            "tiny"
-        );
-
-    } else if (length > 16) {
-
-        button.classList.add(
-            "small"
-        );
     }
 }
 
@@ -1448,10 +1420,6 @@ function renderActivities() {
                 activity.id;
 
 
-            /* ==========================
-               AREA ELIMINA
-               ========================== */
-
             const deleteReveal =
                 document.createElement(
                     "div"
@@ -1491,10 +1459,6 @@ function renderActivities() {
             );
 
 
-            /* ==========================
-               RIGA
-               ========================== */
-
             const row =
                 document.createElement(
                     "div"
@@ -1503,10 +1467,6 @@ function renderActivities() {
             row.className =
                 "activity-row";
 
-
-            /* ==========================
-               AREA DETTAGLIO
-               ========================== */
 
             const infoButton =
                 document.createElement(
@@ -1544,10 +1504,10 @@ function renderActivities() {
             );
 
 
-            /* ==========================
-               PULSANTE NOME / RESET
-               ========================== */
-
+            /*
+               Il nome è sempre un tasto della stessa
+               identica dimensione per ogni attività.
+            */
             const nameButton =
                 document.createElement(
                     "button"
@@ -1558,10 +1518,6 @@ function renderActivities() {
 
             nameButton.textContent =
                 activity.name;
-
-            adaptButtonText(
-                nameButton
-            );
 
 
             nameButton.addEventListener(
@@ -1583,10 +1539,6 @@ function renderActivities() {
                 nameButton
             );
 
-
-            /* ==========================
-               CONTATORE
-               ========================== */
 
             const counter =
                 document.createElement(
@@ -2118,10 +2070,6 @@ function updateDetail() {
         );
 
 
-    /*
-       Unico contatore nel dettaglio.
-       Non va mai a capo.
-    */
     document.getElementById(
         "detailExact"
     ).textContent =
