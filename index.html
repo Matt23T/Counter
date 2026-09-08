@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -14,13 +13,10 @@
         --text: #1c1c1e;
         --secondary: #8e8e93;
         --blue: #007aff;
+        --ochre: #b8860b;
         --red: #ff3b30;
         --border: rgba(60,60,67,0.18);
         --shadow: 0 4px 18px rgba(0,0,0,0.06);
-
-        /* Sfondo diverso per i due tipi di contatore */
-        --up-bg: #eaf4ff;
-        --down-bg: #fff2e8;
     }
 
     * {
@@ -116,6 +112,10 @@
         background: var(--red);
     }
 
+    .activity-wrapper.reorder-active {
+        z-index: 20;
+    }
+
     .delete-reveal {
         position: absolute;
         top: 0;
@@ -147,33 +147,21 @@
         min-height: 72px;
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 10px 10px;
+        gap: 12px;
+        padding: 10px 14px;
         background: #ffffff;
         border: 1px solid rgba(60,60,67,0.08);
         border-radius: 18px;
         box-shadow: var(--shadow);
         transform: translateX(0);
-        transition:
-            transform .22s cubic-bezier(.25,.8,.25,1),
-            opacity .15s ease;
+        transition: transform .22s cubic-bezier(.25,.8,.25,1);
         touch-action: pan-y;
     }
 
-    /*
-       SFONDO DIVERSO IN BASE AL TIPO DI CONTATORE
-
-       Conta da quando = azzurro chiaro
-       Conta quanto manca = arancio chiaro
-
-       Il colore riguarda lo SFONDO, non la scritta.
-    */
-    .activity-row.mode-up {
-        background: var(--up-bg);
-    }
-
-    .activity-row.mode-down {
-        background: var(--down-bg);
+    .activity-row.reorder-active {
+        opacity: .78;
+        box-shadow: 0 10px 28px rgba(0,0,0,.18);
+        transition: none;
     }
 
     .activity-info {
@@ -196,18 +184,23 @@
         background: rgba(0,0,0,0.05);
     }
 
+    /*
+       TUTTI I TASTI NOME HANNO ESATTAMENTE
+       LA STESSA DIMENSIONE.
+       Il testo non modifica la larghezza del tasto.
+    */
     .activity-name-button {
-        flex: 0 0 155px;
-        width: 155px;
-        max-width: 155px;
-        min-width: 155px;
+        flex: 0 0 190px;
+        width: 190px;
+        max-width: 190px;
+        min-width: 190px;
         height: 44px;
         padding: 0 12px;
         border: 1.5px solid var(--blue);
         border-radius: 12px;
         background: #ffffff;
         color: var(--blue);
-        font-size: 15px;
+        font-size: 16px;
         font-weight: 600;
         white-space: nowrap;
         overflow: hidden;
@@ -222,58 +215,39 @@
             color .1s ease;
     }
 
+    /*
+       CONTA QUANTO MANCA:
+       giallo ocra.
+    */
+    .activity-name-button.countdown {
+        border-color: var(--ochre);
+        color: var(--ochre);
+    }
+
     .activity-name-button:active {
         transform: scale(.96);
         background: var(--blue);
         color: white;
     }
 
-    /*
-       MANIGLIA PER SPOSTARE LE ATTIVITÀ
-       Trascinandola puoi mettere la sezione
-       sopra o sotto le altre.
-    */
-    .drag-handle {
-        flex: 0 0 28px;
-        width: 28px;
-        height: 44px;
-        border: none;
-        background: transparent;
-        color: var(--secondary);
-        font-size: 20px;
-        line-height: 44px;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: grab;
-        touch-action: none;
-        user-select: none;
-        -webkit-user-select: none;
-    }
-
-    .drag-handle:active {
-        cursor: grabbing;
-        color: var(--blue);
-    }
-
-    .activity-wrapper.dragging {
-        opacity: .55;
-    }
-
-    .activity-wrapper.drag-over {
-        transform: scale(1.015);
+    .activity-name-button.countdown:active {
+        background: var(--ochre);
+        color: white;
     }
 
     .counter {
         flex-shrink: 0;
-        min-width: 66px;
+        min-width: 70px;
         text-align: right;
-        font-size: 16px;
+        font-size: 17px;
         font-weight: 600;
         letter-spacing: -0.2px;
         white-space: nowrap;
         color: var(--text);
+    }
+
+    .counter.countdown {
+        color: var(--ochre);
     }
 
     .counter.expired {
@@ -553,29 +527,29 @@
         }
 
         .activity-row {
-            gap: 6px;
-            padding-left: 8px;
-            padding-right: 8px;
+            gap: 8px;
+            padding-left: 10px;
+            padding-right: 10px;
         }
 
+        /*
+           Su schermi piccoli il tasto resta comunque
+           identico per tutte le attività, ma viene
+           ridotto a una misura fissa che entra bene
+           insieme al contatore.
+        */
         .activity-name-button {
-            flex: 0 0 140px;
-            width: 140px;
-            max-width: 140px;
-            min-width: 140px;
+            flex: 0 0 155px;
+            width: 155px;
+            max-width: 155px;
+            min-width: 155px;
             height: 44px;
-            font-size: 14px;
-        }
-
-        .drag-handle {
-            flex: 0 0 24px;
-            width: 24px;
-            font-size: 18px;
+            font-size: 15px;
         }
 
         .counter {
-            font-size: 15px;
-            min-width: 62px;
+            font-size: 16px;
+            min-width: 66px;
         }
 
         .detail-page {
@@ -606,22 +580,16 @@
     @media (max-width: 370px) {
 
         .activity-name-button {
-            flex: 0 0 115px;
-            width: 115px;
-            max-width: 115px;
-            min-width: 115px;
-            font-size: 13px;
-        }
-
-        .drag-handle {
-            flex: 0 0 22px;
-            width: 22px;
-            font-size: 17px;
+            flex: 0 0 135px;
+            width: 135px;
+            max-width: 135px;
+            min-width: 135px;
+            font-size: 14px;
         }
 
         .counter {
-            font-size: 14px;
-            min-width: 58px;
+            font-size: 15px;
+            min-width: 62px;
         }
     }
 </style>
@@ -646,6 +614,7 @@
     <div id="activitiesList"></div>
 
 </div>
+
 
 <!-- ========================================
      MODALE AGGIUNTA / MODIFICA
@@ -702,7 +671,9 @@
 
         </div>
 
-        <div id="startField">
+        <div
+            id="startField"
+        >
 
             <label class="field-label">
                 Data e ora di inizio
@@ -753,6 +724,7 @@
 
     </div>
 </div>
+
 
 <!-- ========================================
      PAGINA DETTAGLIO
@@ -828,6 +800,7 @@
 
 </div>
 
+
 <!-- ========================================
      MODALE CONFERMA
      ======================================== -->
@@ -877,6 +850,7 @@
 
 </div>
 
+
 <script>
 
 const STORAGE_KEY =
@@ -899,21 +873,6 @@ let pendingAction =
 let pendingActionId =
     null;
 
-/* ========================================
-   VARIABILI ORDINAMENTO
-   ======================================== */
-
-let draggedId =
-    null;
-
-let touchDragId =
-    null;
-
-let touchDragging =
-    false;
-
-let touchDragElement =
-    null;
 
 /* ========================================
    CARICAMENTO
@@ -951,6 +910,7 @@ function loadActivities() {
     }
 }
 
+
 /* ========================================
    SALVATAGGIO
    ======================================== */
@@ -964,6 +924,7 @@ function saveActivities() {
         )
     );
 }
+
 
 /* ========================================
    AGGIUNGI ATTIVITÀ
@@ -1015,6 +976,7 @@ function openAddModal() {
         100
     );
 }
+
 
 /* ========================================
    MODIFICA ATTIVITÀ
@@ -1086,6 +1048,7 @@ function openEditModal(id) {
     );
 }
 
+
 /* ========================================
    MODIFICA DAL DETTAGLIO
    ======================================== */
@@ -1099,6 +1062,7 @@ function openEditFromDetail() {
         );
     }
 }
+
 
 /* ========================================
    CHIUDI MODALE ATTIVITÀ
@@ -1115,6 +1079,7 @@ function closeActivityModal() {
     editingId =
         null;
 }
+
 
 /* ========================================
    SELEZIONE MODALITÀ
@@ -1166,6 +1131,7 @@ function selectMode(mode) {
             : "none";
 }
 
+
 /* ========================================
    SALVA ATTIVITÀ
    ======================================== */
@@ -1190,6 +1156,7 @@ function saveActivity() {
     const name =
         nameInput.value.trim();
 
+
     if (!name) {
 
         alert(
@@ -1198,6 +1165,7 @@ function saveActivity() {
 
         return;
     }
+
 
     if (editingId) {
 
@@ -1215,6 +1183,7 @@ function saveActivity() {
 
         activity.mode =
             selectedMode;
+
 
         if (
             selectedMode === "up"
@@ -1310,6 +1279,7 @@ function saveActivity() {
             mode: selectedMode
         };
 
+
         if (
             selectedMode === "up"
         ) {
@@ -1391,6 +1361,7 @@ function saveActivity() {
         );
     }
 
+
     saveActivities();
 
     closeActivityModal();
@@ -1402,6 +1373,7 @@ function saveActivity() {
         updateDetail();
     }
 }
+
 
 /* ========================================
    MILLISECONDO CONTATORE
@@ -1428,6 +1400,7 @@ function getCounterMilliseconds(
         Date.now()
     );
 }
+
 
 /* ========================================
    FORMATTA CONTATORE LISTA
@@ -1471,6 +1444,7 @@ function formatListCounter(
             totalHours / 24
         );
 
+
     if (
         activity.mode === "down" &&
         milliseconds <= 0
@@ -1478,6 +1452,7 @@ function formatListCounter(
 
         return "Scaduto";
     }
+
 
     if (
         days > 0
@@ -1491,6 +1466,7 @@ function formatListCounter(
         );
     }
 
+
     if (
         hours > 0
     ) {
@@ -1502,6 +1478,7 @@ function formatListCounter(
         );
     }
 
+
     if (
         minutes > 0
     ) {
@@ -1512,10 +1489,12 @@ function formatListCounter(
         );
     }
 
+
     return (
         `${seconds}s`
     );
 }
+
 
 /* ========================================
    RENDER LISTA
@@ -1530,6 +1509,7 @@ function renderActivities() {
 
     container.innerHTML =
         "";
+
 
     if (
         activities.length === 0
@@ -1553,6 +1533,7 @@ function renderActivities() {
         return;
     }
 
+
     activities.forEach(
         activity => {
 
@@ -1567,6 +1548,7 @@ function renderActivities() {
             wrapper.dataset.id =
                 activity.id;
 
+
             const deleteReveal =
                 document.createElement(
                     "div"
@@ -1574,6 +1556,7 @@ function renderActivities() {
 
             deleteReveal.className =
                 "delete-reveal";
+
 
             const deleteButton =
                 document.createElement(
@@ -1585,6 +1568,7 @@ function renderActivities() {
 
             deleteButton.textContent =
                 "Elimina";
+
 
             deleteButton.addEventListener(
                 "click",
@@ -1598,9 +1582,11 @@ function renderActivities() {
                 }
             );
 
+
             deleteReveal.appendChild(
                 deleteButton
             );
+
 
             const row =
                 document.createElement(
@@ -1610,15 +1596,6 @@ function renderActivities() {
             row.className =
                 "activity-row";
 
-            /*
-               Applica automaticamente il colore
-               in base al tipo di contatore.
-            */
-            row.classList.add(
-                activity.mode === "up"
-                    ? "mode-up"
-                    : "mode-down"
-            );
 
             const infoButton =
                 document.createElement(
@@ -1628,9 +1605,24 @@ function renderActivities() {
             infoButton.className =
                 "activity-info";
 
+
             infoButton.addEventListener(
                 "click",
                 function(event) {
+
+                    if (
+                        row.dataset.justDragged ===
+                        "true"
+                    ) {
+
+                        row.dataset.justDragged =
+                            "false";
+
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        return;
+                    }
 
                     if (
                         Math.abs(
@@ -1654,6 +1646,11 @@ function renderActivities() {
                 }
             );
 
+
+            /*
+               Il nome è sempre un tasto della stessa
+               identica dimensione per ogni attività.
+            */
             const nameButton =
                 document.createElement(
                     "button"
@@ -1662,12 +1659,36 @@ function renderActivities() {
             nameButton.className =
                 "activity-name-button";
 
+            if (
+                activity.mode === "down"
+            ) {
+
+                nameButton.classList.add(
+                    "countdown"
+                );
+            }
+
             nameButton.textContent =
                 activity.name;
+
 
             nameButton.addEventListener(
                 "click",
                 function(event) {
+
+                    if (
+                        row.dataset.justDragged ===
+                        "true"
+                    ) {
+
+                        row.dataset.justDragged =
+                            "false";
+
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        return;
+                    }
 
                     event.preventDefault();
 
@@ -1679,37 +1700,11 @@ function renderActivities() {
                 }
             );
 
+
             infoButton.appendChild(
                 nameButton
             );
 
-            /*
-               MANIGLIA DI ORDINAMENTO
-            */
-            const dragHandle =
-                document.createElement(
-                    "button"
-                );
-
-            dragHandle.className =
-                "drag-handle";
-
-            dragHandle.type =
-                "button";
-
-            dragHandle.textContent =
-                "☷";
-
-            dragHandle.setAttribute(
-                "aria-label",
-                "Sposta attività"
-            );
-
-            setupDragHandle(
-                dragHandle,
-                wrapper,
-                activity.id
-            );
 
             const counter =
                 document.createElement(
@@ -1719,6 +1714,15 @@ function renderActivities() {
             counter.className =
                 "counter";
 
+            if (
+                activity.mode === "down"
+            ) {
+
+                counter.classList.add(
+                    "countdown"
+                );
+            }
+
             counter.dataset.counterId =
                 activity.id;
 
@@ -1726,6 +1730,7 @@ function renderActivities() {
                 formatListCounter(
                     activity
                 );
+
 
             if (
                 activity.mode === "down" &&
@@ -1739,12 +1744,9 @@ function renderActivities() {
                 );
             }
 
-            row.appendChild(
-                infoButton
-            );
 
             row.appendChild(
-                dragHandle
+                infoButton
             );
 
             row.appendChild(
@@ -1763,407 +1765,19 @@ function renderActivities() {
                 wrapper
             );
 
-            setupDesktopDrag(
-                wrapper,
-                activity.id
-            );
 
             enableSwipe(
+                row
+            );
+
+            enableReorder(
+                wrapper,
                 row
             );
         }
     );
 }
 
-/* ========================================
-   DRAG DESKTOP
-   ======================================== */
-
-function setupDesktopDrag(
-    wrapper,
-    id
-) {
-
-    wrapper.draggable =
-        true;
-
-    wrapper.addEventListener(
-        "dragstart",
-        function(event) {
-
-            draggedId =
-                id;
-
-            wrapper.classList.add(
-                "dragging"
-            );
-
-            if (
-                event.dataTransfer
-            ) {
-
-                event.dataTransfer.effectAllowed =
-                    "move";
-
-                event.dataTransfer.setData(
-                    "text/plain",
-                    id
-                );
-            }
-        }
-    );
-
-    wrapper.addEventListener(
-        "dragend",
-        function() {
-
-            draggedId =
-                null;
-
-            wrapper.classList.remove(
-                "dragging"
-            );
-
-            document
-                .querySelectorAll(
-                    ".activity-wrapper"
-                )
-                .forEach(
-                    item => {
-
-                        item.classList.remove(
-                            "drag-over"
-                        );
-                    }
-                );
-        }
-    );
-
-    wrapper.addEventListener(
-        "dragover",
-        function(event) {
-
-            event.preventDefault();
-
-            if (
-                !draggedId ||
-                draggedId === id
-            ) {
-                return;
-            }
-
-            const rect =
-                wrapper.getBoundingClientRect();
-
-            const middle =
-                rect.top +
-                rect.height / 2;
-
-            if (
-                event.clientY < middle
-            ) {
-
-                wrapper.classList.add(
-                    "drag-over"
-                );
-
-            } else {
-
-                wrapper.classList.add(
-                    "drag-over"
-                );
-            }
-
-            moveActivityBefore(
-                draggedId,
-                id,
-                event.clientY >= middle
-            );
-        }
-    );
-
-    wrapper.addEventListener(
-        "dragleave",
-        function() {
-
-            wrapper.classList.remove(
-                "drag-over"
-            );
-        }
-    );
-
-    wrapper.addEventListener(
-        "drop",
-        function(event) {
-
-            event.preventDefault();
-
-            wrapper.classList.remove(
-                "drag-over"
-            );
-
-            if (
-                event.dataTransfer
-            ) {
-
-                const sourceId =
-                    event.dataTransfer.getData(
-                        "text/plain"
-                    );
-
-                if (
-                    sourceId &&
-                    sourceId !== id
-                ) {
-
-                    moveActivityBefore(
-                        sourceId,
-                        id,
-                        event.clientY >=
-                            wrapper.getBoundingClientRect().top +
-                            wrapper.getBoundingClientRect().height / 2
-                    );
-                }
-            }
-        }
-    );
-}
-
-/* ========================================
-   DRAG DA MANIGLIA SU IPHONE / TOUCH
-   ======================================== */
-
-function setupDragHandle(
-    handle,
-    wrapper,
-    id
-) {
-
-    handle.addEventListener(
-        "pointerdown",
-        function(event) {
-
-            if (
-                event.pointerType !== "touch" &&
-                event.pointerType !== "pen"
-            ) {
-                return;
-            }
-
-            event.preventDefault();
-
-            touchDragId =
-                id;
-
-            touchDragElement =
-                wrapper;
-
-            touchDragging =
-                true;
-
-            wrapper.classList.add(
-                "dragging"
-            );
-
-            try {
-
-                handle.setPointerCapture(
-                    event.pointerId
-                );
-
-            } catch (error) {}
-        }
-    );
-
-    handle.addEventListener(
-        "pointermove",
-        function(event) {
-
-            if (
-                !touchDragging ||
-                touchDragId !== id
-            ) {
-                return;
-            }
-
-            event.preventDefault();
-
-            const elements =
-                Array.from(
-                    document.querySelectorAll(
-                        ".activity-wrapper"
-                    )
-                ).filter(
-                    element =>
-                        element !==
-                        touchDragElement
-                );
-
-            let target =
-                null;
-
-            for (
-                const element of elements
-            ) {
-
-                const rect =
-                    element.getBoundingClientRect();
-
-                if (
-                    event.clientY >= rect.top &&
-                    event.clientY <= rect.bottom
-                ) {
-
-                    target =
-                        element;
-
-                    break;
-                }
-            }
-
-            if (!target) {
-                return;
-            }
-
-            const targetId =
-                target.dataset.id;
-
-            const targetRect =
-                target.getBoundingClientRect();
-
-            const placeAfter =
-                event.clientY >
-                targetRect.top +
-                targetRect.height / 2;
-
-            moveActivityBefore(
-                id,
-                targetId,
-                placeAfter
-            );
-        }
-    );
-
-    handle.addEventListener(
-        "pointerup",
-        function(event) {
-
-            finishTouchDrag(
-                event
-            );
-        }
-    );
-
-    handle.addEventListener(
-        "pointercancel",
-        function(event) {
-
-            finishTouchDrag(
-                event
-            );
-        }
-    );
-}
-
-function finishTouchDrag() {
-
-    if (
-        !touchDragging
-    ) {
-        return;
-    }
-
-    touchDragging =
-        false;
-
-    if (
-        touchDragElement
-    ) {
-
-        touchDragElement.classList.remove(
-            "dragging"
-        );
-    }
-
-    touchDragId =
-        null;
-
-    touchDragElement =
-        null;
-
-    saveActivities();
-
-    renderActivities();
-}
-
-/* ========================================
-   SPOSTA ATTIVITÀ
-   ======================================== */
-
-function moveActivityBefore(
-    sourceId,
-    targetId,
-    after
-) {
-
-    if (
-        sourceId === targetId
-    ) {
-        return;
-    }
-
-    const sourceIndex =
-        activities.findIndex(
-            activity =>
-                activity.id === sourceId
-        );
-
-    const targetIndex =
-        activities.findIndex(
-            activity =>
-                activity.id === targetId
-        );
-
-    if (
-        sourceIndex === -1 ||
-        targetIndex === -1
-    ) {
-        return;
-    }
-
-    const source =
-        activities.splice(
-            sourceIndex,
-            1
-        )[0];
-
-    let newTargetIndex =
-        activities.findIndex(
-            activity =>
-                activity.id === targetId
-        );
-
-    if (
-        after
-    ) {
-
-        newTargetIndex += 1;
-    }
-
-    activities.splice(
-        newTargetIndex,
-        0,
-        source
-    );
-
-    saveActivities();
-
-    /*
-       Ridisegna la lista mantenendo
-       immediatamente il nuovo ordine.
-    */
-    renderActivities();
-}
 
 /* ========================================
    AGGIORNA SINGOLO CONTATORE
@@ -2188,6 +1802,11 @@ function updateSingleCounter(
         );
 
     counter.classList.toggle(
+        "countdown",
+        activity.mode === "down"
+    );
+
+    counter.classList.toggle(
         "expired",
         activity.mode === "down" &&
         getCounterMilliseconds(
@@ -2195,6 +1814,7 @@ function updateSingleCounter(
         ) <= 0
     );
 }
+
 
 /* ========================================
    SWIPE
@@ -2216,6 +1836,7 @@ function enableSwipe(row) {
 
     let moved =
         false;
+
 
     row.addEventListener(
         "touchstart",
@@ -2254,6 +1875,7 @@ function enableSwipe(row) {
         }
     );
 
+
     row.addEventListener(
         "touchmove",
         function(event) {
@@ -2281,6 +1903,7 @@ function enableSwipe(row) {
             const dy =
                 y - startY;
 
+
             if (!moved) {
 
                 if (
@@ -2298,6 +1921,7 @@ function enableSwipe(row) {
                     return;
                 }
 
+
                 if (
                     Math.abs(dx) > 8
                 ) {
@@ -2307,20 +1931,25 @@ function enableSwipe(row) {
                 }
             }
 
+
             if (!moved) {
                 return;
             }
 
+
             let translate =
                 startTranslate + dx;
+
 
             if (translate > 0) {
                 translate = 0;
             }
 
+
             if (translate < -88) {
                 translate = -88;
             }
+
 
             row.style.transform =
                 `translateX(${translate}px)`;
@@ -2330,6 +1959,7 @@ function enableSwipe(row) {
             passive: true
         }
     );
+
 
     row.addEventListener(
         "touchend",
@@ -2345,10 +1975,12 @@ function enableSwipe(row) {
             row.style.transition =
                 "transform .22s cubic-bezier(.25,.8,.25,1)";
 
+
             const finalX =
                 getRowTranslateX(
                     row
                 );
+
 
             if (moved) {
 
@@ -2378,6 +2010,374 @@ function enableSwipe(row) {
     );
 }
 
+
+/* ========================================
+   RIORDINAMENTO MANUALE
+   ======================================== */
+
+/*
+   Per evitare di confondere il riordinamento con
+   lo swipe laterale, il trascinamento verticale
+   parte con una pressione prolungata.
+
+   Tieni premuta una sezione per circa 0,35 secondi,
+   poi trascinala sopra o sotto le altre.
+*/
+
+function enableReorder(
+    wrapper,
+    row
+) {
+
+    let pressTimer =
+        null;
+
+    let reorderActive =
+        false;
+
+    let startY =
+        0;
+
+    let currentY =
+        0;
+
+    let moved =
+        false;
+
+
+    function clearPressTimer() {
+
+        if (pressTimer) {
+
+            clearTimeout(
+                pressTimer
+            );
+
+            pressTimer =
+                null;
+        }
+    }
+
+
+    function startReorder() {
+
+        reorderActive =
+            true;
+
+        moved =
+            false;
+
+        wrapper.classList.add(
+            "reorder-active"
+        );
+
+        row.classList.add(
+            "reorder-active"
+        );
+
+        row.style.transition =
+            "none";
+
+        row.style.transform =
+            "translateX(0)";
+
+        wrapper.dataset.reordering =
+            "true";
+    }
+
+
+    function finishReorder() {
+
+        clearPressTimer();
+
+        if (!reorderActive) {
+            return;
+        }
+
+        reorderActive =
+            false;
+
+        wrapper.classList.remove(
+            "reorder-active"
+        );
+
+        row.classList.remove(
+            "reorder-active"
+        );
+
+        row.style.transition =
+            "transform .22s cubic-bezier(.25,.8,.25,1)";
+
+        row.style.transform =
+            "translateX(0)";
+
+        wrapper.dataset.reordering =
+            "false";
+
+
+        if (moved) {
+
+            row.dataset.justDragged =
+                "true";
+
+            updateActivitiesOrder();
+
+            setTimeout(
+                () => {
+
+                    if (
+                        row.dataset.justDragged ===
+                        "true"
+                    ) {
+
+                        row.dataset.justDragged =
+                            "false";
+                    }
+
+                },
+                400
+            );
+        }
+    }
+
+
+    row.addEventListener(
+        "touchstart",
+        function(event) {
+
+            if (
+                !event.touches ||
+                !event.touches.length
+            ) {
+                return;
+            }
+
+            startY =
+                event.touches[0].clientY;
+
+            currentY =
+                startY;
+
+            moved =
+                false;
+
+            clearPressTimer();
+
+            pressTimer =
+                setTimeout(
+                    startReorder,
+                    350
+                );
+        },
+        {
+            passive: true
+        }
+    );
+
+
+    row.addEventListener(
+        "touchmove",
+        function(event) {
+
+            if (
+                !event.touches ||
+                !event.touches.length
+            ) {
+                return;
+            }
+
+            currentY =
+                event.touches[0].clientY;
+
+
+            if (!reorderActive) {
+
+                const dy =
+                    currentY - startY;
+
+                if (
+                    Math.abs(dy) > 8
+                ) {
+
+                    clearPressTimer();
+                }
+
+                return;
+            }
+
+
+            event.preventDefault();
+
+            const dy =
+                currentY - startY;
+
+
+            if (
+                Math.abs(dy) > 8
+            ) {
+
+                moved =
+                    true;
+            }
+
+
+            if (!moved) {
+                return;
+            }
+
+
+            const container =
+                document.getElementById(
+                    "activitiesList"
+                );
+
+
+            const wrappers =
+                Array.from(
+                    container.children
+                ).filter(
+                    element =>
+                        element !== wrapper &&
+                        element.classList.contains(
+                            "activity-wrapper"
+                        )
+                );
+
+
+            let inserted =
+                false;
+
+
+            for (
+                const otherWrapper
+                of wrappers
+            ) {
+
+                const rect =
+                    otherWrapper.getBoundingClientRect();
+
+                const midpoint =
+                    rect.top +
+                    rect.height / 2;
+
+
+                if (
+                    currentY < midpoint
+                ) {
+
+                    container.insertBefore(
+                        wrapper,
+                        otherWrapper
+                    );
+
+                    inserted =
+                        true;
+
+                    break;
+                }
+            }
+
+
+            if (!inserted) {
+
+                container.appendChild(
+                    wrapper
+                );
+            }
+
+        },
+        {
+            passive: false
+        }
+    );
+
+
+    row.addEventListener(
+        "touchend",
+        function() {
+
+            finishReorder();
+        },
+        {
+            passive: true
+        }
+    );
+
+
+    row.addEventListener(
+        "touchcancel",
+        function() {
+
+            finishReorder();
+        },
+        {
+            passive: true
+        }
+    );
+}
+
+
+/* ========================================
+   SALVA NUOVO ORDINE
+   ======================================== */
+
+function updateActivitiesOrder() {
+
+    const container =
+        document.getElementById(
+            "activitiesList"
+        );
+
+    const wrappers =
+        Array.from(
+            container.children
+        ).filter(
+            element =>
+                element.classList.contains(
+                    "activity-wrapper"
+                )
+        );
+
+
+    const newOrder =
+        [];
+
+
+    wrappers.forEach(
+        wrapper => {
+
+            const id =
+                wrapper.dataset.id;
+
+            const activity =
+                activities.find(
+                    item =>
+                        item.id === id
+                );
+
+            if (activity) {
+
+                newOrder.push(
+                    activity
+                );
+            }
+        }
+    );
+
+
+    if (
+        newOrder.length ===
+        activities.length
+    ) {
+
+        activities =
+            newOrder;
+
+        saveActivities();
+    }
+}
+
+
 /* ========================================
    LEGGI TRASLAZIONE
    ======================================== */
@@ -2398,17 +2398,21 @@ function getRowTranslateX(
         return 0;
     }
 
+
     const match =
         transform.match(
             /matrix\(([^)]+)\)/
         );
 
+
     if (!match) {
         return 0;
     }
 
+
     const values =
         match[1].split(",");
+
 
     return (
         parseFloat(
@@ -2416,6 +2420,7 @@ function getRowTranslateX(
         ) || 0
     );
 }
+
 
 /* ========================================
    CHIUDI SWIPE APERTI
@@ -2430,6 +2435,7 @@ document.addEventListener(
                 ".activity-row"
             );
 
+
         openRows.forEach(
             row => {
 
@@ -2443,6 +2449,7 @@ document.addEventListener(
 
                     const wrapper =
                         row.parentElement;
+
 
                     if (
                         !wrapper.contains(
@@ -2463,6 +2470,7 @@ document.addEventListener(
     }
 );
 
+
 /* ========================================
    AGGIORNA CONTATORI
    ======================================== */
@@ -2478,11 +2486,13 @@ function updateCounters() {
         }
     );
 
+
     if (detailId) {
 
         updateDetail();
     }
 }
+
 
 /* ========================================
    APRI DETTAGLIO
@@ -2511,6 +2521,7 @@ function openDetail(id) {
     updateDetail();
 }
 
+
 /* ========================================
    CHIUDI DETTAGLIO
    ======================================== */
@@ -2527,6 +2538,7 @@ function closeDetail() {
         null;
 }
 
+
 /* ========================================
    AGGIORNA DETTAGLIO
    ======================================== */
@@ -2537,10 +2549,12 @@ function updateDetail() {
         return;
     }
 
+
     const activity =
         activities.find(
             a => a.id === detailId
         );
+
 
     if (!activity) {
 
@@ -2549,52 +2563,64 @@ function updateDetail() {
         return;
     }
 
+
     document.getElementById(
         "detailTitle"
     ).textContent =
         activity.name;
+
 
     let milliseconds =
         getCounterMilliseconds(
             activity
         );
 
+
     const expired =
         activity.mode === "down" &&
         milliseconds <= 0;
 
+
     if (expired) {
         milliseconds = 0;
     }
+
 
     const totalSeconds =
         Math.floor(
             milliseconds / 1000
         );
 
+
     const seconds =
         totalSeconds % 60;
+
 
     const totalMinutes =
         Math.floor(
             totalSeconds / 60
         );
 
+
     const minutes =
         totalMinutes % 60;
+
 
     const totalHours =
         Math.floor(
             totalMinutes / 60
         );
 
+
     const hours =
         totalHours % 24;
+
 
     const days =
         Math.floor(
             totalHours / 24
         );
+
 
     document.getElementById(
         "detailExact"
@@ -2603,6 +2629,7 @@ function updateDetail() {
         `${hours} ore · ` +
         `${minutes} minuti · ` +
         `${seconds} secondi`;
+
 
     if (
         activity.mode === "up"
@@ -2628,6 +2655,7 @@ function updateDetail() {
     }
 }
 
+
 /* ========================================
    RESET DAL DETTAGLIO
    ======================================== */
@@ -2642,6 +2670,7 @@ function requestReset() {
         detailId
     );
 }
+
 
 /* ========================================
    RICHIEDI RESET
@@ -2658,16 +2687,19 @@ function requestResetActivity(id) {
         return;
     }
 
+
     pendingAction =
         "reset";
 
     pendingActionId =
         id;
 
+
     document.getElementById(
         "confirmationTitle"
     ).textContent =
         "Ricominciare il contatore?";
+
 
     if (
         activity.mode === "up"
@@ -2686,10 +2718,12 @@ function requestResetActivity(id) {
             "Il contatore verrà reimpostato e dovrai inserire una nuova scadenza.";
     }
 
+
     const confirmButton =
         document.getElementById(
             "confirmationConfirmButton"
         );
+
 
     confirmButton.textContent =
         "Ricomincia";
@@ -2700,12 +2734,14 @@ function requestResetActivity(id) {
     confirmButton.style.color =
         "var(--blue)";
 
+
     document.getElementById(
         "confirmationModal"
     ).classList.add(
         "show"
     );
 }
+
 
 /* ========================================
    CONFERMA RESET
@@ -2721,6 +2757,7 @@ function confirmReset(id) {
     if (!activity) {
         return;
     }
+
 
     if (
         activity.mode === "up"
@@ -2743,15 +2780,18 @@ function confirmReset(id) {
         return;
     }
 
+
     const currentTarget =
         new Date(
             activity.targetTimestamp
         );
 
+
     const currentValue =
         toDateTimeLocal(
             currentTarget.getTime()
         );
+
 
     const newDeadline =
         prompt(
@@ -2763,11 +2803,13 @@ function confirmReset(id) {
             )
         );
 
+
     if (
         newDeadline === null
     ) {
         return;
     }
+
 
     const normalized =
         newDeadline
@@ -2777,10 +2819,12 @@ function confirmReset(id) {
                 "T"
             );
 
+
     const timestamp =
         new Date(
             normalized
         ).getTime();
+
 
     if (
         isNaN(timestamp)
@@ -2793,6 +2837,7 @@ function confirmReset(id) {
         return;
     }
 
+
     if (
         timestamp <= Date.now()
     ) {
@@ -2804,12 +2849,15 @@ function confirmReset(id) {
         return;
     }
 
+
     activity.targetTimestamp =
         timestamp;
+
 
     saveActivities();
 
     renderActivities();
+
 
     if (
         detailId === id
@@ -2818,6 +2866,7 @@ function confirmReset(id) {
         updateDetail();
     }
 }
+
 
 /* ========================================
    RICHIEDI ELIMINAZIONE
@@ -2834,6 +2883,7 @@ function requestDelete() {
     );
 }
 
+
 function requestDeleteActivity(
     id
 ) {
@@ -2847,26 +2897,31 @@ function requestDeleteActivity(
         return;
     }
 
+
     pendingAction =
         "delete";
 
     pendingActionId =
         id;
 
+
     document.getElementById(
         "confirmationTitle"
     ).textContent =
         "Eliminare attività?";
+
 
     document.getElementById(
         "confirmationText"
     ).textContent =
         `L'attività "${activity.name}" verrà eliminata definitivamente.`;
 
+
     const confirmButton =
         document.getElementById(
             "confirmationConfirmButton"
         );
+
 
     confirmButton.textContent =
         "Elimina";
@@ -2877,12 +2932,14 @@ function requestDeleteActivity(
     confirmButton.style.color =
         "var(--red)";
 
+
     document.getElementById(
         "confirmationModal"
     ).classList.add(
         "show"
     );
 }
+
 
 /* ========================================
    CONFERMA ELIMINAZIONE
@@ -2896,9 +2953,11 @@ function confirmDelete(id) {
                 activity.id !== id
         );
 
+
     saveActivities();
 
     renderActivities();
+
 
     if (
         detailId === id
@@ -2907,6 +2966,7 @@ function confirmDelete(id) {
         closeDetail();
     }
 }
+
 
 /* ========================================
    CONFERMA AZIONE
@@ -2920,7 +2980,9 @@ function confirmAction() {
     const id =
         pendingActionId;
 
+
     closeConfirmation();
+
 
     if (
         !action ||
@@ -2928,6 +2990,7 @@ function confirmAction() {
     ) {
         return;
     }
+
 
     if (
         action === "reset"
@@ -2938,6 +3001,7 @@ function confirmAction() {
         );
     }
 
+
     if (
         action === "delete"
     ) {
@@ -2947,12 +3011,14 @@ function confirmAction() {
         );
     }
 
+
     pendingAction =
         null;
 
     pendingActionId =
         null;
 }
+
 
 /* ========================================
    CHIUDI CONFERMA
@@ -2973,6 +3039,7 @@ function closeConfirmation() {
         null;
 }
 
+
 /* ========================================
    CHIUSURA OVERLAY
    ======================================== */
@@ -2988,12 +3055,14 @@ function overlayClose(
         return;
     }
 
+
     if (
         id === "activityModal"
     ) {
 
         closeActivityModal();
     }
+
 
     if (
         id === "confirmationModal"
@@ -3002,6 +3071,7 @@ function overlayClose(
         closeConfirmation();
     }
 }
+
 
 /* ========================================
    DATA LEGGIBILE
@@ -3016,6 +3086,7 @@ function formatExactDate(
             timestamp
         );
 
+
     return date.toLocaleString(
         "it-IT",
         {
@@ -3028,6 +3099,7 @@ function formatExactDate(
         }
     );
 }
+
 
 /* ========================================
    DATETIME LOCAL
@@ -3042,8 +3114,10 @@ function toDateTimeLocal(
             timestamp
         );
 
+
     const year =
         date.getFullYear();
+
 
     const month =
         String(
@@ -3053,6 +3127,7 @@ function toDateTimeLocal(
             "0"
         );
 
+
     const day =
         String(
             date.getDate()
@@ -3060,6 +3135,7 @@ function toDateTimeLocal(
             2,
             "0"
         );
+
 
     const hours =
         String(
@@ -3069,6 +3145,7 @@ function toDateTimeLocal(
             "0"
         );
 
+
     const minutes =
         String(
             date.getMinutes()
@@ -3077,11 +3154,13 @@ function toDateTimeLocal(
             "0"
         );
 
+
     return (
         `${year}-${month}-${day}` +
         `T${hours}:${minutes}`
     );
 }
+
 
 /* ========================================
    AVVIO
