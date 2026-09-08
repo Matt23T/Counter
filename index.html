@@ -16,7 +16,10 @@
         --red: #ff3b30;
         --border: rgba(60,60,67,0.18);
         --shadow: 0 4px 18px rgba(0,0,0,0.06);
-        --countdown-bg: #eaf4ff;
+
+        /* Colori distinti per i due tipi */
+        --up-bg: #eef6ff;
+        --down-bg: #f2fbed;
     }
 
     * {
@@ -57,24 +60,17 @@
         padding: 24px 16px 40px;
     }
 
-    /* ========================================
-       HEADER
-       ======================================== */
-
     .header {
-        display: grid;
-        grid-template-columns: 80px 1fr 42px;
+        display: flex;
         align-items: center;
+        justify-content: space-between;
         margin-bottom: 20px;
-        min-height: 42px;
     }
 
-    .title {
-        font-size: 34px;
-        font-weight: 700;
-        letter-spacing: -1.2px;
-        text-align: center;
-        white-space: nowrap;
+    .header-left {
+        display: flex;
+        align-items: center;
+        min-width: 0;
     }
 
     .edit-button {
@@ -83,13 +79,22 @@
         color: var(--blue);
         font-size: 17px;
         font-weight: 500;
-        padding: 6px 0;
-        text-align: left;
+        padding: 8px 8px 8px 0;
         white-space: nowrap;
     }
 
     .edit-button:active {
         opacity: .55;
+    }
+
+    .title {
+        font-size: 34px;
+        font-weight: 700;
+        letter-spacing: -1.2px;
+    }
+
+    .edit-mode .title {
+        margin-left: 8px;
     }
 
     .add-button {
@@ -107,6 +112,7 @@
         justify-content: center;
         box-shadow: 0 4px 12px rgba(0,122,255,0.22);
         transition: transform .12s ease, opacity .12s ease;
+        flex-shrink: 0;
     }
 
     .add-button:active {
@@ -132,21 +138,13 @@
         overflow: hidden;
         border-radius: 18px;
         background: var(--red);
-        transition:
-            transform .28s cubic-bezier(.25,.8,.25,1),
-            opacity .2s ease;
+        transition: transform .2s ease, opacity .2s ease;
     }
 
     .activity-wrapper.dragging {
+        opacity: .85;
         z-index: 50;
-        opacity: .96;
-        box-shadow: 0 14px 35px rgba(0,0,0,.16);
-    }
-
-    .activity-wrapper.drag-placeholder {
-        opacity: .28;
-        background: rgba(0,122,255,.08);
-        border: 1px solid rgba(0,122,255,.15);
+        box-shadow: 0 10px 30px rgba(0,0,0,.16);
     }
 
     .delete-reveal {
@@ -189,85 +187,17 @@
         transform: translateX(0);
         transition:
             transform .22s cubic-bezier(.25,.8,.25,1),
-            background-color .2s ease;
+            background .18s ease;
         touch-action: pan-y;
     }
 
+    /* Sfondo diverso in base al tipo di contatore */
     .activity-row.mode-up {
-        background: #ffffff;
+        background: var(--up-bg);
     }
 
     .activity-row.mode-down {
-        background: var(--countdown-bg);
-    }
-
-    /* ========================================
-       MANIGLIA RIORDINAMENTO
-       ======================================== */
-
-    .reorder-handle {
-        flex: 0 0 24px;
-        width: 24px;
-        height: 42px;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        color: var(--secondary);
-        font-size: 23px;
-        font-weight: 600;
-        letter-spacing: -5px;
-        line-height: 1;
-        user-select: none;
-        -webkit-user-select: none;
-        touch-action: none;
-        cursor: grab;
-    }
-
-    .reorder-handle:active {
-        cursor: grabbing;
-    }
-
-    .edit-mode .reorder-handle {
-        display: flex;
-    }
-
-    .edit-mode .activity-row {
-        gap: 8px;
-        touch-action: none;
-    }
-
-    .edit-mode .activity-info {
-        pointer-events: none;
-    }
-
-    .edit-mode .activity-name-button {
-        pointer-events: none;
-    }
-
-    .edit-mode .counter {
-        pointer-events: none;
-    }
-
-    /* ========================================
-       ANIMAZIONE TIPO IPHONE
-       ======================================== */
-
-    .edit-mode .activity-wrapper:not(.dragging) {
-        animation: iphoneWiggle .14s ease-in-out infinite alternate;
-    }
-
-    .edit-mode .activity-wrapper:nth-child(2n):not(.dragging) {
-        animation-delay: -.07s;
-    }
-
-    @keyframes iphoneWiggle {
-        from {
-            transform: rotate(-0.55deg);
-        }
-
-        to {
-            transform: rotate(0.55deg);
-        }
+        background: var(--down-bg);
     }
 
     .activity-info {
@@ -335,6 +265,73 @@
 
     .counter.expired {
         color: var(--red);
+    }
+
+    /* ========================================
+       MODALITÀ RIORDINO
+       ======================================== */
+
+    .reorder-handle {
+        display: none;
+        flex: 0 0 30px;
+        width: 30px;
+        height: 44px;
+        align-items: center;
+        justify-content: center;
+        color: var(--secondary);
+        font-size: 23px;
+        font-weight: 700;
+        letter-spacing: -5px;
+        line-height: 1;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .reorder-handle::before {
+        content: "⠿";
+        display: block;
+        transform: rotate(90deg);
+    }
+
+    .edit-mode .reorder-handle {
+        display: flex;
+    }
+
+    .edit-mode .activity-wrapper {
+        overflow: visible;
+        background: transparent;
+    }
+
+    .edit-mode .activity-row {
+        transform: translateX(0) !important;
+        touch-action: none;
+        transition:
+            transform .18s ease,
+            box-shadow .18s ease,
+            opacity .18s ease;
+    }
+
+    .edit-mode .delete-reveal {
+        display: none;
+    }
+
+    .edit-mode .activity-info {
+        pointer-events: none;
+    }
+
+    .edit-mode .activity-name-button {
+        border-color: rgba(60,60,67,.18);
+        color: var(--text);
+        pointer-events: none;
+    }
+
+    .edit-mode .counter {
+        pointer-events: none;
+    }
+
+    .activity-wrapper.drag-placeholder {
+        opacity: .25;
     }
 
     /* ========================================
@@ -602,27 +599,11 @@
         flex: 1;
     }
 
-    /* ========================================
-       RESPONSIVE
-       ======================================== */
-
     @media (max-width: 500px) {
 
         .app {
             padding-left: 12px;
             padding-right: 12px;
-        }
-
-        .header {
-            grid-template-columns: 70px 1fr 42px;
-        }
-
-        .title {
-            font-size: 31px;
-        }
-
-        .edit-button {
-            font-size: 16px;
         }
 
         .activity-row {
@@ -668,21 +649,14 @@
             height: 52px;
             min-height: 52px;
         }
+
+        .edit-mode .reorder-handle {
+            flex-basis: 26px;
+            width: 26px;
+        }
     }
 
     @media (max-width: 370px) {
-
-        .header {
-            grid-template-columns: 62px 1fr 42px;
-        }
-
-        .title {
-            font-size: 28px;
-        }
-
-        .edit-button {
-            font-size: 15px;
-        }
 
         .activity-name-button {
             flex: 0 0 135px;
@@ -706,16 +680,20 @@
 
     <div class="header">
 
-        <button
-            id="editButton"
-            class="edit-button"
-            onclick="toggleEditMode()"
-        >
-            Modifica
-        </button>
+        <div class="header-left">
 
-        <div class="title">
-            Contatori
+            <button
+                id="editButton"
+                class="edit-button"
+                onclick="toggleEditMode()"
+            >
+                Modifica
+            </button>
+
+            <div class="title">
+                Contatori
+            </div>
+
         </div>
 
         <button
@@ -987,21 +965,20 @@ let pendingActionId =
 let editMode =
     false;
 
-/* ========================================
-   STATO RIORDINAMENTO
-   ======================================== */
+let draggingActivityId =
+    null;
 
-let reorderState = {
-    active: false,
-    id: null,
-    wrapper: null,
-    handle: null,
-    startY: 0,
-    currentY: 0,
-    offsetY: 0,
-    placeholder: null,
-    originalIndex: -1
-};
+let dragStartY =
+    0;
+
+let dragCurrentY =
+    0;
+
+let draggedWrapper =
+    null;
+
+let dragMoved =
+    false;
 
 /* ========================================
    CARICAMENTO
@@ -1054,16 +1031,10 @@ function saveActivities() {
 }
 
 /* ========================================
-   MODALITÀ MODIFICA
+   MODALITÀ MODIFICA / RIORDINO
    ======================================== */
 
 function toggleEditMode() {
-
-    if (
-        reorderState.active
-    ) {
-        return;
-    }
 
     editMode =
         !editMode;
@@ -1083,31 +1054,21 @@ function toggleEditMode() {
         editMode
     );
 
-    editButton.textContent =
-        editMode
-            ? "Fine"
-            : "Modifica";
+    if (editMode) {
 
-    /*
-       In modalità modifica eliminiamo
-       eventuali swipe aperti.
-    */
-    if (
-        editMode
-    ) {
+        editButton.textContent =
+            "Fine";
 
-        document.querySelectorAll(
-            ".activity-row"
-        ).forEach(
-            row => {
+        closeAllSwipes();
 
-                row.style.transform =
-                    "translateX(0)";
-            }
-        );
+    } else {
+
+        editButton.textContent =
+            "Modifica";
+
+        saveActivities();
+        renderActivities();
     }
-
-    renderActivities();
 }
 
 /* ========================================
@@ -1116,9 +1077,7 @@ function toggleEditMode() {
 
 function openAddModal() {
 
-    if (
-        editMode
-    ) {
+    if (editMode) {
         return;
     }
 
@@ -1743,12 +1702,6 @@ function renderActivities() {
 
                     event.stopPropagation();
 
-                    if (
-                        editMode
-                    ) {
-                        return;
-                    }
-
                     requestDeleteActivity(
                         activity.id
                     );
@@ -1767,33 +1720,36 @@ function renderActivities() {
             row.className =
                 "activity-row " +
                 (
-                    activity.mode === "down"
-                        ? "mode-down"
-                        : "mode-up"
+                    activity.mode === "up"
+                        ? "mode-up"
+                        : "mode-down"
                 );
 
             /* ========================================
-               MANIGLIA
+               MANIGLIA RIORDINO
                ======================================== */
 
-            const handle =
+            const reorderHandle =
                 document.createElement(
                     "div"
                 );
 
-            handle.className =
+            reorderHandle.className =
                 "reorder-handle";
 
-            handle.innerHTML =
-                "≡";
-
-            handle.setAttribute(
+            reorderHandle.setAttribute(
                 "aria-label",
-                "Trascina per riordinare"
+                "Sposta attività"
+            );
+
+            enableReorder(
+                reorderHandle,
+                wrapper,
+                activity.id
             );
 
             /* ========================================
-               INFO
+               INFORMAZIONI
                ======================================== */
 
             const infoButton =
@@ -1808,9 +1764,7 @@ function renderActivities() {
                 "click",
                 function(event) {
 
-                    if (
-                        editMode
-                    ) {
+                    if (editMode) {
                         return;
                     }
 
@@ -1838,7 +1792,7 @@ function renderActivities() {
 
             const nameButton =
                 document.createElement(
-                    "button"
+                    "div"
                 );
 
             nameButton.className =
@@ -1851,15 +1805,13 @@ function renderActivities() {
                 "click",
                 function(event) {
 
+                    if (editMode) {
+                        return;
+                    }
+
                     event.preventDefault();
 
                     event.stopPropagation();
-
-                    if (
-                        editMode
-                    ) {
-                        return;
-                    }
 
                     requestResetActivity(
                         activity.id
@@ -1900,7 +1852,7 @@ function renderActivities() {
             }
 
             row.appendChild(
-                handle
+                reorderHandle
             );
 
             row.appendChild(
@@ -1923,74 +1875,72 @@ function renderActivities() {
                 wrapper
             );
 
-            if (
-                !editMode
-            ) {
-
-                enableSwipe(
-                    row
-                );
-            }
-
-            enableReorder(
-                wrapper,
-                handle,
-                activity.id
+            enableSwipe(
+                row
             );
         }
     );
 }
 
 /* ========================================
-   RIORDINAMENTO
+   RIORDINAMENTO TOUCH
    ======================================== */
 
 function enableReorder(
-    wrapper,
     handle,
-    id
+    wrapper,
+    activityId
 ) {
 
-    let longPressTimer =
-        null;
-
-    let startY =
-        0;
+    let startY = 0;
+    let currentY = 0;
+    let active = false;
+    let moved = false;
 
     handle.addEventListener(
         "touchstart",
         function(event) {
 
-            if (
-                !editMode
-            ) {
+            if (!editMode) {
                 return;
             }
 
             if (
-                event.touches.length !== 1
+                !event.touches ||
+                !event.touches.length
             ) {
                 return;
             }
+
+            event.stopPropagation();
 
             startY =
                 event.touches[0].clientY;
 
-            longPressTimer =
-                setTimeout(
-                    function() {
+            currentY =
+                startY;
 
-                        startReorder(
-                            wrapper,
-                            handle,
-                            id,
-                            startY
-                        );
+            active =
+                true;
 
-                    },
-                    180
-                );
+            moved =
+                false;
 
+            draggingActivityId =
+                activityId;
+
+            draggedWrapper =
+                wrapper;
+
+            dragMoved =
+                false;
+
+            wrapper.classList.add(
+                "dragging"
+            );
+
+            document.body.style.overflow =
+                "hidden";
         },
         {
             passive: true
@@ -2002,51 +1952,48 @@ function enableReorder(
         function(event) {
 
             if (
+                !active ||
                 !editMode
             ) {
                 return;
             }
 
             if (
-                !reorderState.active
+                !event.touches ||
+                !event.touches.length
             ) {
-
-                if (
-                    event.touches.length
-                ) {
-
-                    const currentY =
-                        event.touches[0].clientY;
-
-                    if (
-                        Math.abs(
-                            currentY -
-                            startY
-                        ) > 10
-                    ) {
-
-                        clearTimeout(
-                            longPressTimer
-                        );
-
-                        longPressTimer =
-                            null;
-                    }
-                }
-
                 return;
             }
 
+            currentY =
+                event.touches[0].clientY;
+
+            const dy =
+                currentY - startY;
+
             if (
-                event.touches.length !== 1
+                Math.abs(dy) > 6
             ) {
+
+                moved =
+                    true;
+
+                dragMoved =
+                    true;
+            }
+
+            if (!moved) {
                 return;
             }
 
             event.preventDefault();
 
-            moveReorder(
-                event.touches[0].clientY
+            wrapper.style.transform =
+                `translateY(${dy}px)`;
+
+            moveActivityByTouch(
+                wrapper,
+                currentY
             );
 
         },
@@ -2059,25 +2006,35 @@ function enableReorder(
         "touchend",
         function() {
 
-            if (
-                longPressTimer
-            ) {
-
-                clearTimeout(
-                    longPressTimer
-                );
-
-                longPressTimer =
-                    null;
+            if (!active) {
+                return;
             }
 
-            if (
-                reorderState.active
-            ) {
+            active =
+                false;
 
-                finishReorder();
+            wrapper.classList.remove(
+                "dragging"
+            );
+
+            wrapper.style.transform =
+                "";
+
+            document.body.style.overflow =
+                "";
+
+            if (moved) {
+
+                saveActivities();
+
+                renderActivities();
             }
 
+            draggingActivityId =
+                null;
+
+            draggedWrapper =
+                null;
         },
         {
             passive: true
@@ -2088,25 +2045,26 @@ function enableReorder(
         "touchcancel",
         function() {
 
-            if (
-                longPressTimer
-            ) {
+            active =
+                false;
 
-                clearTimeout(
-                    longPressTimer
-                );
+            wrapper.classList.remove(
+                "dragging"
+            );
 
-                longPressTimer =
-                    null;
-            }
+            wrapper.style.transform =
+                "";
 
-            if (
-                reorderState.active
-            ) {
+            document.body.style.overflow =
+                "";
 
-                finishReorder();
-            }
+            draggingActivityId =
+                null;
 
+            draggedWrapper =
+                null;
+
+            renderActivities();
         },
         {
             passive: true
@@ -2115,361 +2073,148 @@ function enableReorder(
 }
 
 /* ========================================
-   INIZIA RIORDINAMENTO
+   SPOSTA ATTIVITÀ IN BASE ALLA POSIZIONE
    ======================================== */
 
-function startReorder(
-    wrapper,
-    handle,
-    id,
-    clientY
+function moveActivityByTouch(
+    dragged,
+    touchY
 ) {
-
-    if (
-        !editMode ||
-        reorderState.active
-    ) {
-        return;
-    }
-
-    const rect =
-        wrapper.getBoundingClientRect();
-
-    const index =
-        activities.findIndex(
-            activity =>
-                activity.id === id
-        );
-
-    if (
-        index === -1
-    ) {
-        return;
-    }
-
-    reorderState.active =
-        true;
-
-    reorderState.id =
-        id;
-
-    reorderState.wrapper =
-        wrapper;
-
-    reorderState.handle =
-        handle;
-
-    reorderState.startY =
-        clientY;
-
-    reorderState.currentY =
-        clientY;
-
-    reorderState.offsetY =
-        clientY -
-        rect.top;
-
-    reorderState.originalIndex =
-        index;
-
-    const placeholder =
-        document.createElement(
-            "div"
-        );
-
-    placeholder.className =
-        "activity-wrapper drag-placeholder";
-
-    placeholder.style.height =
-        rect.height + "px";
-
-    placeholder.style.marginBottom =
-        "10px";
-
-    reorderState.placeholder =
-        placeholder;
-
-    wrapper.parentNode.insertBefore(
-        placeholder,
-        wrapper
-    );
-
-    wrapper.classList.add(
-        "dragging"
-    );
-
-    wrapper.style.position =
-        "relative";
-
-    wrapper.style.width =
-        rect.width + "px";
-
-    wrapper.style.transform =
-        "translateY(0) scale(1.035)";
-
-    wrapper.style.transition =
-        "none";
-
-    wrapper.style.touchAction =
-        "none";
-
-    /*
-       Blocchiamo temporaneamente lo scroll
-       durante il trascinamento.
-    */
-    document.body.style.overflow =
-        "hidden";
-
-    if (
-        navigator.vibrate
-    ) {
-
-        navigator.vibrate(
-            20
-        );
-    }
-}
-
-/* ========================================
-   MUOVI ELEMENTO
-   ======================================== */
-
-function moveReorder(
-    clientY
-) {
-
-    if (
-        !reorderState.active
-    ) {
-        return;
-    }
-
-    const wrapper =
-        reorderState.wrapper;
-
-    reorderState.currentY =
-        clientY;
-
-    /*
-       Il punto centrale della sezione segue
-       il dito, dando l'effetto di trascinamento
-       tipico dell'iPhone.
-    */
-
-    const newTop =
-        clientY -
-        reorderState.offsetY;
-
-    const originalTop =
-        wrapper.getBoundingClientRect().top;
-
-    const delta =
-        newTop -
-        originalTop;
-
-    wrapper.style.transform =
-        `translateY(${delta}px) scale(1.035)`;
 
     const container =
         document.getElementById(
             "activitiesList"
         );
 
-    const items =
+    const wrappers =
         Array.from(
-            container.children
+            container.querySelectorAll(
+                ".activity-wrapper"
+            )
         ).filter(
-            element =>
-                element !== wrapper &&
-                element !== reorderState.placeholder &&
-                element.classList.contains(
-                    "activity-wrapper"
-                )
+            wrapper =>
+                wrapper !== dragged
         );
 
-    let inserted =
-        false;
+    let target =
+        null;
 
-    for (
-        const item of items
-    ) {
+    let closestDistance =
+        Infinity;
+
+    wrappers.forEach(
+        wrapper => {
+
+            const rect =
+                wrapper.getBoundingClientRect();
+
+            const center =
+                rect.top +
+                rect.height / 2;
+
+            const distance =
+                Math.abs(
+                    touchY - center
+                );
+
+            if (
+                touchY < center &&
+                distance < closestDistance
+            ) {
+
+                closestDistance =
+                    distance;
+
+                target =
+                    wrapper;
+            }
+        }
+    );
+
+    if (target) {
+
+        container.insertBefore(
+            dragged,
+            target
+        );
+
+        updateActivityArrayFromDOM();
+
+        return;
+    }
+
+    const last =
+        wrappers[
+            wrappers.length - 1
+        ];
+
+    if (last) {
 
         const rect =
-            item.getBoundingClientRect();
-
-        const midpoint =
-            rect.top +
-            rect.height / 2;
+            last.getBoundingClientRect();
 
         if (
-            clientY < midpoint
+            touchY >
+            rect.top +
+            rect.height / 2
         ) {
 
-            if (
-                reorderState.placeholder.nextSibling !== item
-            ) {
+            container.appendChild(
+                dragged
+            );
 
-                container.insertBefore(
-                    reorderState.placeholder,
-                    item
-                );
-            }
-
-            inserted =
-                true;
-
-            break;
+            updateActivityArrayFromDOM();
         }
-    }
-
-    if (!inserted) {
-
-        container.appendChild(
-            reorderState.placeholder
-        );
     }
 }
 
 /* ========================================
-   TERMINA RIORDINAMENTO
+   AGGIORNA ARRAY SECONDO ORDINE DOM
    ======================================== */
 
-function finishReorder() {
-
-    if (
-        !reorderState.active
-    ) {
-        return;
-    }
-
-    const wrapper =
-        reorderState.wrapper;
-
-    const placeholder =
-        reorderState.placeholder;
+function updateActivityArrayFromDOM() {
 
     const container =
         document.getElementById(
             "activitiesList"
         );
 
-    const placeholderIndex =
+    const ids =
         Array.from(
-            container.children
-        ).indexOf(
-            placeholder
+            container.querySelectorAll(
+                ".activity-wrapper"
+            )
+        ).map(
+            wrapper =>
+                wrapper.dataset.id
         );
 
-    const activity =
-        activities.find(
-            a =>
-                a.id ===
-                reorderState.id
-        );
+    const reordered = [];
 
-    if (
-        activity
-    ) {
+    ids.forEach(
+        id => {
 
-        const oldIndex =
-            activities.findIndex(
-                a =>
-                    a.id ===
-                    reorderState.id
-            );
+            const activity =
+                activities.find(
+                    a => a.id === id
+                );
 
-        if (
-            oldIndex !== -1
-        ) {
-
-            activities.splice(
-                oldIndex,
-                1
-            );
-
-            let targetIndex =
-                placeholderIndex;
-
-            /*
-               Dopo aver rimosso l'elemento
-               originale, gli indici successivi
-               scalano di uno.
-            */
-            if (
-                targetIndex > oldIndex
-            ) {
-
-                targetIndex--;
-            }
-
-            if (
-                targetIndex < 0
-            ) {
-                targetIndex = 0;
-            }
-
-            if (
-                targetIndex >
-                activities.length
-            ) {
-
-                targetIndex =
-                    activities.length;
-            }
-
-            activities.splice(
-                targetIndex,
-                0,
-                activity
-            );
-        }
-    }
-
-    saveActivities();
-
-    /*
-       Animazione di rilascio.
-    */
-
-    wrapper.style.transition =
-        "transform .28s cubic-bezier(.25,.8,.25,1)";
-
-    wrapper.style.transform =
-        "translateY(0) scale(1)";
-
-    setTimeout(
-        function() {
-
-            if (
-                placeholder &&
-                placeholder.parentNode
-            ) {
-
-                placeholder.parentNode.removeChild(
-                    placeholder
+            if (activity) {
+                reordered.push(
+                    activity
                 );
             }
-
-            document.body.style.overflow =
-                "";
-
-            reorderState = {
-                active: false,
-                id: null,
-                wrapper: null,
-                handle: null,
-                startY: 0,
-                currentY: 0,
-                offsetY: 0,
-                placeholder: null,
-                originalIndex: -1
-            };
-
-            renderActivities();
-
-        },
-        120
+        }
     );
+
+    if (
+        reordered.length ===
+        activities.length
+    ) {
+
+        activities =
+            reordered;
+    }
 }
 
 /* ========================================
@@ -2528,10 +2273,7 @@ function enableSwipe(row) {
         "touchstart",
         function(event) {
 
-            if (
-                editMode ||
-                reorderState.active
-            ) {
+            if (editMode) {
                 return;
             }
 
@@ -2738,14 +2480,27 @@ function getRowTranslateX(
    CHIUDI SWIPE APERTI
    ======================================== */
 
+function closeAllSwipes() {
+
+    const openRows =
+        document.querySelectorAll(
+            ".activity-row"
+        );
+
+    openRows.forEach(
+        row => {
+
+            row.style.transform =
+                "translateX(0)";
+        }
+    );
+}
+
 document.addEventListener(
     "touchstart",
     function(event) {
 
-        if (
-            editMode ||
-            reorderState.active
-        ) {
+        if (editMode) {
             return;
         }
 
@@ -2814,9 +2569,7 @@ function updateCounters() {
 
 function openDetail(id) {
 
-    if (
-        editMode
-    ) {
+    if (editMode) {
         return;
     }
 
