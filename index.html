@@ -7,755 +7,685 @@
 <title>Contatori</title>
 
 <style>
-    * {
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    --bg: #f5f5f7;
+    --blue: #007aff;
+    --red: #ff3b30;
+    --text: #111;
+    --secondary: #86868b;
+    --separator: rgba(60,60,67,.16);
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "SF Pro Text",
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+button,
+input {
+    font-family: inherit;
+}
+
+.app {
+    max-width: 760px;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding-bottom: 50px;
+}
+
+header {
+    padding: 62px 22px 22px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 38px;
+    line-height: 1;
+    font-weight: 750;
+    letter-spacing: -1.5px;
+}
+
+header p {
+    margin: 9px 0 0;
+    color: var(--secondary);
+    font-size: 16px;
+}
+
+/* =========================
+   NUOVA ATTIVITÀ
+========================= */
+
+.add-button {
+    width: calc(100% - 32px);
+    height: 52px;
+    margin: 0 16px 28px;
+
+    border: 1.5px solid rgba(0,122,255,.75);
+    border-radius: 16px;
+
+    background: rgba(255,255,255,.7);
+    color: var(--blue);
+
+    font-size: 17px;
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        transform .1s ease,
+        background .1s ease;
+}
+
+.add-button:active {
+    transform: scale(.96);
+    background: rgba(0,122,255,.12);
+}
+
+/* =========================
+   LISTA
+========================= */
+
+.section {
+    margin: 0 16px;
+}
+
+.section-title {
+    margin: 0 0 9px 18px;
+    color: var(--secondary);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+}
+
+.activity-list {
+    overflow: hidden;
+    border-radius: 20px;
+    background: rgba(255,255,255,.8);
+    box-shadow:
+        0 1px 3px rgba(0,0,0,.05),
+        0 8px 25px rgba(0,0,0,.035);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+/* Contenitore di ogni attività */
+.activity-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--separator);
+}
+
+.activity-wrapper:last-child {
+    border-bottom: none;
+}
+
+/* Pulsante rosso che appare con lo swipe */
+.delete-reveal {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 88px;
+
+    border: none;
+    background: var(--red);
+    color: white;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+/* Riga che può essere trascinata */
+.activity-row {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    min-height: 76px;
+    padding: 11px 12px 11px 14px;
+
+    background: rgba(255,255,255,.86);
+
+    transition: transform .22s ease;
+    touch-action: pan-y;
+}
+
+.activity-name-button {
+    flex: 1;
+    min-width: 0;
+
+    height: 47px;
+    padding: 0 12px;
+
+    border: 1.5px solid rgba(0,122,255,.75);
+    border-radius: 14px;
+
+    background: rgba(255,255,255,.6);
+    color: var(--blue);
+
+    font-size: 15px;
+    font-weight: 600;
+
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    cursor: pointer;
+
+    transition:
+        transform .1s ease,
+        background .1s ease,
+        box-shadow .1s ease;
+}
+
+.activity-name-button.small {
+    font-size: 13px;
+}
+
+.activity-name-button.tiny {
+    font-size: 11px;
+}
+
+.activity-name-button:active {
+    transform: scale(.95);
+    background: rgba(0,122,255,.12);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,.08);
+}
+
+.counter {
+    flex: 0 0 auto;
+    min-width: 83px;
+
+    font-size: 15px;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+
+    text-align: right;
+    white-space: nowrap;
+    letter-spacing: -.2px;
+}
+
+.counter.expired {
+    color: var(--red);
+}
+
+/* =========================
+   MODALE
+========================= */
+
+.modal-background {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+
+    background: rgba(0,0,0,.3);
+
+    align-items: flex-end;
+    justify-content: center;
+
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.modal-background.show {
+    display: flex;
+}
+
+.modal {
+    width: 100%;
+    max-width: 760px;
+
+    padding: 20px 17px 34px;
+
+    background: rgba(247,247,249,.96);
+    border-radius: 28px 28px 0 0;
+
+    box-shadow: 0 -10px 40px rgba(0,0,0,.15);
+
+    animation: modalUp .23s ease;
+}
+
+@keyframes modalUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 23px;
+    font-weight: 700;
+}
+
+.close-button {
+    width: 34px;
+    height: 34px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #e4e4e9;
+    color: #555;
+
+    font-size: 21px;
+
+    cursor: pointer;
+}
+
+.close-button:active {
+    transform: scale(.88);
+}
+
+.input-label {
+    display: block;
+    margin: 0 0 7px 4px;
+
+    color: var(--secondary);
+    font-size: 13px;
+}
+
+.text-input,
+.date-input {
+    width: 100%;
+    height: 52px;
+
+    margin-bottom: 17px;
+    padding: 0 15px;
+
+    border: 1px solid rgba(60,60,67,.12);
+    border-radius: 15px;
+
+    outline: none;
+
+    background: white;
+    color: #000;
+
+    font-size: 17px;
+}
+
+.text-input:focus,
+.date-input:focus {
+    border-color: rgba(0,122,255,.55);
+}
+
+.mode-container {
+    display: flex;
+    gap: 3px;
+
+    padding: 3px;
+    margin-bottom: 18px;
+
+    border-radius: 14px;
+    background: #e1e1e6;
+}
+
+.mode-button {
+    flex: 1;
+    height: 44px;
+
+    border: none;
+    border-radius: 11px;
+
+    background: transparent;
+    color: #333;
+
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+.mode-button.active {
+    background: white;
+    color: #000;
+    font-weight: 650;
+    box-shadow: 0 1px 4px rgba(0,0,0,.12);
+}
+
+.countdown-fields {
+    display: none;
+}
+
+.countdown-fields.show {
+    display: block;
+}
+
+.save-button {
+    width: 100%;
+    height: 52px;
+
+    border: none;
+    border-radius: 16px;
+
+    background: var(--blue);
+    color: white;
+
+    font-size: 17px;
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        transform .1s ease,
+        opacity .1s ease;
+}
+
+.save-button:active {
+    transform: scale(.97);
+    opacity: .75;
+}
+
+/* =========================
+   DETTAGLIO
+========================= */
+
+.detail-background {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+
+    overflow-y: auto;
+    background: var(--bg);
+}
+
+.detail-background.show {
+    display: block;
+}
+
+.detail {
+    max-width: 760px;
+    min-height: 100vh;
+    margin: 0 auto;
+
+    padding: 58px 18px 45px;
+}
+
+.detail-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 35px;
+}
+
+.back-button {
+    flex: 0 0 auto;
+
+    height: 42px;
+    padding: 0 14px;
+
+    border: 1px solid rgba(60,60,67,.12);
+    border-radius: 14px;
+
+    background: rgba(255,255,255,.8);
+    color: var(--blue);
+
+    font-size: 16px;
+
+    cursor: pointer;
+}
+
+.detail-title {
+    flex: 1;
+    min-width: 0;
+
+    margin: 0;
+
+    font-size: 23px;
+    font-weight: 700;
+
+    text-align: center;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.detail-spacer {
+    width: 75px;
+    flex-shrink: 0;
+}
+
+.detail-date {
+    margin-bottom: 25px;
+    color: var(--secondary);
+    font-size: 15px;
+    text-align: center;
+}
+
+.detail-counter {
+    margin-bottom: 18px;
+    padding: 36px 15px 31px;
+
+    border-radius: 25px;
+
+    background: rgba(255,255,255,.82);
+
+    box-shadow:
+        0 1px 3px rgba(0,0,0,.05),
+        0 12px 30px rgba(0,0,0,.035);
+
+    text-align: center;
+}
+
+.detail-main-number {
+    font-size: 76px;
+    line-height: .95;
+    font-weight: 750;
+    letter-spacing: -4px;
+    font-variant-numeric: tabular-nums;
+}
+
+.detail-main-label {
+    margin-top: 9px;
+    color: var(--secondary);
+    font-size: 17px;
+}
+
+.detail-precise {
+    margin-top: 25px;
+    font-size: 20px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.detail-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+}
+
+.detail-action {
+    width: 100%;
+    height: 52px;
+
+    border-radius: 16px;
+
+    background: rgba(255,255,255,.82);
+
+    font-size: 17px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform .1s ease,
+        background .1s ease;
+}
+
+.detail-action:active {
+    transform: scale(.97);
+}
+
+.detail-action.reset {
+    border: 1.5px solid rgba(0,122,255,.7);
+    color: var(--blue);
+}
+
+.detail-action.edit {
+    border: 1.5px solid rgba(60,60,67,.28);
+    color: #333;
+}
+
+.detail-action.delete {
+    border: 1.5px solid rgba(255,59,48,.65);
+    color: var(--red);
+}
+
+/* =========================
+   CONFERMA
+========================= */
+
+.confirmation-background {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 400;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(0,0,0,.32);
+
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+}
+
+.confirmation-background.show {
+    display: flex;
+}
+
+.confirmation {
+    width: 100%;
+    max-width: 370px;
+
+    overflow: hidden;
+
+    border-radius: 22px;
+
+    background: rgba(250,250,252,.97);
+
+    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+
+    animation: confirmationIn .18s ease;
+}
+
+@keyframes confirmationIn {
+    from {
+        transform: scale(.92);
+        opacity: 0;
     }
 
-    :root {
-        --background: #f5f5f7;
-        --card: rgba(255,255,255,0.78);
-        --text: #111111;
-        --secondary: #86868b;
-        --blue: #007aff;
-        --red: #ff3b30;
-        --border: rgba(60,60,67,0.16);
+    to {
+        transform: scale(1);
+        opacity: 1;
     }
+}
 
-    body {
-        margin: 0;
-        background: var(--background);
-        color: var(--text);
-        font-family:
-            -apple-system,
-            BlinkMacSystemFont,
-            "SF Pro Display",
-            "SF Pro Text",
-            "Helvetica Neue",
-            Arial,
-            sans-serif;
-        -webkit-font-smoothing: antialiased;
-    }
+.confirmation-content {
+    padding: 25px 20px 22px;
+    text-align: center;
+}
 
-    button,
-    input {
-        font-family: inherit;
-    }
+.confirmation h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+}
 
-    button {
-        -webkit-appearance: none;
-    }
+.confirmation p {
+    margin: 0;
+    color: #6d6d72;
+    font-size: 15px;
+    line-height: 1.4;
+}
 
-    .app {
-        width: 100%;
-        max-width: 760px;
-        min-height: 100vh;
-        margin: 0 auto;
-        padding-bottom: 50px;
-    }
+.confirmation-buttons {
+    display: flex;
+    border-top: 1px solid var(--separator);
+}
 
-    /* =========================
-       HEADER
-    ========================= */
+.confirmation-buttons button {
+    flex: 1;
+    height: 52px;
 
-    header {
-        padding: 62px 22px 22px;
-    }
+    border: none;
+    background: transparent;
 
-    header h1 {
-        margin: 0;
-        font-size: 38px;
-        line-height: 1.05;
-        font-weight: 750;
-        letter-spacing: -1.5px;
-    }
+    font-size: 16px;
 
-    header p {
-        margin: 8px 0 0;
-        color: var(--secondary);
-        font-size: 16px;
-        letter-spacing: -0.1px;
-    }
+    cursor: pointer;
+}
 
-    /* =========================
-       NUOVA ATTIVITÀ
-    ========================= */
+.confirmation-buttons button + button {
+    border-left: 1px solid var(--separator);
+}
 
-    .add-button {
-        width: calc(100% - 32px);
-        height: 54px;
-        margin: 0 16px 28px;
+.confirmation-cancel {
+    color: var(--blue);
+}
 
-        border: 1px solid rgba(0,122,255,0.85);
-        border-radius: 18px;
+.confirmation-confirm {
+    color: var(--red);
+    font-weight: 650;
+}
 
-        background: rgba(255,255,255,0.75);
-        color: var(--blue);
+/* =========================
+   EMPTY
+========================= */
 
-        font-size: 17px;
-        font-weight: 650;
+.empty {
+    padding: 45px 20px;
+    color: var(--secondary);
+    font-size: 16px;
+    text-align: center;
+    line-height: 1.5;
+}
 
-        cursor: pointer;
-
-        box-shadow:
-            0 1px 2px rgba(0,0,0,0.04),
-            inset 0 0 0 1px rgba(255,255,255,0.7);
-
-        transition:
-            transform 0.12s ease,
-            background 0.12s ease,
-            box-shadow 0.12s ease;
-    }
-
-    .add-button:active {
-        transform: scale(0.97);
-        background: rgba(0,122,255,0.12);
-        box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
-    }
-
-    /* =========================
-       LISTA
-    ========================= */
-
-    .section {
-        margin: 0 16px;
-    }
-
-    .section-title {
-        margin: 0 0 9px 18px;
-        color: var(--secondary);
-        font-size: 13px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-    }
-
-    .activity-list {
-        overflow: hidden;
-        border-radius: 20px;
-        background: var(--card);
-        border: 1px solid rgba(255,255,255,0.8);
-        box-shadow:
-            0 1px 3px rgba(0,0,0,0.06),
-            0 8px 24px rgba(0,0,0,0.035);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-    }
-
-    .activity-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        min-height: 78px;
-        padding: 11px 13px 11px 14px;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .activity-row:last-child {
-        border-bottom: none;
-    }
-
-    /*
-       Il pulsante dell'attività è sempre contornato.
-       Il testo viene adattato automaticamente.
-    */
-
-    .activity-name-button {
-        flex: 1;
-        min-width: 0;
-        height: 50px;
-
-        padding: 0 14px;
-
-        border: 1.5px solid rgba(0,122,255,0.72);
-        border-radius: 15px;
-
-        background: rgba(255,255,255,0.52);
-        color: var(--blue);
-
-        font-size: 16px;
-        font-weight: 600;
-        text-align: left;
-
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-
-        cursor: pointer;
-
-        box-shadow:
-            inset 0 0 0 1px rgba(255,255,255,0.5);
-
-        transition:
-            transform 0.1s ease,
-            background 0.1s ease,
-            box-shadow 0.1s ease;
-    }
-
-    .activity-name-button:active {
-        transform: scale(0.96);
-        background: rgba(0,122,255,0.12);
-        box-shadow:
-            inset 0 2px 5px rgba(0,0,0,0.09);
-    }
-
-    .activity-name-button.small-text {
-        font-size: 14px;
-    }
-
-    .activity-name-button.very-small-text {
-        font-size: 12px;
-    }
-
-    .counter {
-        flex: 0 0 auto;
-        min-width: 92px;
-
-        color: var(--text);
-
-        font-size: 16px;
-        font-weight: 650;
-
-        font-variant-numeric: tabular-nums;
-        text-align: right;
-        white-space: nowrap;
-        letter-spacing: -0.3px;
-    }
-
-    .counter.expired {
-        color: var(--red);
-    }
-
-    /* =========================
-       MODALE
-    ========================= */
-
+@media (min-width: 700px) {
     .modal-background {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 100;
-
-        background: rgba(0,0,0,0.28);
-
-        align-items: flex-end;
-        justify-content: center;
-
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
-    }
-
-    .modal-background.show {
-        display: flex;
+        align-items: center;
     }
 
     .modal {
-        width: 100%;
-        max-width: 760px;
-
-        padding: 20px 17px 34px;
-
-        background: rgba(246,246,248,0.94);
-
-        border-radius: 28px 28px 0 0;
-
-        box-shadow:
-            0 -10px 40px rgba(0,0,0,0.12);
-
-        animation: modalUp 0.25s ease;
+        margin: 20px;
+        border-radius: 28px;
     }
-
-    @keyframes modalUp {
-        from {
-            transform: translateY(100%);
-        }
-
-        to {
-            transform: translateY(0);
-        }
-    }
-
-    .modal-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 22px;
-    }
-
-    .modal-header h2 {
-        margin: 0;
-        font-size: 23px;
-        font-weight: 700;
-        letter-spacing: -0.5px;
-    }
-
-    .close-button {
-        width: 34px;
-        height: 34px;
-
-        border: none;
-        border-radius: 50%;
-
-        background: #e4e4e9;
-        color: #555;
-
-        font-size: 21px;
-        line-height: 1;
-
-        cursor: pointer;
-
-        transition: transform 0.1s ease;
-    }
-
-    .close-button:active {
-        transform: scale(0.88);
-    }
-
-    .input-label {
-        display: block;
-        margin: 0 0 7px 4px;
-
-        color: var(--secondary);
-
-        font-size: 13px;
-        font-weight: 500;
-    }
-
-    .text-input,
-    .date-input {
-        width: 100%;
-        height: 52px;
-
-        margin-bottom: 17px;
-        padding: 0 15px;
-
-        border: 1px solid rgba(60,60,67,0.10);
-        border-radius: 15px;
-
-        outline: none;
-
-        background: rgba(255,255,255,0.9);
-
-        color: #000;
-
-        font-size: 17px;
-
-        box-shadow:
-            0 1px 2px rgba(0,0,0,0.04);
-    }
-
-    .text-input:focus,
-    .date-input:focus {
-        border-color: rgba(0,122,255,0.55);
-    }
-
-    .mode-container {
-        display: flex;
-        gap: 3px;
-
-        padding: 3px;
-        margin-bottom: 18px;
-
-        border-radius: 14px;
-        background: #e1e1e6;
-    }
-
-    .mode-button {
-        flex: 1;
-        height: 44px;
-
-        border: none;
-        border-radius: 11px;
-
-        background: transparent;
-        color: #333;
-
-        font-size: 15px;
-        font-weight: 500;
-
-        cursor: pointer;
-    }
-
-    .mode-button.active {
-        background: white;
-        color: #000;
-        font-weight: 650;
-
-        box-shadow:
-            0 1px 4px rgba(0,0,0,0.12);
-    }
-
-    .countdown-fields {
-        display: none;
-    }
-
-    .countdown-fields.show {
-        display: block;
-    }
-
-    .create-button {
-        width: 100%;
-        height: 54px;
-
-        margin-top: 3px;
-
-        border: 1px solid rgba(0,122,255,0.8);
-        border-radius: 17px;
-
-        background: var(--blue);
-        color: white;
-
-        font-size: 17px;
-        font-weight: 650;
-
-        cursor: pointer;
-
-        transition:
-            transform 0.1s ease,
-            opacity 0.1s ease;
-    }
-
-    .create-button:active {
-        transform: scale(0.97);
-        opacity: 0.75;
-    }
-
-    /* =========================
-       DETTAGLIO
-    ========================= */
-
-    .detail-background {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 200;
-
-        overflow-y: auto;
-
-        background: var(--background);
-    }
-
-    .detail-background.show {
-        display: block;
-    }
-
-    .detail {
-        width: 100%;
-        max-width: 760px;
-        min-height: 100vh;
-
-        margin: 0 auto;
-        padding: 58px 18px 45px;
-    }
-
-    .detail-top {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-
-        margin-bottom: 35px;
-    }
-
-    .back-button {
-        flex: 0 0 auto;
-
-        height: 42px;
-        padding: 0 15px;
-
-        border: 1px solid rgba(60,60,67,0.12);
-        border-radius: 14px;
-
-        background: rgba(255,255,255,0.78);
-        color: var(--blue);
-
-        font-size: 16px;
-        font-weight: 550;
-
-        cursor: pointer;
-
-        transition:
-            transform 0.1s ease,
-            background 0.1s ease;
-    }
-
-    .back-button:active {
-        transform: scale(0.94);
-        background: rgba(0,122,255,0.10);
-    }
-
-    .detail-title {
-        flex: 1;
-        min-width: 0;
-
-        margin: 0;
-
-        font-size: 23px;
-        font-weight: 700;
-        letter-spacing: -0.5px;
-
-        text-align: center;
-
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .detail-spacer {
-        width: 76px;
-        flex-shrink: 0;
-    }
-
-    .detail-date {
-        margin-bottom: 25px;
-
-        color: var(--secondary);
-
-        font-size: 15px;
-        text-align: center;
-    }
-
-    .detail-counter {
-        margin-bottom: 18px;
-        padding: 36px 15px 31px;
-
-        border-radius: 25px;
-
-        background: rgba(255,255,255,0.82);
-
-        border: 1px solid rgba(255,255,255,0.95);
-
-        box-shadow:
-            0 1px 3px rgba(0,0,0,0.05),
-            0 12px 30px rgba(0,0,0,0.035);
-
-        text-align: center;
-
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-    }
-
-    .detail-main-number {
-        font-size: 76px;
-        line-height: 0.95;
-
-        font-weight: 750;
-        letter-spacing: -4px;
-
-        font-variant-numeric: tabular-nums;
-    }
-
-    .detail-main-label {
-        margin-top: 9px;
-
-        color: var(--secondary);
-
-        font-size: 17px;
-    }
-
-    .detail-precise {
-        margin-top: 25px;
-
-        font-size: 20px;
-        font-weight: 600;
-
-        font-variant-numeric: tabular-nums;
-        letter-spacing: -0.3px;
-    }
-
-    .detail-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 11px;
-    }
-
-    .detail-action {
-        width: 100%;
-        height: 53px;
-
-        border-radius: 17px;
-
-        background: rgba(255,255,255,0.82);
-
-        font-size: 17px;
-        font-weight: 600;
-
-        cursor: pointer;
-
-        transition:
-            transform 0.1s ease,
-            background 0.1s ease,
-            box-shadow 0.1s ease;
-    }
-
-    .detail-action:active {
-        transform: scale(0.97);
-        box-shadow: inset 0 2px 5px rgba(0,0,0,0.08);
-    }
-
-    .detail-action.reset {
-        border: 1.5px solid rgba(0,122,255,0.72);
-        color: var(--blue);
-    }
-
-    .detail-action.reset:active {
-        background: rgba(0,122,255,0.10);
-    }
-
-    .detail-action.edit {
-        border: 1.5px solid rgba(60,60,67,0.28);
-        color: #333;
-    }
-
-    .detail-action.edit:active {
-        background: rgba(60,60,67,0.08);
-    }
-
-    .detail-action.delete {
-        border: 1.5px solid rgba(255,59,48,0.65);
-        color: var(--red);
-    }
-
-    .detail-action.delete:active {
-        background: rgba(255,59,48,0.09);
-    }
-
-    /* =========================
-       CONFERMA
-    ========================= */
-
-    .confirmation-background {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 300;
-
-        align-items: center;
-        justify-content: center;
-
-        padding: 20px;
-
-        background: rgba(0,0,0,0.32);
-
-        backdrop-filter: blur(7px);
-        -webkit-backdrop-filter: blur(7px);
-    }
-
-    .confirmation-background.show {
-        display: flex;
-    }
-
-    .confirmation {
-        width: 100%;
-        max-width: 370px;
-
-        overflow: hidden;
-
-        border-radius: 22px;
-
-        background: rgba(250,250,252,0.96);
-
-        box-shadow:
-            0 20px 60px rgba(0,0,0,0.2);
-
-        animation: confirmationIn 0.18s ease;
-    }
-
-    @keyframes confirmationIn {
-        from {
-            transform: scale(0.92);
-            opacity: 0;
-        }
-
-        to {
-            transform: scale(1);
-            opacity: 1;
-        }
-    }
-
-    .confirmation-content {
-        padding: 25px 20px 22px;
-        text-align: center;
-    }
-
-    .confirmation h3 {
-        margin: 0 0 8px;
-
-        font-size: 20px;
-        font-weight: 700;
-    }
-
-    .confirmation p {
-        margin: 0;
-
-        color: #6d6d72;
-
-        font-size: 15px;
-        line-height: 1.4;
-    }
-
-    .confirmation-buttons {
-        display: flex;
-
-        border-top: 1px solid var(--border);
-    }
-
-    .confirmation-buttons button {
-        flex: 1;
-
-        height: 52px;
-
-        border: none;
-        background: transparent;
-
-        font-size: 16px;
-
-        cursor: pointer;
-    }
-
-    .confirmation-buttons button:active {
-        background: rgba(0,0,0,0.05);
-    }
-
-    .confirmation-cancel {
-        color: var(--blue);
-    }
-
-    .confirmation-confirm {
-        color: var(--red);
-        font-weight: 650;
-    }
-
-    /* =========================
-       EMPTY
-    ========================= */
-
-    .empty {
-        padding: 45px 20px;
-
-        color: var(--secondary);
-
-        font-size: 16px;
-        line-height: 1.5;
-
-        text-align: center;
-    }
-
-    /* =========================
-       DESKTOP
-    ========================= */
-
-    @media (min-width: 700px) {
-
-        .modal-background {
-            align-items: center;
-        }
-
-        .modal {
-            margin: 20px;
-            border-radius: 28px;
-        }
-
-    }
+}
 </style>
 </head>
 
@@ -768,7 +698,10 @@
         <p>Il tempo delle tue attività</p>
     </header>
 
-    <button class="add-button" onclick="openAddModal()">
+    <button
+        class="add-button"
+        onclick="openAddModal()"
+    >
         + Nuova attività
     </button>
 
@@ -778,7 +711,10 @@
             Attività
         </div>
 
-        <div class="activity-list" id="activityList"></div>
+        <div
+            class="activity-list"
+            id="activityList"
+        ></div>
 
     </div>
 
@@ -786,10 +722,13 @@
 
 
 <!-- =========================
-     MODALE NUOVA ATTIVITÀ
+     MODALE CREAZIONE / MODIFICA
 ========================= -->
 
-<div class="modal-background" id="addModal">
+<div
+    class="modal-background"
+    id="addModal"
+>
 
     <div class="modal">
 
@@ -866,9 +805,9 @@
 
 
         <button
-            class="create-button"
-            id="saveActivityButton"
-            onclick="saveActivityFromModal()"
+            class="save-button"
+            id="saveButton"
+            onclick="saveActivity()"
         >
             Crea attività
         </button>
@@ -1015,12 +954,7 @@
 
 <script>
 
-/* =========================
-   DATI
-========================= */
-
-const STORAGE_KEY =
-    "contatore_giorni_attivita";
+const STORAGE_KEY = "contatore_giorni_attivita";
 
 let activities = [];
 
@@ -1029,6 +963,12 @@ let selectedMode = "up";
 let selectedActivityId = null;
 
 let editingActivityId = null;
+
+let swipeStartX = 0;
+
+let swipeCurrentX = 0;
+
+let swipingRow = null;
 
 
 /* =========================
@@ -1043,14 +983,9 @@ function loadActivities() {
     if (saved) {
 
         try {
-
-            activities =
-                JSON.parse(saved);
-
-        } catch (error) {
-
+            activities = JSON.parse(saved);
+        } catch (e) {
             activities = [];
-
         }
 
     }
@@ -1074,88 +1009,58 @@ function saveActivities() {
 
 
 /* =========================
-   MODALE
+   MODALE NUOVA
 ========================= */
 
 function openAddModal() {
 
     editingActivityId = null;
 
-    document
-        .getElementById("modalTitle")
-        .textContent =
-        "Nuova attività";
+    document.getElementById("modalTitle")
+        .textContent = "Nuova attività";
 
-    document
-        .getElementById("saveActivityButton")
-        .textContent =
-        "Crea attività";
+    document.getElementById("saveButton")
+        .textContent = "Crea attività";
 
-    document
-        .getElementById("activityName")
+    document.getElementById("activityName")
         .value = "";
 
-    document
-        .getElementById("targetDate")
+    document.getElementById("targetDate")
         .value = "";
 
     selectMode("up");
 
-    document
-        .getElementById("addModal")
+    document.getElementById("addModal")
         .classList.add("show");
-
-}
-
-
-function closeAddModal() {
-
-    document
-        .getElementById("addModal")
-        .classList.remove("show");
-
-    editingActivityId = null;
-
 }
 
 
 /* =========================
-   MODIFICA
+   MODALE MODIFICA
 ========================= */
 
 function openEditModal() {
 
-    if (!selectedActivityId) {
-        return;
-    }
+    if (!selectedActivityId) return;
 
     const activity =
         activities.find(
-            item =>
-                item.id === selectedActivityId
+            item => item.id === selectedActivityId
         );
 
-    if (!activity) {
-        return;
-    }
+    if (!activity) return;
 
     editingActivityId =
         activity.id;
 
-    document
-        .getElementById("modalTitle")
-        .textContent =
-        "Modifica attività";
+    document.getElementById("modalTitle")
+        .textContent = "Modifica attività";
 
-    document
-        .getElementById("saveActivityButton")
-        .textContent =
-        "Salva modifiche";
+    document.getElementById("saveButton")
+        .textContent = "Salva modifiche";
 
-    document
-        .getElementById("activityName")
-        .value =
-        activity.name;
+    document.getElementById("activityName")
+        .value = activity.name;
 
 
     if (activity.mode === "up") {
@@ -1166,43 +1071,84 @@ function openEditModal() {
 
         selectMode("down");
 
-        const date =
-            new Date(
-                activity.targetTimestamp
-            );
-
-        document
-            .getElementById("targetDate")
+        document.getElementById("targetDate")
             .value =
-            toDateTimeLocal(date);
-
+            toDateTimeLocal(
+                new Date(activity.targetTimestamp)
+            );
     }
 
 
-    document
-        .getElementById("addModal")
+    document.getElementById("addModal")
         .classList.add("show");
-
 }
 
 
 /* =========================
-   SALVATAGGIO NUOVA/MODIFICA
+   CHIUSURA MODALE
 ========================= */
 
-function saveActivityFromModal() {
+function closeAddModal() {
+
+    document.getElementById("addModal")
+        .classList.remove("show");
+
+    editingActivityId = null;
+}
+
+
+/* =========================
+   MODALITÀ
+========================= */
+
+function selectMode(mode) {
+
+    selectedMode = mode;
+
+    const up =
+        document.getElementById("upModeButton");
+
+    const down =
+        document.getElementById("downModeButton");
+
+    const fields =
+        document.getElementById("countdownFields");
+
+
+    if (mode === "up") {
+
+        up.classList.add("active");
+
+        down.classList.remove("active");
+
+        fields.classList.remove("show");
+
+    } else {
+
+        down.classList.add("active");
+
+        up.classList.remove("active");
+
+        fields.classList.add("show");
+
+    }
+}
+
+
+/* =========================
+   SALVA ATTIVITÀ
+========================= */
+
+function saveActivity() {
 
     const name =
-        document
-            .getElementById("activityName")
+        document.getElementById("activityName")
             .value
             .trim();
 
     if (!name) {
 
-        alert(
-            "Inserisci il nome dell'attività."
-        );
+        alert("Inserisci il nome dell'attività.");
 
         return;
     }
@@ -1220,9 +1166,11 @@ function saveActivityFromModal() {
                     item.id === editingActivityId
             );
 
-        if (!activity) {
-            return;
-        }
+        if (!activity) return;
+
+
+        const oldMode =
+            activity.mode;
 
 
         activity.name = name;
@@ -1233,43 +1181,28 @@ function saveActivityFromModal() {
             activity.mode = "up";
 
             /*
-                Se prima era countdown
-                e si passa a "Conta da quando",
+                Se viene cambiato da countdown
+                a contatore crescente,
                 parte da questo momento.
             */
 
-            if (
-                !activity.startTimestamp ||
-                activity.mode !== "up"
-            ) {
-                activity.startTimestamp =
-                    Date.now();
+            if (oldMode !== "up") {
+                activity.startTimestamp = Date.now();
             }
 
-            /*
-                Per sicurezza, se l'attività
-                era precedentemente countdown,
-                il timestamp viene comunque
-                impostato al momento della modifica.
-            */
-
-            if (
-                !activity.startTimestamp
-            ) {
-                activity.startTimestamp =
-                    Date.now();
+            if (!activity.startTimestamp) {
+                activity.startTimestamp = Date.now();
             }
 
             delete activity.targetTimestamp;
 
         } else {
 
-            const targetValue =
-                document
-                    .getElementById("targetDate")
+            const value =
+                document.getElementById("targetDate")
                     .value;
 
-            if (!targetValue) {
+            if (!value) {
 
                 alert(
                     "Inserisci la data e l'ora della scadenza."
@@ -1278,16 +1211,12 @@ function saveActivityFromModal() {
                 return;
             }
 
-            const targetTimestamp =
-                new Date(
-                    targetValue
-                ).getTime();
+            const timestamp =
+                new Date(value).getTime();
 
-            if (isNaN(targetTimestamp)) {
+            if (isNaN(timestamp)) {
 
-                alert(
-                    "La data inserita non è valida."
-                );
+                alert("Data non valida.");
 
                 return;
             }
@@ -1295,10 +1224,9 @@ function saveActivityFromModal() {
             activity.mode = "down";
 
             activity.targetTimestamp =
-                targetTimestamp;
+                timestamp;
 
             delete activity.startTimestamp;
-
         }
 
 
@@ -1318,32 +1246,29 @@ function saveActivityFromModal() {
        NUOVA ATTIVITÀ
     ===================== */
 
-    const id =
-        Date.now().toString();
+    const activity = {
+
+        id: Date.now().toString(),
+
+        name: name,
+
+        mode: selectedMode
+
+    };
 
 
     if (selectedMode === "up") {
 
-        activities.push({
-
-            id: id,
-
-            name: name,
-
-            mode: "up",
-
-            startTimestamp: Date.now()
-
-        });
+        activity.startTimestamp =
+            Date.now();
 
     } else {
 
-        const targetValue =
-            document
-                .getElementById("targetDate")
+        const value =
+            document.getElementById("targetDate")
                 .value;
 
-        if (!targetValue) {
+        if (!value) {
 
             alert(
                 "Inserisci la data e l'ora della scadenza."
@@ -1352,87 +1277,28 @@ function saveActivityFromModal() {
             return;
         }
 
-        const targetTimestamp =
-            new Date(
-                targetValue
-            ).getTime();
+        const timestamp =
+            new Date(value).getTime();
 
-        if (isNaN(targetTimestamp)) {
+        if (isNaN(timestamp)) {
 
-            alert(
-                "La data inserita non è valida."
-            );
+            alert("Data non valida.");
 
             return;
         }
 
-        activities.push({
-
-            id: id,
-
-            name: name,
-
-            mode: "down",
-
-            targetTimestamp:
-                targetTimestamp
-
-        });
-
+        activity.targetTimestamp =
+            timestamp;
     }
 
+
+    activities.push(activity);
 
     saveActivities();
 
     closeAddModal();
 
     renderActivities();
-
-}
-
-
-/* =========================
-   MODALITÀ
-========================= */
-
-function selectMode(mode) {
-
-    selectedMode = mode;
-
-    const upButton =
-        document.getElementById(
-            "upModeButton"
-        );
-
-    const downButton =
-        document.getElementById(
-            "downModeButton"
-        );
-
-    const fields =
-        document.getElementById(
-            "countdownFields"
-        );
-
-
-    if (mode === "up") {
-
-        upButton.classList.add("active");
-
-        downButton.classList.remove("active");
-
-        fields.classList.remove("show");
-
-    } else {
-
-        downButton.classList.add("active");
-
-        upButton.classList.remove("active");
-
-        fields.classList.add("show");
-
-    }
-
 }
 
 
@@ -1443,8 +1309,8 @@ function selectMode(mode) {
 function adaptButtonText(button) {
 
     button.classList.remove(
-        "small-text",
-        "very-small-text"
+        "small",
+        "tiny"
     );
 
     const length =
@@ -1452,40 +1318,50 @@ function adaptButtonText(button) {
 
     if (length > 27) {
 
-        button.classList.add(
-            "very-small-text"
-        );
+        button.classList.add("tiny");
 
     } else if (length > 19) {
 
-        button.classList.add(
-            "small-text"
-        );
+        button.classList.add("small");
 
     }
-
 }
 
 
 /* =========================
-   FORMATTAZIONE LISTA
+   CONTATORE
+========================= */
+
+function getCounterMilliseconds(activity) {
+
+    const now = Date.now();
+
+    if (activity.mode === "up") {
+
+        return Math.max(
+            0,
+            now - activity.startTimestamp
+        );
+    }
+
+    return Math.max(
+        0,
+        activity.targetTimestamp - now
+    );
+}
+
+
+/* =========================
+   FORMATO LISTA
 ========================= */
 
 function formatListCounter(milliseconds) {
 
-    if (milliseconds < 0) {
-        milliseconds = 0;
-    }
-
     const totalSeconds =
-        Math.floor(
-            milliseconds / 1000
-        );
+        Math.floor(milliseconds / 1000);
 
     const days =
-        Math.floor(
-            totalSeconds / 86400
-        );
+        Math.floor(totalSeconds / 86400);
 
     const hours =
         Math.floor(
@@ -1502,81 +1378,33 @@ function formatListCounter(milliseconds) {
 
 
     /*
-        Meno di un'ora:
-        minuti + secondi
+        Secondi visibili soltanto
+        prima di arrivare a un'ora.
     */
 
-    if (days === 0 && hours === 0) {
+    if (hours === 0 && days === 0) {
 
-        return (
-            minutes +
-            "m " +
-            seconds +
-            "s"
-        );
-
+        return `${minutes}m ${seconds}s`;
     }
 
 
     /*
-        Da un'ora a meno di un giorno:
-        ore + minuti
+        Arrivata almeno un'ora:
+        niente secondi.
     */
 
     if (days === 0) {
 
-        return (
-            hours +
-            "h " +
-            minutes +
-            "m"
-        );
-
+        return `${hours}h ${minutes}m`;
     }
 
 
     /*
-        Da un giorno:
-        giorni + ore
+        Arrivato almeno un giorno:
+        niente minuti e secondi.
     */
 
-    return (
-        days +
-        "g " +
-        hours +
-        "h"
-    );
-
-}
-
-
-/* =========================
-   CALCOLO
-========================= */
-
-function getCounterMilliseconds(activity) {
-
-    const now =
-        Date.now();
-
-
-    if (activity.mode === "up") {
-
-        return Math.max(
-            0,
-            now -
-            activity.startTimestamp
-        );
-
-    }
-
-
-    return Math.max(
-        0,
-        activity.targetTimestamp -
-        now
-    );
-
+    return `${days}g ${hours}h`;
 }
 
 
@@ -1587,9 +1415,7 @@ function getCounterMilliseconds(activity) {
 function renderActivities() {
 
     const list =
-        document.getElementById(
-            "activityList"
-        );
+        document.getElementById("activityList");
 
 
     if (activities.length === 0) {
@@ -1610,19 +1436,47 @@ function renderActivities() {
 
     activities.forEach(activity => {
 
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            "activity-wrapper";
+
+
+        /* Pulsante elimina nascosto */
+
+        const deleteButton =
+            document.createElement("button");
+
+        deleteButton.className =
+            "delete-reveal";
+
+        deleteButton.textContent =
+            "Elimina";
+
+        deleteButton.onclick =
+            function() {
+
+                requestDeleteActivity(
+                    activity.id
+                );
+
+            };
+
+
+        /* Riga */
+
         const row =
             document.createElement("div");
 
         row.className =
             "activity-row";
 
+        row.dataset.id =
+            activity.id;
 
-        /*
-            PULSANTE ATTIVITÀ
 
-            Premendolo:
-            reset immediato.
-        */
+        /* Pulsante nome */
 
         const nameButton =
             document.createElement("button");
@@ -1633,26 +1487,25 @@ function renderActivities() {
         nameButton.textContent =
             activity.name;
 
-        adaptButtonText(
-            nameButton
-        );
-
-
-        nameButton.addEventListener(
-            "click",
-            function() {
-
-                resetActivityImmediately(
-                    activity.id
-                );
-
-            }
-        );
+        adaptButtonText(nameButton);
 
 
         /*
-            CONTATORE
+            UN TOCCO = reset
+            ma con conferma.
         */
+
+        nameButton.onclick =
+            function() {
+
+                requestResetActivity(
+                    activity.id
+                );
+
+            };
+
+
+        /* Contatore */
 
         const counter =
             document.createElement("div");
@@ -1664,45 +1517,24 @@ function renderActivities() {
             activity.id;
 
 
-        const milliseconds =
-            getCounterMilliseconds(
-                activity
-            );
-
-
-        if (
-            activity.mode === "down" &&
-            milliseconds <= 0
-        ) {
-
-            counter.textContent =
-                "Scaduto";
-
-            counter.classList.add(
-                "expired"
-            );
-
-        } else {
-
-            counter.textContent =
-                formatListCounter(
-                    milliseconds
-                );
-
-        }
-
-
-        row.appendChild(
-            nameButton
+        updateSingleCounter(
+            counter,
+            activity
         );
 
-        row.appendChild(
-            counter
-        );
 
-        list.appendChild(
-            row
-        );
+        row.appendChild(nameButton);
+
+        row.appendChild(counter);
+
+        wrapper.appendChild(deleteButton);
+
+        wrapper.appendChild(row);
+
+        list.appendChild(wrapper);
+
+
+        enableSwipe(row);
 
     });
 
@@ -1710,95 +1542,186 @@ function renderActivities() {
 
 
 /* =========================
-   RESET IMMEDIATO
+   CONTATORE SINGOLO
 ========================= */
 
-function resetActivityImmediately(id) {
+function updateSingleCounter(
+    counter,
+    activity
+) {
 
-    const activity =
-        activities.find(
-            item => item.id === id
-        );
+    const milliseconds =
+        getCounterMilliseconds(activity);
 
-    if (!activity) {
-        return;
-    }
-
-
-    /*
-        Per il contatore crescente:
-        riparte immediatamente da zero.
-    */
-
-    if (activity.mode === "up") {
-
-        activity.startTimestamp =
-            Date.now();
-
-        saveActivities();
-
-        renderActivities();
-
-        if (
-            selectedActivityId === id
-        ) {
-            updateDetail();
-        }
-
-        return;
-    }
-
-
-    /*
-        Per il countdown chiediamo
-        una nuova scadenza.
-    */
-
-    const newDate =
-        prompt(
-            "Inserisci la nuova scadenza.\nFormato: AAAA-MM-GG HH:MM"
-        );
-
-    if (!newDate) {
-        return;
-    }
-
-
-    const timestamp =
-        new Date(
-            newDate.replace(" ", "T")
-        ).getTime();
-
-
-    if (isNaN(timestamp)) {
-
-        alert(
-            "Data non valida."
-        );
-
-        return;
-    }
-
-
-    activity.targetTimestamp =
-        timestamp;
-
-
-    saveActivities();
-
-    renderActivities();
 
     if (
-        selectedActivityId === id
+        activity.mode === "down" &&
+        milliseconds <= 0
     ) {
-        updateDetail();
+
+        counter.textContent =
+            "Scaduto";
+
+        counter.classList.add("expired");
+
+        return;
     }
+
+
+    counter.classList.remove("expired");
+
+    counter.textContent =
+        formatListCounter(
+            milliseconds
+        );
+}
+
+
+/* =========================
+   SWIPE IPHONE
+========================= */
+
+function enableSwipe(row) {
+
+    row.addEventListener(
+        "touchstart",
+        function(event) {
+
+            swipeStartX =
+                event.touches[0].clientX;
+
+            swipeCurrentX =
+                swipeStartX;
+
+            swipingRow =
+                row;
+
+        },
+        { passive: true }
+    );
+
+
+    row.addEventListener(
+        "touchmove",
+        function(event) {
+
+            if (swipingRow !== row) {
+                return;
+            }
+
+            swipeCurrentX =
+                event.touches[0].clientX;
+
+            let distance =
+                swipeCurrentX -
+                swipeStartX;
+
+
+            /*
+                Permettiamo soltanto
+                lo swipe verso sinistra.
+            */
+
+            if (distance > 0) {
+                distance = 0;
+            }
+
+
+            /*
+                Limite stile iPhone.
+            */
+
+            distance =
+                Math.max(
+                    -88,
+                    distance
+                );
+
+
+            row.style.transition =
+                "none";
+
+            row.style.transform =
+                `translateX(${distance}px)`;
+
+        },
+        { passive: true }
+    );
+
+
+    row.addEventListener(
+        "touchend",
+        function() {
+
+            if (swipingRow !== row) {
+                return;
+            }
+
+
+            const distance =
+                swipeCurrentX -
+                swipeStartX;
+
+
+            row.style.transition =
+                "transform .22s ease";
+
+
+            if (distance < -45) {
+
+                row.style.transform =
+                    "translateX(-88px)";
+
+            } else {
+
+                row.style.transform =
+                    "translateX(0)";
+
+            }
+
+
+            swipingRow = null;
+
+        }
+    );
 
 }
 
 
 /* =========================
-   AGGIORNAMENTO
+   CHIUDI SWIPE
+========================= */
+
+document.addEventListener(
+    "touchstart",
+    function(event) {
+
+        if (
+            !event.target.closest(
+                ".activity-row"
+            )
+        ) {
+
+            document
+                .querySelectorAll(
+                    ".activity-row"
+                )
+                .forEach(row => {
+
+                    row.style.transform =
+                        "translateX(0)";
+
+                });
+
+        }
+
+    },
+    { passive: true }
+);
+
+
+/* =========================
+   AGGIORNAMENTO OGNI SECONDO
 ========================= */
 
 function updateCounters() {
@@ -1807,56 +1730,24 @@ function updateCounters() {
         .querySelectorAll(".counter")
         .forEach(counter => {
 
-            const id =
-                counter.dataset.id;
-
             const activity =
                 activities.find(
                     item =>
-                        item.id === id
+                        item.id ===
+                        counter.dataset.id
                 );
 
-            if (!activity) {
-                return;
-            }
+            if (!activity) return;
 
-
-            const milliseconds =
-                getCounterMilliseconds(
-                    activity
-                );
-
-
-            if (
-                activity.mode === "down" &&
-                milliseconds <= 0
-            ) {
-
-                counter.textContent =
-                    "Scaduto";
-
-                counter.classList.add(
-                    "expired"
-                );
-
-            } else {
-
-                counter.classList.remove(
-                    "expired"
-                );
-
-                counter.textContent =
-                    formatListCounter(
-                        milliseconds
-                    );
-
-            }
+            updateSingleCounter(
+                counter,
+                activity
+            );
 
         });
 
 
     updateDetail();
-
 }
 
 
@@ -1871,77 +1762,37 @@ function openDetail(id) {
             item => item.id === id
         );
 
-    if (!activity) {
-        return;
-    }
+    if (!activity) return;
 
     selectedActivityId =
         id;
 
-
     document
-        .getElementById(
-            "detailBackground"
-        )
+        .getElementById("detailBackground")
         .classList.add("show");
 
-
     document
-        .getElementById(
-            "detailTitle"
-        )
+        .getElementById("detailTitle")
         .textContent =
         activity.name;
 
 
-    if (activity.mode === "up") {
-
-        document
-            .getElementById(
-                "detailDate"
-            )
-            .textContent =
-            "Iniziato il " +
-            formatExactDate(
-                activity.startTimestamp
-            );
-
-    } else {
-
-        document
-            .getElementById(
-                "detailDate"
-            )
-            .textContent =
-            "Scadenza: " +
-            formatExactDate(
-                activity.targetTimestamp
-            );
-
-    }
-
-
     updateDetail();
-
 }
 
 
 function closeDetail() {
 
     document
-        .getElementById(
-            "detailBackground"
-        )
+        .getElementById("detailBackground")
         .classList.remove("show");
 
-    selectedActivityId =
-        null;
-
+    selectedActivityId = null;
 }
 
 
 /* =========================
-   DETTAGLIO PRECISO
+   DETTAGLIO CONTATORE
 ========================= */
 
 function updateDetail() {
@@ -1963,9 +1814,7 @@ function updateDetail() {
 
 
     const milliseconds =
-        getCounterMilliseconds(
-            activity
-        );
+        getCounterMilliseconds(activity);
 
 
     const totalSeconds =
@@ -1993,15 +1842,29 @@ function updateDetail() {
         totalSeconds % 60;
 
 
-    const mainNumber =
-        document.getElementById(
-            "detailMainNumber"
-        );
+    if (
+        activity.mode === "up"
+    ) {
 
-    const precise =
-        document.getElementById(
-            "detailPrecise"
-        );
+        document
+            .getElementById("detailDate")
+            .textContent =
+            "Iniziato il " +
+            formatExactDate(
+                activity.startTimestamp
+            );
+
+    } else {
+
+        document
+            .getElementById("detailDate")
+            .textContent =
+            "Scadenza: " +
+            formatExactDate(
+                activity.targetTimestamp
+            );
+
+    }
 
 
     if (
@@ -2009,124 +1872,33 @@ function updateDetail() {
         milliseconds <= 0
     ) {
 
-        mainNumber.textContent =
-            "0";
+        document
+            .getElementById("detailMainNumber")
+            .textContent = "0";
 
-        precise.textContent =
-            "Scaduto";
+        document
+            .getElementById("detailPrecise")
+            .textContent = "Scaduto";
 
         return;
-
     }
 
 
-    mainNumber.textContent =
+    document
+        .getElementById("detailMainNumber")
+        .textContent =
         days;
 
 
-    /*
-        Nel dettaglio mostriamo sempre
-        la precisione completa.
-    */
-
-    precise.textContent =
+    document
+        .getElementById("detailPrecise")
+        .textContent =
         `${days} giorni, ${hours} ore, ${minutes} minuti, ${seconds} secondi`;
-
 }
 
 
 /* =========================
-   DATA
-========================= */
-
-function formatExactDate(timestamp) {
-
-    const date =
-        new Date(timestamp);
-
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(2, "0");
-
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(2, "0");
-
-
-    const year =
-        date.getFullYear();
-
-
-    const hours =
-        String(
-            date.getHours()
-        ).padStart(2, "0");
-
-
-    const minutes =
-        String(
-            date.getMinutes()
-        ).padStart(2, "0");
-
-
-    const seconds =
-        String(
-            date.getSeconds()
-        ).padStart(2, "0");
-
-
-    return (
-        `${day}/${month}/${year} alle ` +
-        `${hours}:${minutes}:${seconds}`
-    );
-
-}
-
-
-/* =========================
-   DATETIME LOCAL
-========================= */
-
-function toDateTimeLocal(date) {
-
-    const year =
-        date.getFullYear();
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(2, "0");
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(2, "0");
-
-    const hours =
-        String(
-            date.getHours()
-        ).padStart(2, "0");
-
-    const minutes =
-        String(
-            date.getMinutes()
-        ).padStart(2, "0");
-
-
-    return (
-        `${year}-${month}-${day}` +
-        `T${hours}:${minutes}`
-    );
-
-}
-
-
-/* =========================
-   RESET DAL DETTAGLIO
+   RESET CON CONFERMA
 ========================= */
 
 function requestReset() {
@@ -2135,11 +1907,144 @@ function requestReset() {
         return;
     }
 
-
-    resetActivityImmediately(
+    requestResetActivity(
         selectedActivityId
     );
+}
 
+
+function requestResetActivity(id) {
+
+    const activity =
+        activities.find(
+            item => item.id === id
+        );
+
+    if (!activity) return;
+
+
+    selectedActivityId = id;
+
+
+    document
+        .getElementById("confirmationTitle")
+        .textContent =
+        "Ricominciare il contatore?";
+
+
+    document
+        .getElementById("confirmationText")
+        .textContent =
+        "Il contatore verrà azzerato e ripartirà da questo momento.";
+
+
+    const button =
+        document.getElementById(
+            "confirmationButton"
+        );
+
+
+    button.textContent =
+        "Ricomincia";
+
+    button.style.color =
+        "var(--blue)";
+
+    button.onclick =
+        confirmReset;
+
+
+    document
+        .getElementById("confirmationModal")
+        .classList.add("show");
+}
+
+
+/* =========================
+   CONFERMA RESET
+========================= */
+
+function confirmReset() {
+
+    const activity =
+        activities.find(
+            item => item.id === selectedActivityId
+        );
+
+    if (!activity) {
+        closeConfirmation();
+        return;
+    }
+
+
+    if (activity.mode === "up") {
+
+        activity.startTimestamp =
+            Date.now();
+
+    } else {
+
+        /*
+            Per il countdown chiediamo
+            la nuova scadenza.
+        */
+
+        closeConfirmation();
+
+
+        setTimeout(
+            function() {
+
+                const value =
+                    prompt(
+                        "Inserisci la nuova scadenza.\nFormato: AAAA-MM-GG HH:MM"
+                    );
+
+                if (!value) {
+                    return;
+                }
+
+
+                const timestamp =
+                    new Date(
+                        value.replace(" ", "T")
+                    ).getTime();
+
+
+                if (isNaN(timestamp)) {
+
+                    alert(
+                        "Data non valida."
+                    );
+
+                    return;
+                }
+
+
+                activity.targetTimestamp =
+                    timestamp;
+
+                saveActivities();
+
+                renderActivities();
+
+                updateDetail();
+
+            },
+            100
+        );
+
+        return;
+    }
+
+
+    saveActivities();
+
+    closeConfirmation();
+
+    renderActivities();
+
+    updateDetail();
 }
 
 
@@ -2153,43 +2058,58 @@ function requestDelete() {
         return;
     }
 
+    requestDeleteActivity(
+        selectedActivityId
+    );
+}
+
+
+function requestDeleteActivity(id) {
+
+    const activity =
+        activities.find(
+            item => item.id === id
+        );
+
+    if (!activity) return;
+
+
+    selectedActivityId = id;
+
 
     document
-        .getElementById(
-            "confirmationTitle"
-        )
+        .getElementById("confirmationTitle")
         .textContent =
         "Eliminare attività?";
 
 
     document
-        .getElementById(
-            "confirmationText"
-        )
+        .getElementById("confirmationText")
         .textContent =
-        "L'attività verrà eliminata definitivamente.";
+        `"${activity.name}" verrà eliminata definitivamente.`;
 
 
-    document
-        .getElementById(
+    const button =
+        document.getElementById(
             "confirmationButton"
-        )
-        .onclick =
+        );
+
+
+    button.textContent =
+        "Elimina";
+
+    button.style.color =
+        "var(--red)";
+
+    button.onclick =
         confirmDelete;
 
 
     document
-        .getElementById(
-            "confirmationModal"
-        )
+        .getElementById("confirmationModal")
         .classList.add("show");
-
 }
 
-
-/* =========================
-   CONFERMA ELIMINAZIONE
-========================= */
 
 function confirmDelete() {
 
@@ -2207,22 +2127,89 @@ function confirmDelete() {
     closeDetail();
 
     renderActivities();
-
 }
 
 
 /* =========================
-   CONFERMA
+   CHIUDI CONFERMA
 ========================= */
 
 function closeConfirmation() {
 
     document
-        .getElementById(
-            "confirmationModal"
-        )
+        .getElementById("confirmationModal")
         .classList.remove("show");
 
+}
+
+
+/* =========================
+   DATA
+========================= */
+
+function formatExactDate(timestamp) {
+
+    const date =
+        new Date(timestamp);
+
+    const day =
+        String(date.getDate())
+            .padStart(2, "0");
+
+    const month =
+        String(date.getMonth() + 1)
+            .padStart(2, "0");
+
+    const year =
+        date.getFullYear();
+
+    const hours =
+        String(date.getHours())
+            .padStart(2, "0");
+
+    const minutes =
+        String(date.getMinutes())
+            .padStart(2, "0");
+
+    const seconds =
+        String(date.getSeconds())
+            .padStart(2, "0");
+
+
+    return `${day}/${month}/${year} alle ${hours}:${minutes}:${seconds}`;
+}
+
+
+/* =========================
+   DATETIME LOCAL
+========================= */
+
+function toDateTimeLocal(date) {
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(date.getMonth() + 1)
+            .padStart(2, "0");
+
+    const day =
+        String(date.getDate())
+            .padStart(2, "0");
+
+    const hours =
+        String(date.getHours())
+            .padStart(2, "0");
+
+    const minutes =
+        String(date.getMinutes())
+            .padStart(2, "0");
+
+
+    return (
+        `${year}-${month}-${day}` +
+        `T${hours}:${minutes}`
+    );
 }
 
 
@@ -2232,67 +2219,9 @@ function closeConfirmation() {
 
 loadActivities();
 
-
-/*
-    Aggiornamento ogni secondo.
-*/
-
 setInterval(
     updateCounters,
     1000
-);
-
-
-/*
-    Se si apre il dettaglio
-    con doppio click/tocco sul nome,
-    viene mostrato il dettaglio.
-    
-    Il normale tocco sul pulsante
-    continua invece a resettare.
-*/
-
-document.addEventListener(
-    "dblclick",
-    function(event) {
-
-        const button =
-            event.target.closest(
-                ".activity-name-button"
-            );
-
-        if (!button) {
-            return;
-        }
-
-
-        const row =
-            button.closest(
-                ".activity-row"
-            );
-
-        if (!row) {
-            return;
-        }
-
-
-        const counter =
-            row.querySelector(
-                ".counter"
-            );
-
-        if (!counter) {
-            return;
-        }
-
-
-        const id =
-            counter.dataset.id;
-
-
-        openDetail(id);
-
-    }
 );
 
 </script>
