@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -16,6 +17,10 @@
         --red: #ff3b30;
         --border: rgba(60,60,67,0.18);
         --shadow: 0 4px 18px rgba(0,0,0,0.06);
+
+        /* Sfondo diverso per i due tipi di contatore */
+        --up-bg: #eaf4ff;
+        --down-bg: #fff2e8;
     }
 
     * {
@@ -63,25 +68,10 @@
         margin-bottom: 20px;
     }
 
-    .header-left {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
     .title {
         font-size: 34px;
         font-weight: 700;
         letter-spacing: -1.2px;
-    }
-
-    .edit-button {
-        border: none;
-        background: transparent;
-        color: var(--blue);
-        font-size: 17px;
-        font-weight: 500;
-        padding: 7px 0;
     }
 
     .add-button {
@@ -114,62 +104,6 @@
     }
 
     /* ========================================
-       MODALITÀ RIORDINO
-       ======================================== */
-
-    .reorder-info {
-        display: none;
-        text-align: center;
-        color: var(--secondary);
-        font-size: 14px;
-        margin: -7px 0 15px;
-    }
-
-    body.reorder-mode .reorder-info {
-        display: block;
-    }
-
-    body.reorder-mode .activity-wrapper {
-        cursor: grab;
-    }
-
-    body.reorder-mode .activity-wrapper:active {
-        cursor: grabbing;
-    }
-
-    body.reorder-mode .activity-row {
-        touch-action: none;
-        transition:
-            transform .18s ease,
-            box-shadow .18s ease,
-            opacity .18s ease;
-    }
-
-    body.reorder-mode .activity-row.dragging {
-        transition: none !important;
-        box-shadow:
-            0 14px 30px rgba(0,0,0,.16);
-        z-index: 20;
-        opacity: .96;
-    }
-
-    body.reorder-mode .activity-wrapper.drag-placeholder {
-        opacity: .35;
-    }
-
-    body.reorder-mode .delete-reveal {
-        display: none;
-    }
-
-    body.reorder-mode .activity-info {
-        pointer-events: none;
-    }
-
-    body.reorder-mode .activity-name-button {
-        pointer-events: none;
-    }
-
-    /* ========================================
        RIGA ATTIVITÀ
        ======================================== */
 
@@ -177,6 +111,7 @@
         position: relative;
         width: 100%;
         margin-bottom: 10px;
+        overflow: hidden;
         border-radius: 18px;
         background: var(--red);
     }
@@ -192,8 +127,6 @@
         align-items: center;
         justify-content: center;
         z-index: 1;
-        border-radius: 18px;
-        overflow: hidden;
     }
 
     .delete-button {
@@ -214,38 +147,33 @@
         min-height: 72px;
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 10px 14px;
+        gap: 8px;
+        padding: 10px 10px;
         background: #ffffff;
         border: 1px solid rgba(60,60,67,0.08);
         border-radius: 18px;
         box-shadow: var(--shadow);
         transform: translateX(0);
-        transition: transform .22s cubic-bezier(.25,.8,.25,1);
+        transition:
+            transform .22s cubic-bezier(.25,.8,.25,1),
+            opacity .15s ease;
         touch-action: pan-y;
     }
 
-    /* ========================================
-       COLORI IN BASE AL TIPO
-       ======================================== */
+    /*
+       SFONDO DIVERSO IN BASE AL TIPO DI CONTATORE
 
-    .activity-row.countdown {
-        background: #007aff;
-        border-color: rgba(0,122,255,.35);
+       Conta da quando = azzurro chiaro
+       Conta quanto manca = arancio chiaro
+
+       Il colore riguarda lo SFONDO, non la scritta.
+    */
+    .activity-row.mode-up {
+        background: var(--up-bg);
     }
 
-    .activity-row.countdown .activity-name-button {
-        background: rgba(255,255,255,.96);
-        color: var(--blue);
-        border-color: rgba(255,255,255,.9);
-    }
-
-    .activity-row.countdown .counter {
-        color: white;
-    }
-
-    .activity-row.countdown .counter.expired {
-        color: white;
+    .activity-row.mode-down {
+        background: var(--down-bg);
     }
 
     .activity-info {
@@ -269,17 +197,17 @@
     }
 
     .activity-name-button {
-        flex: 0 0 190px;
-        width: 190px;
-        max-width: 190px;
-        min-width: 190px;
+        flex: 0 0 155px;
+        width: 155px;
+        max-width: 155px;
+        min-width: 155px;
         height: 44px;
         padding: 0 12px;
         border: 1.5px solid var(--blue);
         border-radius: 12px;
         background: #ffffff;
         color: var(--blue);
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 600;
         white-space: nowrap;
         overflow: hidden;
@@ -300,11 +228,48 @@
         color: white;
     }
 
+    /*
+       MANIGLIA PER SPOSTARE LE ATTIVITÀ
+       Trascinandola puoi mettere la sezione
+       sopra o sotto le altre.
+    */
+    .drag-handle {
+        flex: 0 0 28px;
+        width: 28px;
+        height: 44px;
+        border: none;
+        background: transparent;
+        color: var(--secondary);
+        font-size: 20px;
+        line-height: 44px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .drag-handle:active {
+        cursor: grabbing;
+        color: var(--blue);
+    }
+
+    .activity-wrapper.dragging {
+        opacity: .55;
+    }
+
+    .activity-wrapper.drag-over {
+        transform: scale(1.015);
+    }
+
     .counter {
         flex-shrink: 0;
-        min-width: 70px;
+        min-width: 66px;
         text-align: right;
-        font-size: 17px;
+        font-size: 16px;
         font-weight: 600;
         letter-spacing: -0.2px;
         white-space: nowrap;
@@ -580,10 +545,6 @@
         flex: 1;
     }
 
-    /* ========================================
-       RESPONSIVE
-       ======================================== */
-
     @media (max-width: 500px) {
 
         .app {
@@ -592,23 +553,29 @@
         }
 
         .activity-row {
-            gap: 8px;
-            padding-left: 10px;
-            padding-right: 10px;
+            gap: 6px;
+            padding-left: 8px;
+            padding-right: 8px;
         }
 
         .activity-name-button {
-            flex: 0 0 155px;
-            width: 155px;
-            max-width: 155px;
-            min-width: 155px;
+            flex: 0 0 140px;
+            width: 140px;
+            max-width: 140px;
+            min-width: 140px;
             height: 44px;
-            font-size: 15px;
+            font-size: 14px;
+        }
+
+        .drag-handle {
+            flex: 0 0 24px;
+            width: 24px;
+            font-size: 18px;
         }
 
         .counter {
-            font-size: 16px;
-            min-width: 66px;
+            font-size: 15px;
+            min-width: 62px;
         }
 
         .detail-page {
@@ -639,16 +606,22 @@
     @media (max-width: 370px) {
 
         .activity-name-button {
-            flex: 0 0 135px;
-            width: 135px;
-            max-width: 135px;
-            min-width: 135px;
-            font-size: 14px;
+            flex: 0 0 115px;
+            width: 115px;
+            max-width: 115px;
+            min-width: 115px;
+            font-size: 13px;
+        }
+
+        .drag-handle {
+            flex: 0 0 22px;
+            width: 22px;
+            font-size: 17px;
         }
 
         .counter {
-            font-size: 15px;
-            min-width: 62px;
+            font-size: 14px;
+            min-width: 58px;
         }
     }
 </style>
@@ -659,22 +632,7 @@
 <div class="app">
 
     <div class="header">
-
-        <div class="header-left">
-
-            <div class="title">
-                Contatori
-            </div>
-
-            <button
-                id="editButton"
-                class="edit-button"
-                onclick="toggleReorderMode()"
-            >
-                Modifica
-            </button>
-
-        </div>
+        <div class="title">Contatori</div>
 
         <button
             class="add-button"
@@ -683,14 +641,6 @@
         >
             +
         </button>
-
-    </div>
-
-    <div
-        id="reorderInfo"
-        class="reorder-info"
-    >
-        Trascina le attività per cambiarne l'ordine
     </div>
 
     <div id="activitiesList"></div>
@@ -949,10 +899,20 @@ let pendingAction =
 let pendingActionId =
     null;
 
-let reorderMode =
+/* ========================================
+   VARIABILI ORDINAMENTO
+   ======================================== */
+
+let draggedId =
+    null;
+
+let touchDragId =
+    null;
+
+let touchDragging =
     false;
 
-let dragState =
+let touchDragElement =
     null;
 
 /* ========================================
@@ -1006,49 +966,10 @@ function saveActivities() {
 }
 
 /* ========================================
-   MODALITÀ MODIFICA / RIORDINO
-   ======================================== */
-
-function toggleReorderMode() {
-
-    reorderMode =
-        !reorderMode;
-
-    document.body.classList.toggle(
-        "reorder-mode",
-        reorderMode
-    );
-
-    const button =
-        document.getElementById(
-            "editButton"
-        );
-
-    button.textContent =
-        reorderMode
-            ? "Fine"
-            : "Modifica";
-
-    if (!reorderMode) {
-
-        dragState =
-            null;
-
-        saveActivities();
-
-        renderActivities();
-    }
-}
-
-/* ========================================
    AGGIUNGI ATTIVITÀ
    ======================================== */
 
 function openAddModal() {
-
-    if (reorderMode) {
-        toggleReorderMode();
-    }
 
     editingId =
         null;
@@ -1689,14 +1610,15 @@ function renderActivities() {
             row.className =
                 "activity-row";
 
-            if (
-                activity.mode === "down"
-            ) {
-
-                row.classList.add(
-                    "countdown"
-                );
-            }
+            /*
+               Applica automaticamente il colore
+               in base al tipo di contatore.
+            */
+            row.classList.add(
+                activity.mode === "up"
+                    ? "mode-up"
+                    : "mode-down"
+            );
 
             const infoButton =
                 document.createElement(
@@ -1709,10 +1631,6 @@ function renderActivities() {
             infoButton.addEventListener(
                 "click",
                 function(event) {
-
-                    if (reorderMode) {
-                        return;
-                    }
 
                     if (
                         Math.abs(
@@ -1751,10 +1669,6 @@ function renderActivities() {
                 "click",
                 function(event) {
 
-                    if (reorderMode) {
-                        return;
-                    }
-
                     event.preventDefault();
 
                     event.stopPropagation();
@@ -1767,6 +1681,34 @@ function renderActivities() {
 
             infoButton.appendChild(
                 nameButton
+            );
+
+            /*
+               MANIGLIA DI ORDINAMENTO
+            */
+            const dragHandle =
+                document.createElement(
+                    "button"
+                );
+
+            dragHandle.className =
+                "drag-handle";
+
+            dragHandle.type =
+                "button";
+
+            dragHandle.textContent =
+                "☷";
+
+            dragHandle.setAttribute(
+                "aria-label",
+                "Sposta attività"
+            );
+
+            setupDragHandle(
+                dragHandle,
+                wrapper,
+                activity.id
             );
 
             const counter =
@@ -1802,6 +1744,10 @@ function renderActivities() {
             );
 
             row.appendChild(
+                dragHandle
+            );
+
+            row.appendChild(
                 counter
             );
 
@@ -1817,338 +1763,441 @@ function renderActivities() {
                 wrapper
             );
 
-            if (reorderMode) {
+            setupDesktopDrag(
+                wrapper,
+                activity.id
+            );
 
-                enableReorderDrag(
-                    wrapper
+            enableSwipe(
+                row
+            );
+        }
+    );
+}
+
+/* ========================================
+   DRAG DESKTOP
+   ======================================== */
+
+function setupDesktopDrag(
+    wrapper,
+    id
+) {
+
+    wrapper.draggable =
+        true;
+
+    wrapper.addEventListener(
+        "dragstart",
+        function(event) {
+
+            draggedId =
+                id;
+
+            wrapper.classList.add(
+                "dragging"
+            );
+
+            if (
+                event.dataTransfer
+            ) {
+
+                event.dataTransfer.effectAllowed =
+                    "move";
+
+                event.dataTransfer.setData(
+                    "text/plain",
+                    id
+                );
+            }
+        }
+    );
+
+    wrapper.addEventListener(
+        "dragend",
+        function() {
+
+            draggedId =
+                null;
+
+            wrapper.classList.remove(
+                "dragging"
+            );
+
+            document
+                .querySelectorAll(
+                    ".activity-wrapper"
+                )
+                .forEach(
+                    item => {
+
+                        item.classList.remove(
+                            "drag-over"
+                        );
+                    }
+                );
+        }
+    );
+
+    wrapper.addEventListener(
+        "dragover",
+        function(event) {
+
+            event.preventDefault();
+
+            if (
+                !draggedId ||
+                draggedId === id
+            ) {
+                return;
+            }
+
+            const rect =
+                wrapper.getBoundingClientRect();
+
+            const middle =
+                rect.top +
+                rect.height / 2;
+
+            if (
+                event.clientY < middle
+            ) {
+
+                wrapper.classList.add(
+                    "drag-over"
                 );
 
             } else {
 
-                enableSwipe(
-                    row
+                wrapper.classList.add(
+                    "drag-over"
                 );
+            }
+
+            moveActivityBefore(
+                draggedId,
+                id,
+                event.clientY >= middle
+            );
+        }
+    );
+
+    wrapper.addEventListener(
+        "dragleave",
+        function() {
+
+            wrapper.classList.remove(
+                "drag-over"
+            );
+        }
+    );
+
+    wrapper.addEventListener(
+        "drop",
+        function(event) {
+
+            event.preventDefault();
+
+            wrapper.classList.remove(
+                "drag-over"
+            );
+
+            if (
+                event.dataTransfer
+            ) {
+
+                const sourceId =
+                    event.dataTransfer.getData(
+                        "text/plain"
+                    );
+
+                if (
+                    sourceId &&
+                    sourceId !== id
+                ) {
+
+                    moveActivityBefore(
+                        sourceId,
+                        id,
+                        event.clientY >=
+                            wrapper.getBoundingClientRect().top +
+                            wrapper.getBoundingClientRect().height / 2
+                    );
+                }
             }
         }
     );
 }
 
 /* ========================================
-   RIORDINO VERTICALE PULITO
+   DRAG DA MANIGLIA SU IPHONE / TOUCH
    ======================================== */
 
-function enableReorderDrag(wrapper) {
+function setupDragHandle(
+    handle,
+    wrapper,
+    id
+) {
 
-    let startY = 0;
-    let currentY = 0;
-    let startTop = 0;
-    let originalIndex = -1;
-    let dragging = false;
-    let moved = false;
-
-    const row =
-        wrapper.querySelector(
-            ".activity-row"
-        );
-
-    row.addEventListener(
-        "touchstart",
-        function(event) {
-
-            if (!reorderMode) {
-                return;
-            }
-
-            if (
-                !event.touches ||
-                !event.touches.length
-            ) {
-                return;
-            }
-
-            const touch =
-                event.touches[0];
-
-            startY =
-                touch.clientY;
-
-            currentY =
-                startY;
-
-            const rect =
-                wrapper.getBoundingClientRect();
-
-            startTop =
-                rect.top;
-
-            originalIndex =
-                Array.from(
-                    wrapper.parentElement.children
-                ).indexOf(
-                    wrapper
-                );
-
-            dragging =
-                true;
-
-            moved =
-                false;
-
-            dragState = {
-                wrapper: wrapper
-            };
-
-            row.classList.add(
-                "dragging"
-            );
-
-            wrapper.style.zIndex =
-                "20";
-
-        },
-        {
-            passive: true
-        }
-    );
-
-    row.addEventListener(
-        "touchmove",
+    handle.addEventListener(
+        "pointerdown",
         function(event) {
 
             if (
-                !dragging ||
-                !reorderMode
+                event.pointerType !== "touch" &&
+                event.pointerType !== "pen"
             ) {
-                return;
-            }
-
-            if (
-                !event.touches ||
-                !event.touches.length
-            ) {
-                return;
-            }
-
-            const touch =
-                event.touches[0];
-
-            currentY =
-                touch.clientY;
-
-            const dy =
-                currentY -
-                startY;
-
-            if (
-                Math.abs(dy) > 6
-            ) {
-
-                moved =
-                    true;
-            }
-
-            if (!moved) {
                 return;
             }
 
             event.preventDefault();
 
-            /*
-               Solo movimento verticale.
-               Nessun translateX:
-               questo evita lo "sballamento" laterale.
-            */
-            row.style.transform =
-                `translateY(${dy}px)`;
+            touchDragId =
+                id;
 
-            const siblings =
-                Array.from(
-                    wrapper.parentElement.children
-                ).filter(
-                    el =>
-                        el !== wrapper
+            touchDragElement =
+                wrapper;
+
+            touchDragging =
+                true;
+
+            wrapper.classList.add(
+                "dragging"
+            );
+
+            try {
+
+                handle.setPointerCapture(
+                    event.pointerId
                 );
 
-            let newIndex =
-                originalIndex;
-
-            for (
-                let i = 0;
-                i < siblings.length;
-                i++
-            ) {
-
-                const sibling =
-                    siblings[i];
-
-                const rect =
-                    sibling.getBoundingClientRect();
-
-                const middle =
-                    rect.top +
-                    rect.height / 2;
-
-                if (
-                    currentY > middle
-                ) {
-
-                    newIndex =
-                        i + 1;
-                }
-            }
-
-            const currentDomIndex =
-                Array.from(
-                    wrapper.parentElement.children
-                ).indexOf(
-                    wrapper
-                );
-
-            if (
-                newIndex !==
-                currentDomIndex
-            ) {
-
-                const children =
-                    Array.from(
-                        wrapper.parentElement.children
-                    );
-
-                const reference =
-                    children[newIndex];
-
-                if (reference) {
-
-                    wrapper.parentElement.insertBefore(
-                        wrapper,
-                        reference
-                    );
-
-                } else {
-
-                    wrapper.parentElement.appendChild(
-                        wrapper
-                    );
-                }
-            }
-
-        },
-        {
-            passive: false
+            } catch (error) {}
         }
     );
 
-    row.addEventListener(
-        "touchend",
-        function() {
+    handle.addEventListener(
+        "pointermove",
+        function(event) {
 
-            if (!dragging) {
+            if (
+                !touchDragging ||
+                touchDragId !== id
+            ) {
                 return;
             }
 
-            dragging =
-                false;
+            event.preventDefault();
 
-            row.classList.remove(
-                "dragging"
-            );
+            const elements =
+                Array.from(
+                    document.querySelectorAll(
+                        ".activity-wrapper"
+                    )
+                ).filter(
+                    element =>
+                        element !==
+                        touchDragElement
+                );
 
-            row.style.transform =
-                "";
+            let target =
+                null;
 
-            wrapper.style.zIndex =
-                "";
+            for (
+                const element of elements
+            ) {
 
-            if (moved) {
+                const rect =
+                    element.getBoundingClientRect();
 
-                updateActivitiesOrder();
+                if (
+                    event.clientY >= rect.top &&
+                    event.clientY <= rect.bottom
+                ) {
 
-                saveActivities();
+                    target =
+                        element;
+
+                    break;
+                }
             }
 
-            dragState =
-                null;
-        },
-        {
-            passive: true
+            if (!target) {
+                return;
+            }
+
+            const targetId =
+                target.dataset.id;
+
+            const targetRect =
+                target.getBoundingClientRect();
+
+            const placeAfter =
+                event.clientY >
+                targetRect.top +
+                targetRect.height / 2;
+
+            moveActivityBefore(
+                id,
+                targetId,
+                placeAfter
+            );
         }
     );
 
-    row.addEventListener(
-        "touchcancel",
-        function() {
+    handle.addEventListener(
+        "pointerup",
+        function(event) {
 
-            dragging =
-                false;
-
-            row.classList.remove(
-                "dragging"
+            finishTouchDrag(
+                event
             );
+        }
+    );
 
-            row.style.transform =
-                "";
+    handle.addEventListener(
+        "pointercancel",
+        function(event) {
 
-            wrapper.style.zIndex =
-                "";
-
-            dragState =
-                null;
-
-            renderActivities();
-        },
-        {
-            passive: true
+            finishTouchDrag(
+                event
+            );
         }
     );
 }
 
-/* ========================================
-   SALVA ORDINE CORRENTE
-   ======================================== */
-
-function updateActivitiesOrder() {
-
-    const wrappers =
-        Array.from(
-            document.querySelectorAll(
-                ".activity-wrapper"
-            )
-        );
-
-    const newOrder = [];
-
-    wrappers.forEach(
-        wrapper => {
-
-            const id =
-                wrapper.dataset.id;
-
-            const activity =
-                activities.find(
-                    a => a.id === id
-                );
-
-            if (activity) {
-
-                newOrder.push(
-                    activity
-                );
-            }
-        }
-    );
+function finishTouchDrag() {
 
     if (
-        newOrder.length ===
-        activities.length
+        !touchDragging
+    ) {
+        return;
+    }
+
+    touchDragging =
+        false;
+
+    if (
+        touchDragElement
     ) {
 
-        activities =
-            newOrder;
+        touchDragElement.classList.remove(
+            "dragging"
+        );
     }
+
+    touchDragId =
+        null;
+
+    touchDragElement =
+        null;
+
+    saveActivities();
+
+    renderActivities();
 }
 
 /* ========================================
-   SWIPE ELIMINA
+   SPOSTA ATTIVITÀ
+   ======================================== */
+
+function moveActivityBefore(
+    sourceId,
+    targetId,
+    after
+) {
+
+    if (
+        sourceId === targetId
+    ) {
+        return;
+    }
+
+    const sourceIndex =
+        activities.findIndex(
+            activity =>
+                activity.id === sourceId
+        );
+
+    const targetIndex =
+        activities.findIndex(
+            activity =>
+                activity.id === targetId
+        );
+
+    if (
+        sourceIndex === -1 ||
+        targetIndex === -1
+    ) {
+        return;
+    }
+
+    const source =
+        activities.splice(
+            sourceIndex,
+            1
+        )[0];
+
+    let newTargetIndex =
+        activities.findIndex(
+            activity =>
+                activity.id === targetId
+        );
+
+    if (
+        after
+    ) {
+
+        newTargetIndex += 1;
+    }
+
+    activities.splice(
+        newTargetIndex,
+        0,
+        source
+    );
+
+    saveActivities();
+
+    /*
+       Ridisegna la lista mantenendo
+       immediatamente il nuovo ordine.
+    */
+    renderActivities();
+}
+
+/* ========================================
+   AGGIORNA SINGOLO CONTATORE
+   ======================================== */
+
+function updateSingleCounter(
+    activity
+) {
+
+    const counter =
+        document.querySelector(
+            `[data-counter-id="${activity.id}"]`
+        );
+
+    if (!counter) {
+        return;
+    }
+
+    counter.textContent =
+        formatListCounter(
+            activity
+        );
+
+    counter.classList.toggle(
+        "expired",
+        activity.mode === "down" &&
+        getCounterMilliseconds(
+            activity
+        ) <= 0
+    );
+}
+
+/* ========================================
+   SWIPE
    ======================================== */
 
 function enableSwipe(row) {
@@ -2171,10 +2220,6 @@ function enableSwipe(row) {
     row.addEventListener(
         "touchstart",
         function(event) {
-
-            if (reorderMode) {
-                return;
-            }
 
             if (
                 !event.touches ||
@@ -2213,10 +2258,7 @@ function enableSwipe(row) {
         "touchmove",
         function(event) {
 
-            if (
-                !dragging ||
-                reorderMode
-            ) {
+            if (!dragging) {
                 return;
             }
 
@@ -2383,10 +2425,6 @@ document.addEventListener(
     "touchstart",
     function(event) {
 
-        if (reorderMode) {
-            return;
-        }
-
         const openRows =
             document.querySelectorAll(
                 ".activity-row"
@@ -2444,37 +2482,6 @@ function updateCounters() {
 
         updateDetail();
     }
-}
-
-/* ========================================
-   AGGIORNA SINGOLO CONTATORE
-   ======================================== */
-
-function updateSingleCounter(
-    activity
-) {
-
-    const counter =
-        document.querySelector(
-            `[data-counter-id="${activity.id}"]`
-        );
-
-    if (!counter) {
-        return;
-    }
-
-    counter.textContent =
-        formatListCounter(
-            activity
-        );
-
-    counter.classList.toggle(
-        "expired",
-        activity.mode === "down" &&
-        getCounterMilliseconds(
-            activity
-        ) <= 0
-    );
 }
 
 /* ========================================
