@@ -142,8 +142,8 @@
         min-height: 72px;
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 10px 12px;
+        gap: 12px;
+        padding: 10px 14px;
         background: #ffffff;
         border: 1px solid rgba(60,60,67,0.08);
         border-radius: 18px;
@@ -153,27 +153,20 @@
         touch-action: pan-y;
     }
 
-    /*
-       AREA DEL DETTAGLIO.
-       NON È PIÙ UN BUTTON CHE CONTIENE
-       UN ALTRO BUTTON.
-    */
     .activity-info {
-        flex: 0 0 190px;
-        width: 190px;
-        min-width: 190px;
+        flex: 1;
+        min-width: 0;
         height: 52px;
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         border: none;
         background: transparent;
         padding: 0;
-        text-align: center;
+        text-align: left;
         color: var(--text);
         border-radius: 12px;
         transition: background .12s ease;
-        cursor: pointer;
     }
 
     .activity-info:active {
@@ -181,8 +174,9 @@
     }
 
     /*
-       TUTTI I TASTI DELLE ATTIVITÀ HANNO
-       ESATTAMENTE LA STESSA DIMENSIONE.
+       TUTTI I TASTI NOME HANNO ESATTAMENTE
+       LA STESSA DIMENSIONE.
+       Il testo non modifica la larghezza del tasto.
     */
     .activity-name-button {
         flex: 0 0 190px;
@@ -216,17 +210,13 @@
         color: white;
     }
 
-    /*
-       TIMER PRINCIPALE:
-       MOSTRA SOLO LE UNITÀ NECESSARIE.
-    */
     .counter {
-        flex: 1;
-        min-width: 0;
+        flex-shrink: 0;
+        min-width: 70px;
         text-align: right;
-        font-size: 15px;
+        font-size: 17px;
         font-weight: 600;
-        letter-spacing: -0.35px;
+        letter-spacing: -0.2px;
         white-space: nowrap;
         color: var(--text);
     }
@@ -503,22 +493,22 @@
     @media (max-width: 500px) {
 
         .app {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        .activity-row {
+            gap: 8px;
             padding-left: 10px;
             padding-right: 10px;
         }
 
-        .activity-row {
-            gap: 7px;
-            padding-left: 8px;
-            padding-right: 8px;
-        }
-
-        .activity-info {
-            flex: 0 0 155px;
-            width: 155px;
-            min-width: 155px;
-        }
-
+        /*
+           Su schermi piccoli il tasto resta comunque
+           identico per tutte le attività, ma viene
+           ridotto a una misura fissa che entra bene
+           insieme al contatore.
+        */
         .activity-name-button {
             flex: 0 0 155px;
             width: 155px;
@@ -529,8 +519,8 @@
         }
 
         .counter {
-            font-size: 13px;
-            letter-spacing: -0.45px;
+            font-size: 16px;
+            min-width: 66px;
         }
 
         .detail-page {
@@ -560,22 +550,17 @@
 
     @media (max-width: 370px) {
 
-        .activity-info {
-            flex: 0 0 125px;
-            width: 125px;
-            min-width: 125px;
-        }
-
         .activity-name-button {
-            flex: 0 0 125px;
-            width: 125px;
-            max-width: 125px;
-            min-width: 125px;
-            font-size: 13px;
+            flex: 0 0 135px;
+            width: 135px;
+            max-width: 135px;
+            min-width: 135px;
+            font-size: 14px;
         }
 
         .counter {
-            font-size: 11px;
+            font-size: 15px;
+            min-width: 62px;
         }
     }
 </style>
@@ -657,7 +642,9 @@
 
         </div>
 
-        <div id="startField">
+        <div
+            id="startField"
+        >
 
             <label class="field-label">
                 Data e ora di inizio
@@ -745,7 +732,7 @@
                 id="detailExact"
                 class="detail-exact"
             >
-                0s
+                0 giorni · 0 ore · 0 minuti · 0 secondi
             </div>
 
             <div
@@ -911,7 +898,7 @@ function saveActivities() {
 
 
 /* ========================================
-   APERTURA NUOVA ATTIVITÀ
+   AGGIUNGI ATTIVITÀ
    ======================================== */
 
 function openAddModal() {
@@ -929,10 +916,7 @@ function openAddModal() {
     ).value =
         "";
 
-    document.getElementById(
-        "targetDate"
-    ).value =
-        "";
+    selectMode("up");
 
     document.getElementById(
         "startDate"
@@ -941,7 +925,10 @@ function openAddModal() {
             Date.now()
         );
 
-    selectMode("up");
+    document.getElementById(
+        "targetDate"
+    ).value =
+        "";
 
     document.getElementById(
         "activityModal"
@@ -963,7 +950,7 @@ function openAddModal() {
 
 
 /* ========================================
-   APERTURA MODIFICA
+   MODIFICA ATTIVITÀ
    ======================================== */
 
 function openEditModal(id) {
@@ -1013,16 +1000,16 @@ function openEditModal(id) {
     } else {
 
         document.getElementById(
+            "startDate"
+        ).value =
+            "";
+
+        document.getElementById(
             "targetDate"
         ).value =
             toDateTimeLocal(
                 activity.targetTimestamp
             );
-
-        document.getElementById(
-            "startDate"
-        ).value =
-            "";
     }
 
     document.getElementById(
@@ -1049,7 +1036,7 @@ function openEditFromDetail() {
 
 
 /* ========================================
-   CHIUDI MODALE
+   CHIUDI MODALE ATTIVITÀ
    ======================================== */
 
 function closeActivityModal() {
@@ -1140,6 +1127,7 @@ function saveActivity() {
     const name =
         nameInput.value.trim();
 
+
     if (!name) {
 
         alert(
@@ -1149,132 +1137,6 @@ function saveActivity() {
         return;
     }
 
-
-    /* ====================================
-       CONTA DA QUANDO
-       ==================================== */
-
-    if (
-        selectedMode === "up"
-    ) {
-
-        if (!startInput.value) {
-
-            alert(
-                "Inserisci la data e l'ora di inizio."
-            );
-
-            return;
-        }
-
-        const startTimestamp =
-            new Date(
-                startInput.value
-            ).getTime();
-
-        if (
-            isNaN(startTimestamp)
-        ) {
-
-            alert(
-                "Data o ora di inizio non valide."
-            );
-
-            return;
-        }
-
-        if (editingId) {
-
-            const activity =
-                activities.find(
-                    a => a.id === editingId
-                );
-
-            if (!activity) {
-                return;
-            }
-
-            activity.name =
-                name;
-
-            activity.mode =
-                "up";
-
-            activity.startTimestamp =
-                startTimestamp;
-
-            delete activity.targetTimestamp;
-
-        } else {
-
-            const id =
-                Date.now().toString(36) +
-                Math.random()
-                    .toString(36)
-                    .substring(2, 7);
-
-            activities.push({
-                id: id,
-                name: name,
-                mode: "up",
-                startTimestamp:
-                    startTimestamp
-            });
-        }
-
-        saveActivities();
-
-        closeActivityModal();
-
-        renderActivities();
-
-        if (detailId) {
-            updateDetail();
-        }
-
-        return;
-    }
-
-
-    /* ====================================
-       CONTA QUANTO MANCA
-       ==================================== */
-
-    if (!targetInput.value) {
-
-        alert(
-            "Inserisci la data e l'ora della scadenza."
-        );
-
-        return;
-    }
-
-    const targetTimestamp =
-        new Date(
-            targetInput.value
-        ).getTime();
-
-    if (
-        isNaN(targetTimestamp)
-    ) {
-
-        alert(
-            "Data o ora non valide."
-        );
-
-        return;
-    }
-
-    if (
-        targetTimestamp <= Date.now()
-    ) {
-
-        alert(
-            "La scadenza deve essere nel futuro."
-        );
-
-        return;
-    }
 
     if (editingId) {
 
@@ -1291,12 +1153,88 @@ function saveActivity() {
             name;
 
         activity.mode =
-            "down";
+            selectedMode;
 
-        activity.targetTimestamp =
-            targetTimestamp;
 
-        delete activity.startTimestamp;
+        if (
+            selectedMode === "up"
+        ) {
+
+            const startValue =
+                startInput.value;
+
+            if (!startValue) {
+
+                alert(
+                    "Inserisci data e ora di inizio."
+                );
+
+                return;
+            }
+
+            const timestamp =
+                new Date(
+                    startValue
+                ).getTime();
+
+            if (isNaN(timestamp)) {
+
+                alert(
+                    "Data o ora non valide."
+                );
+
+                return;
+            }
+
+            activity.startTimestamp =
+                timestamp;
+
+            delete activity.targetTimestamp;
+
+        } else {
+
+            const targetValue =
+                targetInput.value;
+
+            if (!targetValue) {
+
+                alert(
+                    "Inserisci data e ora della scadenza."
+                );
+
+                return;
+            }
+
+            const timestamp =
+                new Date(
+                    targetValue
+                ).getTime();
+
+            if (isNaN(timestamp)) {
+
+                alert(
+                    "Data o ora non valide."
+                );
+
+                return;
+            }
+
+            if (
+                timestamp <= Date.now()
+            ) {
+
+                alert(
+                    "La scadenza deve essere nel futuro."
+                );
+
+                return;
+            }
+
+            activity.targetTimestamp =
+                timestamp;
+
+            delete activity.startTimestamp;
+        }
 
     } else {
 
@@ -1306,14 +1244,94 @@ function saveActivity() {
                 .toString(36)
                 .substring(2, 7);
 
-        activities.push({
+        const activity = {
             id: id,
             name: name,
-            mode: "down",
-            targetTimestamp:
-                targetTimestamp
-        });
+            mode: selectedMode
+        };
+
+
+        if (
+            selectedMode === "up"
+        ) {
+
+            const startValue =
+                startInput.value;
+
+            if (!startValue) {
+
+                alert(
+                    "Inserisci data e ora di inizio."
+                );
+
+                return;
+            }
+
+            const timestamp =
+                new Date(
+                    startValue
+                ).getTime();
+
+            if (isNaN(timestamp)) {
+
+                alert(
+                    "Data o ora non valide."
+                );
+
+                return;
+            }
+
+            activity.startTimestamp =
+                timestamp;
+
+        } else {
+
+            const targetValue =
+                targetInput.value;
+
+            if (!targetValue) {
+
+                alert(
+                    "Inserisci data e ora della scadenza."
+                );
+
+                return;
+            }
+
+            const timestamp =
+                new Date(
+                    targetValue
+                ).getTime();
+
+            if (isNaN(timestamp)) {
+
+                alert(
+                    "Data o ora non valide."
+                );
+
+                return;
+            }
+
+            if (
+                timestamp <= Date.now()
+            ) {
+
+                alert(
+                    "La scadenza deve essere nel futuro."
+                );
+
+                return;
+            }
+
+            activity.targetTimestamp =
+                timestamp;
+        }
+
+        activities.push(
+            activity
+        );
     }
+
 
     saveActivities();
 
@@ -1322,13 +1340,14 @@ function saveActivity() {
     renderActivities();
 
     if (detailId) {
+
         updateDetail();
     }
 }
 
 
 /* ========================================
-   MILLISECONDI CONTATORE
+   MILLISECONDO CONTATORE
    ======================================== */
 
 function getCounterMilliseconds(
@@ -1355,13 +1374,17 @@ function getCounterMilliseconds(
 
 
 /* ========================================
-   FORMATTA TIMER
-   MOSTRA SOLO LE UNITÀ NECESSARIE
+   FORMATTA CONTATORE LISTA
    ======================================== */
 
-function formatCounter(
-    milliseconds
+function formatListCounter(
+    activity
 ) {
+
+    const milliseconds =
+        getCounterMilliseconds(
+            activity
+        );
 
     const totalSeconds =
         Math.floor(
@@ -1393,72 +1416,6 @@ function formatCounter(
         );
 
 
-    const parts = [];
-
-
-    if (days > 0) {
-
-        parts.push(
-            `${days}g`
-        );
-    }
-
-
-    if (hours > 0) {
-
-        parts.push(
-            `${hours}h`
-        );
-    }
-
-
-    if (minutes > 0) {
-
-        parts.push(
-            `${minutes}m`
-        );
-    }
-
-
-    if (seconds > 0) {
-
-        parts.push(
-            `${seconds}s`
-        );
-    }
-
-
-    /*
-       Se il tempo è esattamente zero,
-       mostriamo comunque 0s.
-    */
-
-    if (
-        parts.length === 0
-    ) {
-
-        return "0s";
-    }
-
-
-    return parts.join(" ");
-}
-
-
-/* ========================================
-   FORMATTA TIMER PRINCIPALE
-   ======================================== */
-
-function formatListCounter(
-    activity
-) {
-
-    const milliseconds =
-        getCounterMilliseconds(
-            activity
-        );
-
-
     if (
         activity.mode === "down" &&
         milliseconds <= 0
@@ -1468,8 +1425,44 @@ function formatListCounter(
     }
 
 
-    return formatCounter(
-        milliseconds
+    if (
+        days > 0
+    ) {
+
+        return (
+            `${days}g ` +
+            `${hours}h ` +
+            `${minutes}m ` +
+            `${seconds}s`
+        );
+    }
+
+
+    if (
+        hours > 0
+    ) {
+
+        return (
+            `${hours}h ` +
+            `${minutes}m ` +
+            `${seconds}s`
+        );
+    }
+
+
+    if (
+        minutes > 0
+    ) {
+
+        return (
+            `${minutes}m ` +
+            `${seconds}s`
+        );
+    }
+
+
+    return (
+        `${seconds}s`
     );
 }
 
@@ -1527,10 +1520,6 @@ function renderActivities() {
                 activity.id;
 
 
-            /* ==========================
-               ELIMINA
-               ========================== */
-
             const deleteReveal =
                 document.createElement(
                     "div"
@@ -1570,10 +1559,6 @@ function renderActivities() {
             );
 
 
-            /* ==========================
-               RIGA
-               ========================== */
-
             const row =
                 document.createElement(
                     "div"
@@ -1583,20 +1568,16 @@ function renderActivities() {
                 "activity-row";
 
 
-            /* ==========================
-               AREA DETTAGLIO
-               ========================== */
-
-            const infoArea =
+            const infoButton =
                 document.createElement(
-                    "div"
+                    "button"
                 );
 
-            infoArea.className =
+            infoButton.className =
                 "activity-info";
 
 
-            infoArea.addEventListener(
+            infoButton.addEventListener(
                 "click",
                 function(event) {
 
@@ -1623,10 +1604,10 @@ function renderActivities() {
             );
 
 
-            /* ==========================
-               NOME
-               ========================== */
-
+            /*
+               Il nome è sempre un tasto della stessa
+               identica dimensione per ogni attività.
+            */
             const nameButton =
                 document.createElement(
                     "button"
@@ -1654,14 +1635,10 @@ function renderActivities() {
             );
 
 
-            infoArea.appendChild(
+            infoButton.appendChild(
                 nameButton
             );
 
-
-            /* ==========================
-               TIMER
-               ========================== */
 
             const counter =
                 document.createElement(
@@ -1694,7 +1671,7 @@ function renderActivities() {
 
 
             row.appendChild(
-                infoArea
+                infoButton
             );
 
             row.appendChild(
@@ -1723,7 +1700,7 @@ function renderActivities() {
 
 
 /* ========================================
-   AGGIORNA SINGOLO TIMER
+   AGGIORNA SINGOLO CONTATORE
    ======================================== */
 
 function updateSingleCounter(
@@ -1739,12 +1716,10 @@ function updateSingleCounter(
         return;
     }
 
-
     counter.textContent =
         formatListCounter(
             activity
         );
-
 
     counter.classList.toggle(
         "expired",
@@ -1996,7 +1971,7 @@ function getRowTranslateX(
 
 
 /* ========================================
-   CHIUDI SWIPE
+   CHIUDI SWIPE APERTI
    ======================================== */
 
 document.addEventListener(
@@ -2045,7 +2020,7 @@ document.addEventListener(
 
 
 /* ========================================
-   AGGIORNA TIMER
+   AGGIORNA CONTATORI
    ======================================== */
 
 function updateCounters() {
@@ -2149,21 +2124,59 @@ function updateDetail() {
         );
 
 
-    if (
+    const expired =
         activity.mode === "down" &&
-        milliseconds <= 0
-    ) {
+        milliseconds <= 0;
 
+
+    if (expired) {
         milliseconds = 0;
     }
+
+
+    const totalSeconds =
+        Math.floor(
+            milliseconds / 1000
+        );
+
+
+    const seconds =
+        totalSeconds % 60;
+
+
+    const totalMinutes =
+        Math.floor(
+            totalSeconds / 60
+        );
+
+
+    const minutes =
+        totalMinutes % 60;
+
+
+    const totalHours =
+        Math.floor(
+            totalMinutes / 60
+        );
+
+
+    const hours =
+        totalHours % 24;
+
+
+    const days =
+        Math.floor(
+            totalHours / 24
+        );
 
 
     document.getElementById(
         "detailExact"
     ).textContent =
-        formatCounter(
-            milliseconds
-        );
+        `${days} giorni · ` +
+        `${hours} ore · ` +
+        `${minutes} minuti · ` +
+        `${seconds} secondi`;
 
 
     if (
