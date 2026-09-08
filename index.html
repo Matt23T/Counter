@@ -6,960 +6,1094 @@
 <title>Contatore Giorni</title>
 
 <style>
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #f5f5f7;
-    color: #111;
-}
-
-body {
-    overflow-x: hidden;
-}
-
-button,
-input,
-select {
-    font: inherit;
-}
-
-.app {
-    width: 100%;
-    max-width: 650px;
-    margin: 0 auto;
-    min-height: 100vh;
-    padding: 24px 18px 40px;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 28px;
-}
-
-.header h1 {
-    margin: 0;
-    font-size: 30px;
-    font-weight: 750;
-    letter-spacing: -0.7px;
-}
-
-.add-button {
-    width: 46px;
-    height: 46px;
-    border: none;
-    border-radius: 50%;
-    background: #111;
-    color: white;
-    font-size: 30px;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.empty {
-    text-align: center;
-    padding: 80px 20px;
-    color: #777;
-}
-
-.empty-icon {
-    font-size: 52px;
-    margin-bottom: 18px;
-}
-
-.empty-title {
-    font-size: 21px;
-    font-weight: 700;
-    color: #222;
-    margin-bottom: 8px;
-}
-
-.empty-text {
-    font-size: 15px;
-    line-height: 1.5;
-}
-
-.counter-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.counter-card {
-    background: white;
-    border-radius: 20px;
-    padding: 19px 20px;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    transition: transform 0.12s ease;
-}
-
-.counter-card:active {
-    transform: scale(0.98);
-}
-
-.counter-card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 15px;
-}
-
-.counter-name {
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1.3;
-    word-break: break-word;
-}
-
-.counter-type {
-    display: inline-block;
-    margin-top: 7px;
-    padding: 4px 8px;
-    border-radius: 7px;
-    background: #f0f0f2;
-    color: #666;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-.counter-date {
-    margin-top: 6px;
-    color: #888;
-    font-size: 13px;
-}
-
-.counter-time {
-    text-align: right;
-    white-space: nowrap;
-}
-
-.counter-days {
-    font-size: 27px;
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.5px;
-}
-
-.counter-hours {
-    margin-top: 4px;
-    font-size: 14px;
-    color: #777;
-    font-weight: 600;
-}
-
-.expired {
-    color: #c33;
-}
-
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.42);
-    display: none;
-    align-items: flex-end;
-    justify-content: center;
-    z-index: 100;
-    padding: 0;
-}
-
-.modal-overlay.active {
-    display: flex;
-}
-
-.modal {
-    width: 100%;
-    max-width: 650px;
-    background: white;
-    border-radius: 28px 28px 0 0;
-    padding: 24px 20px 30px;
-    animation: slideUp 0.2s ease-out;
-    max-height: 92vh;
-    overflow-y: auto;
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(100%);
+    * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
     }
-    to {
-        transform: translateY(0);
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: #f2f2f7;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+        color: #000;
     }
-}
 
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
+    .app {
+        max-width: 700px;
+        margin: 0 auto;
+        min-height: 100vh;
+        padding-bottom: 40px;
+    }
 
-.modal-title {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 750;
-}
+    header {
+        padding: 55px 20px 20px;
+    }
 
-.close-button {
-    width: 38px;
-    height: 38px;
-    border: none;
-    border-radius: 50%;
-    background: #eee;
-    color: #333;
-    font-size: 22px;
-    cursor: pointer;
-}
+    header h1 {
+        margin: 0;
+        font-size: 34px;
+        font-weight: 700;
+        letter-spacing: -1px;
+    }
 
-.input-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 650;
-    color: #555;
-    margin-bottom: 8px;
-}
+    header p {
+        margin: 5px 0 0;
+        color: #8e8e93;
+        font-size: 15px;
+    }
 
-.activity-input {
-    width: 100%;
-    border: 1px solid #ddd;
-    background: #f7f7f8;
-    border-radius: 14px;
-    padding: 15px;
-    font-size: 17px;
-    outline: none;
-}
+    .add-button {
+        margin: 0 16px 20px;
+        width: calc(100% - 32px);
+        height: 52px;
+        border: none;
+        border-radius: 14px;
+        background: #007aff;
+        color: white;
+        font-size: 17px;
+        font-weight: 600;
+        cursor: pointer;
+    }
 
-.activity-input:focus {
-    border-color: #999;
-    background: white;
-}
+    .add-button:active {
+        transform: scale(0.98);
+        opacity: 0.8;
+    }
 
-.mode-selector {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin: 18px 0;
-}
+    .section {
+        margin: 0 16px;
+    }
 
-.mode-button {
-    border: 1px solid #ddd;
-    background: #f5f5f7;
-    border-radius: 13px;
-    padding: 13px 8px;
-    font-size: 14px;
-    font-weight: 650;
-    color: #555;
-    cursor: pointer;
-}
+    .section-title {
+        margin: 0 0 8px 16px;
+        color: #6d6d72;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
 
-.mode-button.active {
-    background: #111;
-    color: white;
-    border-color: #111;
-}
+    .activity-list {
+        background: white;
+        border-radius: 14px;
+        overflow: hidden;
+    }
 
-.date-input,
-.time-input {
-    width: 100%;
-    border: 1px solid #ddd;
-    background: #f7f7f8;
-    border-radius: 14px;
-    padding: 14px;
-    font-size: 17px;
-    outline: none;
-    color: #111;
-}
-
-.datetime-fields {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 10px;
-}
-
-.start-button {
-    width: 100%;
-    border: none;
-    border-radius: 15px;
-    padding: 16px;
-    margin-top: 18px;
-    background: #111;
-    color: white;
-    font-size: 17px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.detail-overlay {
-    position: fixed;
-    inset: 0;
-    background: #f5f5f7;
-    display: none;
-    z-index: 200;
-    overflow-y: auto;
-}
-
-.detail-overlay.active {
-    display: block;
-}
-
-.detail {
-    width: 100%;
-    max-width: 650px;
-    min-height: 100vh;
-    margin: 0 auto;
-    padding: 24px 18px 45px;
-}
-
-.detail-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 34px;
-}
-
-.back-button {
-    width: 44px;
-    height: 44px;
-    border: none;
-    border-radius: 50%;
-    background: white;
-    font-size: 25px;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-.detail-title {
-    margin: 0;
-    font-size: 25px;
-    font-weight: 750;
-    word-break: break-word;
-}
-
-.detail-start {
-    text-align: center;
-    color: #777;
-    font-size: 15px;
-    line-height: 1.6;
-    margin-bottom: 35px;
-}
-
-.detail-start strong {
-    display: block;
-    color: #222;
-    font-size: 17px;
-    font-weight: 650;
-}
-
-.big-counter {
-    background: white;
-    border-radius: 25px;
-    padding: 35px 20px;
-    text-align: center;
-    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
-}
-
-.big-days {
-    font-size: 64px;
-    line-height: 1;
-    font-weight: 850;
-    letter-spacing: -2px;
-}
-
-.big-days-label {
-    margin-top: 8px;
-    color: #777;
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.full-counter {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 28px;
-    font-size: 18px;
-    font-weight: 650;
-}
-
-.full-counter span {
-    color: #222;
-}
-
-.full-counter .separator {
-    color: #aaa;
-}
-
-.detail-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 22px;
-}
-
-.reset-button,
-.delete-button {
-    width: 100%;
-    border: none;
-    border-radius: 15px;
-    padding: 15px;
-    font-size: 16px;
-    font-weight: 650;
-    cursor: pointer;
-}
-
-.reset-button {
-    background: white;
-    color: #222;
-}
-
-.delete-button {
-    background: #eee;
-    color: #d22;
-}
-
-.confirm-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.42);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 300;
-    padding: 20px;
-}
-
-.confirm-overlay.active {
-    display: flex;
-}
-
-.confirm-box {
-    width: 100%;
-    max-width: 380px;
-    background: white;
-    border-radius: 22px;
-    padding: 24px;
-}
-
-.confirm-title {
-    font-size: 20px;
-    font-weight: 750;
-    margin-bottom: 9px;
-}
-
-.confirm-text {
-    font-size: 15px;
-    color: #666;
-    line-height: 1.45;
-    margin-bottom: 22px;
-}
-
-.confirm-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.confirm-buttons button {
-    flex: 1;
-    border: none;
-    border-radius: 13px;
-    padding: 13px;
-    font-weight: 650;
-    cursor: pointer;
-}
-
-.cancel-button {
-    background: #eee;
-    color: #222;
-}
-
-.confirm-action {
-    background: #111;
-    color: white;
-}
-
-@media (min-width: 651px) {
-    .modal-overlay {
+    .activity-row {
+        min-height: 76px;
+        display: flex;
         align-items: center;
-        padding: 20px;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e5e5ea;
+        gap: 12px;
+    }
+
+    .activity-row:last-child {
+        border-bottom: none;
+    }
+
+    .activity-name-button {
+        flex: 1;
+        min-width: 0;
+        min-height: 50px;
+        border: none;
+        background: transparent;
+        text-align: left;
+        padding: 5px 0;
+        font-size: 17px;
+        color: #007aff;
+        cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .activity-name-button:active {
+        opacity: 0.5;
+    }
+
+    .counter {
+        flex-shrink: 0;
+        font-variant-numeric: tabular-nums;
+        font-size: 17px;
+        font-weight: 600;
+        color: #000;
+        white-space: nowrap;
+        text-align: right;
+    }
+
+    .counter.expired {
+        color: #ff3b30;
+    }
+
+    .empty {
+        background: white;
+        border-radius: 14px;
+        padding: 40px 20px;
+        text-align: center;
+        color: #8e8e93;
+        font-size: 16px;
+    }
+
+    /* MODALE */
+
+    .modal-background {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        z-index: 100;
+        align-items: flex-end;
+        justify-content: center;
+    }
+
+    .modal-background.show {
+        display: flex;
     }
 
     .modal {
-        border-radius: 28px;
-        max-width: 500px;
+        width: 100%;
+        max-width: 700px;
+        background: #f2f2f7;
+        border-radius: 22px 22px 0 0;
+        padding: 20px 16px 35px;
+        animation: slideUp 0.25s ease;
     }
-}
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(100%);
+        }
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+        margin: 0;
+        font-size: 22px;
+    }
+
+    .close-button {
+        border: none;
+        background: #e5e5ea;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .input-label {
+        display: block;
+        margin: 0 0 7px 4px;
+        font-size: 13px;
+        color: #6d6d72;
+    }
+
+    .text-input,
+    .date-input {
+        width: 100%;
+        height: 52px;
+        border: none;
+        border-radius: 13px;
+        background: white;
+        padding: 0 15px;
+        font-size: 17px;
+        outline: none;
+        margin-bottom: 16px;
+    }
+
+    .mode-container {
+        display: flex;
+        background: #e5e5ea;
+        border-radius: 12px;
+        padding: 2px;
+        margin-bottom: 16px;
+    }
+
+    .mode-button {
+        flex: 1;
+        height: 44px;
+        border: none;
+        border-radius: 10px;
+        background: transparent;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+    .mode-button.active {
+        background: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        font-weight: 600;
+    }
+
+    .countdown-fields {
+        display: none;
+    }
+
+    .countdown-fields.show {
+        display: block;
+    }
+
+    .create-button {
+        width: 100%;
+        height: 52px;
+        border: none;
+        border-radius: 14px;
+        background: #007aff;
+        color: white;
+        font-size: 17px;
+        font-weight: 600;
+        margin-top: 4px;
+        cursor: pointer;
+    }
+
+    .create-button:active {
+        opacity: 0.8;
+    }
+
+    /* DETTAGLIO */
+
+    .detail-background {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: #f2f2f7;
+        z-index: 200;
+        overflow-y: auto;
+    }
+
+    .detail-background.show {
+        display: block;
+    }
+
+    .detail {
+        max-width: 700px;
+        margin: 0 auto;
+        min-height: 100vh;
+        padding: 55px 20px 40px;
+    }
+
+    .detail-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 35px;
+    }
+
+    .back-button {
+        border: none;
+        background: #e5e5ea;
+        border-radius: 12px;
+        padding: 10px 15px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .detail-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0;
+        text-align: center;
+        flex: 1;
+        padding: 0 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .detail-date {
+        text-align: center;
+        color: #8e8e93;
+        font-size: 15px;
+        margin-bottom: 35px;
+    }
+
+    .detail-counter {
+        text-align: center;
+        background: white;
+        border-radius: 22px;
+        padding: 35px 15px;
+        margin-bottom: 20px;
+    }
+
+    .detail-main-number {
+        font-size: 70px;
+        line-height: 1;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -3px;
+    }
+
+    .detail-main-label {
+        font-size: 18px;
+        color: #8e8e93;
+        margin-top: 8px;
+    }
+
+    .detail-precise {
+        margin-top: 25px;
+        font-size: 21px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .detail-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .detail-action {
+        width: 100%;
+        height: 52px;
+        border: none;
+        border-radius: 14px;
+        background: white;
+        font-size: 17px;
+        cursor: pointer;
+    }
+
+    .detail-action.reset {
+        color: #007aff;
+    }
+
+    .detail-action.delete {
+        color: #ff3b30;
+    }
+
+    .detail-action:active {
+        opacity: 0.7;
+    }
+
+    /* CONFERMA */
+
+    .confirmation-background {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.35);
+        z-index: 300;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .confirmation-background.show {
+        display: flex;
+    }
+
+    .confirmation {
+        width: 100%;
+        max-width: 360px;
+        background: white;
+        border-radius: 18px;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .confirmation-content {
+        padding: 25px 20px;
+    }
+
+    .confirmation h3 {
+        margin: 0 0 8px;
+        font-size: 20px;
+    }
+
+    .confirmation p {
+        margin: 0;
+        color: #6d6d72;
+        font-size: 15px;
+        line-height: 1.4;
+    }
+
+    .confirmation-buttons {
+        display: flex;
+        border-top: 1px solid #e5e5ea;
+    }
+
+    .confirmation-buttons button {
+        flex: 1;
+        height: 50px;
+        border: none;
+        background: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .confirmation-buttons button + button {
+        border-left: 1px solid #e5e5ea;
+    }
+
+    .confirmation-cancel {
+        color: #007aff;
+    }
+
+    .confirmation-confirm {
+        color: #ff3b30;
+        font-weight: 600;
+    }
+
+    @media (min-width: 700px) {
+        .modal-background {
+            align-items: center;
+        }
+
+        .modal {
+            border-radius: 22px;
+            margin: 20px;
+        }
+    }
 </style>
 </head>
 
 <body>
 
-<div class="app" id="mainApp">
-    <div class="header">
-        <h1>Contatore Giorni</h1>
-        <button class="add-button" id="addButton" aria-label="Aggiungi attività">+</button>
+<div class="app">
+
+    <header>
+        <h1>Contatori</h1>
+        <p>Il tempo trascorso dalle tue attività</p>
+    </header>
+
+    <button class="add-button" onclick="openAddModal()">
+        + Nuova attività
+    </button>
+
+    <div class="section">
+        <div class="section-title">Attività</div>
+
+        <div id="activityList"></div>
     </div>
 
-    <div id="counterList"></div>
 </div>
 
-<div class="modal-overlay" id="addModal">
+
+<!-- MODALE NUOVA ATTIVITÀ -->
+
+<div class="modal-background" id="addModal">
     <div class="modal">
+
         <div class="modal-header">
-            <h2 class="modal-title">Nuova attività</h2>
-            <button class="close-button" id="closeAddButton">×</button>
+            <h2>Nuova attività</h2>
+            <button class="close-button" onclick="closeAddModal()">×</button>
         </div>
 
-        <label class="input-label" for="activityInput">Cosa vuoi contare?</label>
-
+        <label class="input-label">Nome attività</label>
         <input
-            class="activity-input"
-            id="activityInput"
             type="text"
-            placeholder="Es. Non bevo alcol"
-            maxlength="100"
-            autocomplete="off"
+            id="activityName"
+            class="text-input"
+            placeholder="Es. Senza fumare"
+            maxlength="50"
         >
 
-        <div class="mode-selector">
-            <button class="mode-button active" id="countUpButton" type="button">
+        <label class="input-label">Tipo</label>
+
+        <div class="mode-container">
+
+            <button
+                class="mode-button active"
+                id="upModeButton"
+                onclick="selectMode('up')"
+            >
                 Conta da quando
             </button>
 
-            <button class="mode-button" id="countDownButton" type="button">
+            <button
+                class="mode-button"
+                id="downModeButton"
+                onclick="selectMode('down')"
+            >
                 Conta quanto manca
             </button>
+
         </div>
 
-        <div id="countUpOptions">
-            <label class="input-label">
-                Il conteggio inizierà nel momento in cui premi "Inizia oggi".
-            </label>
+        <div class="countdown-fields" id="countdownFields">
+
+            <label class="input-label">Data e ora della scadenza</label>
+
+            <input
+                type="datetime-local"
+                id="targetDate"
+                class="date-input"
+            >
+
         </div>
 
-        <div id="countDownOptions" style="display:none;">
-            <label class="input-label">Data e ora di scadenza</label>
-
-            <div class="datetime-fields">
-                <input
-                    class="date-input"
-                    id="targetDate"
-                    type="date"
-                >
-
-                <input
-                    class="time-input"
-                    id="targetTime"
-                    type="time"
-                >
-            </div>
-        </div>
-
-        <button class="start-button" id="startButton">
-            Inizia oggi
+        <button class="create-button" onclick="createActivity()">
+            Crea attività
         </button>
+
     </div>
 </div>
 
-<div class="detail-overlay" id="detailOverlay">
+
+<!-- DETTAGLIO -->
+
+<div class="detail-background" id="detailBackground">
+
     <div class="detail">
-        <div class="detail-header">
-            <button class="back-button" id="backButton">‹</button>
+
+        <div class="detail-top">
+
+            <button class="back-button" onclick="closeDetail()">
+                ‹ Indietro
+            </button>
+
             <h2 class="detail-title" id="detailTitle"></h2>
+
+            <div style="width:80px;"></div>
+
         </div>
 
-        <div class="detail-start">
-            <span id="detailStartLabel"></span>
-            <strong id="detailStartDate"></strong>
-        </div>
+        <div class="detail-date" id="detailDate"></div>
 
-        <div class="big-counter">
-            <div class="big-days" id="bigDays">0</div>
-            <div class="big-days-label" id="bigDaysLabel">giorni</div>
+        <div class="detail-counter">
 
-            <div class="full-counter">
-                <span id="fullDays">0 giorni</span>
-                <span class="separator">·</span>
-                <span id="fullHours">0 ore</span>
-                <span class="separator">·</span>
-                <span id="fullMinutes">0 minuti</span>
-                <span class="separator">·</span>
-                <span id="fullSeconds">0 secondi</span>
+            <div class="detail-main-number" id="detailMainNumber">
+                0
             </div>
+
+            <div class="detail-main-label">
+                giorni
+            </div>
+
+            <div class="detail-precise" id="detailPrecise">
+                0 giorni, 0 ore, 0 minuti, 0 secondi
+            </div>
+
         </div>
 
-        <div class="detail-actions">
-            <button class="reset-button" id="resetButton"></button>
-            <button class="delete-button" id="deleteButton">Elimina attività</button>
+        <div class="detail-buttons">
+
+            <button
+                class="detail-action reset"
+                onclick="requestReset()"
+            >
+                Ricomincia da oggi
+            </button>
+
+            <button
+                class="detail-action delete"
+                onclick="requestDelete()"
+            >
+                Elimina attività
+            </button>
+
         </div>
+
     </div>
+
 </div>
 
-<div class="confirm-overlay" id="confirmOverlay">
-    <div class="confirm-box">
-        <div class="confirm-title" id="confirmTitle">Sei sicuro?</div>
-        <div class="confirm-text" id="confirmText"></div>
 
-        <div class="confirm-buttons">
-            <button class="cancel-button" id="cancelConfirm">Annulla</button>
-            <button class="confirm-action" id="confirmAction">Conferma</button>
+<!-- CONFERMA -->
+
+<div class="confirmation-background" id="confirmationModal">
+
+    <div class="confirmation">
+
+        <div class="confirmation-content">
+
+            <h3 id="confirmationTitle">
+                Sei sicuro?
+            </h3>
+
+            <p id="confirmationText">
+                Questa operazione non può essere annullata.
+            </p>
+
         </div>
+
+        <div class="confirmation-buttons">
+
+            <button
+                class="confirmation-cancel"
+                onclick="closeConfirmation()"
+            >
+                Annulla
+            </button>
+
+            <button
+                class="confirmation-confirm"
+                id="confirmationButton"
+            >
+                Conferma
+            </button>
+
+        </div>
+
     </div>
+
 </div>
+
 
 <script>
+
 const STORAGE_KEY = "contatore_giorni_attivita";
 
-let activities = loadActivities();
-let selectedActivityId = null;
-let confirmActionType = null;
+let activities = [];
 let selectedMode = "up";
+let selectedActivityId = null;
+let confirmationAction = null;
+
+
+/* =========================
+   CARICAMENTO
+========================= */
 
 function loadActivities() {
-    try {
-        const saved = localStorage.getItem(STORAGE_KEY);
 
-        if (!saved) {
-            return [];
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if (saved) {
+
+        try {
+            activities = JSON.parse(saved);
+        } catch (error) {
+            activities = [];
         }
 
-        const parsed = JSON.parse(saved);
-
-        return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-        return [];
+    } else {
+        activities = [];
     }
+
+    renderActivities();
 }
+
+
+/* =========================
+   SALVATAGGIO
+========================= */
 
 function saveActivities() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(activities));
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(activities)
+    );
+
 }
 
-function generateId() {
-    return Date.now().toString() + Math.random().toString(36).slice(2);
+
+/* =========================
+   MODALE AGGIUNTA
+========================= */
+
+function openAddModal() {
+
+    document.getElementById("addModal").classList.add("show");
+
+    document.getElementById("activityName").value = "";
+
+    selectedMode = "up";
+
+    document
+        .getElementById("upModeButton")
+        .classList.add("active");
+
+    document
+        .getElementById("downModeButton")
+        .classList.remove("active");
+
+    document
+        .getElementById("countdownFields")
+        .classList.remove("show");
 }
 
-function calculateElapsed(startTimestamp) {
-    const now = Date.now();
-    const start = new Date(startTimestamp).getTime();
 
-    let difference = now - start;
+function closeAddModal() {
 
-    if (difference < 0) {
-        difference = 0;
+    document
+        .getElementById("addModal")
+        .classList.remove("show");
+
+}
+
+
+function selectMode(mode) {
+
+    selectedMode = mode;
+
+    if (mode === "up") {
+
+        document
+            .getElementById("upModeButton")
+            .classList.add("active");
+
+        document
+            .getElementById("downModeButton")
+            .classList.remove("active");
+
+        document
+            .getElementById("countdownFields")
+            .classList.remove("show");
+
+    } else {
+
+        document
+            .getElementById("downModeButton")
+            .classList.add("active");
+
+        document
+            .getElementById("upModeButton")
+            .classList.remove("active");
+
+        document
+            .getElementById("countdownFields")
+            .classList.add("show");
+
     }
 
-    return convertMilliseconds(difference);
 }
 
-function calculateRemaining(targetTimestamp) {
-    const now = Date.now();
-    const target = new Date(targetTimestamp).getTime();
 
-    const difference = target - now;
+/* =========================
+   CREAZIONE ATTIVITÀ
+========================= */
 
-    if (difference <= 0) {
-        return {
-            days: 0,
-            hours: 0,
-            minutes: 0,
-            seconds: 0,
-            expired: true
-        };
+function createActivity() {
+
+    const nameInput =
+        document.getElementById("activityName");
+
+    const name =
+        nameInput.value.trim();
+
+    if (!name) {
+
+        alert("Inserisci il nome dell'attività.");
+
+        return;
     }
 
-    const result = convertMilliseconds(difference);
-    result.expired = false;
 
-    return result;
+    const id =
+        Date.now().toString();
+
+
+    if (selectedMode === "up") {
+
+        activities.push({
+
+            id: id,
+
+            name: name,
+
+            mode: "up",
+
+            startTimestamp: Date.now()
+
+        });
+
+    } else {
+
+        const targetValue =
+            document.getElementById("targetDate").value;
+
+        if (!targetValue) {
+
+            alert("Inserisci la data e l'ora della scadenza.");
+
+            return;
+        }
+
+        const targetTimestamp =
+            new Date(targetValue).getTime();
+
+        if (isNaN(targetTimestamp)) {
+
+            alert("La data inserita non è valida.");
+
+            return;
+        }
+
+        activities.push({
+
+            id: id,
+
+            name: name,
+
+            mode: "down",
+
+            targetTimestamp: targetTimestamp
+
+        });
+
+    }
+
+
+    saveActivities();
+
+    closeAddModal();
+
+    renderActivities();
+
 }
 
-function convertMilliseconds(milliseconds) {
-    const totalSeconds = Math.floor(milliseconds / 1000);
 
-    const days = Math.floor(totalSeconds / 86400);
-    const hours = Math.floor((totalSeconds % 86400) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
+/* =========================
+   FORMATTAZIONE
+========================= */
 
-    return {
-        days,
-        hours,
-        minutes,
-        seconds
-    };
+/*
+   Regola del contatore nella lista:
+
+   Meno di 1 ora:
+   minuti + secondi
+
+   Da 1 ora a meno di 1 giorno:
+   ore + minuti
+
+   Da 1 giorno in poi:
+   giorni + ore
+*/
+
+function formatListCounter(milliseconds, mode) {
+
+    if (milliseconds < 0) {
+        milliseconds = 0;
+    }
+
+    const totalSeconds =
+        Math.floor(milliseconds / 1000);
+
+    const days =
+        Math.floor(totalSeconds / 86400);
+
+    const hours =
+        Math.floor((totalSeconds % 86400) / 3600);
+
+    const minutes =
+        Math.floor((totalSeconds % 3600) / 60);
+
+    const seconds =
+        totalSeconds % 60;
+
+
+    if (days > 0) {
+
+        return `${days}g ${hours}h`;
+
+    }
+
+    if (hours > 0) {
+
+        return `${hours}h ${minutes}m`;
+
+    }
+
+    return `${minutes}m ${seconds}s`;
+
 }
 
-function formatDateTime(timestamp) {
-    const date = new Date(timestamp);
 
-    return date.toLocaleDateString("it-IT", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric"
-    }) + " alle " +
-    date.toLocaleTimeString("it-IT", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-    });
+/* =========================
+   CALCOLO CONTATORE
+========================= */
+
+function getCounterMilliseconds(activity) {
+
+    const now = Date.now();
+
+    if (activity.mode === "up") {
+
+        return Math.max(
+            0,
+            now - activity.startTimestamp
+        );
+
+    }
+
+    return Math.max(
+        0,
+        activity.targetTimestamp - now
+    );
+
 }
 
-function formatDateOnly(timestamp) {
-    const date = new Date(timestamp);
 
-    return date.toLocaleDateString("it-IT", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric"
-    });
-}
+/* =========================
+   RENDER LISTA
+========================= */
 
-function plural(value, singular, pluralForm) {
-    return value === 1 ? singular : pluralForm;
-}
+function renderActivities() {
 
-function renderList() {
-    const container = document.getElementById("counterList");
+    const list =
+        document.getElementById("activityList");
 
     if (activities.length === 0) {
-        container.innerHTML = `
+
+        list.innerHTML = `
             <div class="empty">
-                <div class="empty-icon">⏳</div>
-                <div class="empty-title">Nessun contatore</div>
-                <div class="empty-text">
-                    Premi + per iniziare a contare.
-                </div>
+                Nessuna attività.<br>
+                Premi "+ Nuova attività" per iniziare.
             </div>
         `;
 
         return;
     }
 
-    container.innerHTML = `
-        <div class="counter-list">
-            ${activities.map(activity => {
-                let elapsed;
 
-                if (activity.mode === "down") {
-                    elapsed = calculateRemaining(activity.targetTimestamp);
-                } else {
-                    elapsed = calculateElapsed(activity.startTimestamp);
-                }
+    list.innerHTML = "";
 
-                const expiredClass =
-                    activity.mode === "down" && elapsed.expired
-                        ? "expired"
-                        : "";
+    activities.forEach(activity => {
 
-                const mainLabel =
-                    activity.mode === "down"
-                        ? (elapsed.expired
-                            ? "Scaduto"
-                            : `${elapsed.days} ${plural(elapsed.days, "giorno", "giorni")}`)
-                        : `${elapsed.days} ${plural(elapsed.days, "giorno", "giorni")}`;
+        const row =
+            document.createElement("div");
 
-                const hoursLabel =
-                    activity.mode === "down"
-                        ? (elapsed.expired
-                            ? ""
-                            : `${elapsed.hours} ${plural(elapsed.hours, "ora", "ore")}`)
-                        : `${elapsed.hours} ${plural(elapsed.hours, "ora", "ore")}`;
+        row.className = "activity-row";
 
-                const dateLabel =
-                    activity.mode === "down"
-                        ? `Fino al ${formatDateTime(activity.targetTimestamp)}`
-                        : `Dal ${formatDateOnly(activity.startTimestamp)}`;
 
-                return `
-                    <div class="counter-card" data-id="${activity.id}">
-                        <div class="counter-card-top">
-                            <div>
-                                <div class="counter-name">
-                                    ${escapeHtml(activity.name)}
-                                </div>
+        const nameButton =
+            document.createElement("button");
 
-                                <div class="counter-type">
-                                    ${activity.mode === "down"
-                                        ? "conto alla rovescia"
-                                        : "conteggio"}
-                                </div>
+        nameButton.className =
+            "activity-name-button";
 
-                                <div class="counter-date">
-                                    ${dateLabel}
-                                </div>
-                            </div>
+        nameButton.textContent =
+            activity.name;
 
-                            <div class="counter-time ${expiredClass}">
-                                <div class="counter-days">
-                                    ${mainLabel}
-                                </div>
+        /*
+            IMPORTANTE:
+            premendo direttamente sul nome
+            il contatore viene resettato.
+        */
 
-                                <div class="counter-hours">
-                                    ${hoursLabel}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join("")}
-        </div>
-    `;
-
-    document.querySelectorAll(".counter-card").forEach(card => {
-        card.addEventListener("click", () => {
-            openDetail(card.dataset.id);
-        });
-    });
-}
-
-function escapeHtml(text) {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-function openAddModal() {
-    document.getElementById("activityInput").value = "";
-
-    const now = new Date();
-    now.setMinutes(now.getMinutes() + 1);
-
-    document.getElementById("targetDate").value =
-        formatDateForInput(now);
-
-    document.getElementById("targetTime").value =
-        formatTimeForInput(now);
-
-    setMode("up");
-
-    document.getElementById("addModal").classList.add("active");
-
-    setTimeout(() => {
-        document.getElementById("activityInput").focus();
-    }, 100);
-}
-
-function closeAddModal() {
-    document.getElementById("addModal").classList.remove("active");
-    document.getElementById("activityInput").blur();
-}
-
-function formatDateForInput(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-}
-
-function formatTimeForInput(date) {
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-
-    return `${hours}:${minutes}`;
-}
-
-function setMode(mode) {
-    selectedMode = mode;
-
-    const countUpButton = document.getElementById("countUpButton");
-    const countDownButton = document.getElementById("countDownButton");
-
-    const countUpOptions = document.getElementById("countUpOptions");
-    const countDownOptions = document.getElementById("countDownOptions");
-
-    const startButton = document.getElementById("startButton");
-
-    if (mode === "up") {
-        countUpButton.classList.add("active");
-        countDownButton.classList.remove("active");
-
-        countUpOptions.style.display = "block";
-        countDownOptions.style.display = "none";
-
-        startButton.textContent = "Inizia oggi";
-    } else {
-        countUpButton.classList.remove("active");
-        countDownButton.classList.add("active");
-
-        countUpOptions.style.display = "none";
-        countDownOptions.style.display = "block";
-
-        startButton.textContent = "Inizia conto alla rovescia";
-    }
-}
-
-function createActivity() {
-    const input = document.getElementById("activityInput");
-    const name = input.value.trim();
-
-    if (!name) {
-        input.focus();
-        return;
-    }
-
-    if (selectedMode === "up") {
-        const activity = {
-            id: generateId(),
-            name: name,
-            mode: "up",
-            startTimestamp: new Date().toISOString()
-        };
-
-        activities.push(activity);
-    } else {
-        const dateValue = document.getElementById("targetDate").value;
-        const timeValue = document.getElementById("targetTime").value;
-
-        if (!dateValue || !timeValue) {
-            return;
-        }
-
-        const targetDate = new Date(
-            `${dateValue}T${timeValue}:00`
+        nameButton.addEventListener(
+            "click",
+            function() {
+                requestResetActivity(activity.id);
+            }
         );
 
-        if (isNaN(targetDate.getTime())) {
-            return;
+
+        const counter =
+            document.createElement("div");
+
+        counter.className = "counter";
+
+        counter.dataset.id =
+            activity.id;
+
+
+        if (activity.mode === "down") {
+
+            const remaining =
+                getCounterMilliseconds(activity);
+
+            counter.textContent =
+                formatListCounter(remaining, "down");
+
+            if (remaining <= 0) {
+
+                counter.textContent =
+                    "Scaduto";
+
+                counter.classList.add("expired");
+
+            }
+
+        } else {
+
+            counter.textContent =
+                formatListCounter(
+                    getCounterMilliseconds(activity),
+                    "up"
+                );
+
         }
 
-        if (targetDate.getTime() <= Date.now()) {
-            alert("La data e l'ora devono essere nel futuro.");
-            return;
-        }
 
-        const activity = {
-            id: generateId(),
-            name: name,
-            mode: "down",
-            targetTimestamp: targetDate.toISOString()
-        };
+        row.appendChild(nameButton);
 
-        activities.push(activity);
-    }
+        row.appendChild(counter);
 
-    saveActivities();
-    closeAddModal();
-    renderList();
+        list.appendChild(row);
+
+    });
+
 }
 
+
+/* =========================
+   AGGIORNAMENTO OGNI SECONDO
+========================= */
+
+function updateCounters() {
+
+    document
+        .querySelectorAll(".counter")
+        .forEach(counter => {
+
+            const id =
+                counter.dataset.id;
+
+            const activity =
+                activities.find(
+                    item => item.id === id
+                );
+
+            if (!activity) {
+                return;
+            }
+
+
+            const milliseconds =
+                getCounterMilliseconds(activity);
+
+
+            if (
+                activity.mode === "down" &&
+                milliseconds <= 0
+            ) {
+
+                counter.textContent =
+                    "Scaduto";
+
+                counter.classList.add("expired");
+
+            } else {
+
+                counter.classList.remove("expired");
+
+                counter.textContent =
+                    formatListCounter(
+                        milliseconds,
+                        activity.mode
+                    );
+
+            }
+
+        });
+
+
+    updateDetail();
+
+}
+
+
+/* =========================
+   DETTAGLIO
+========================= */
+
 function openDetail(id) {
-    const activity = activities.find(item => item.id === id);
+
+    const activity =
+        activities.find(
+            item => item.id === id
+        );
 
     if (!activity) {
         return;
@@ -967,348 +1101,380 @@ function openDetail(id) {
 
     selectedActivityId = id;
 
-    document.getElementById("detailTitle").textContent =
-        activity.name;
+    document
+        .getElementById("detailBackground")
+        .classList.add("show");
+
+    document
+        .getElementById("detailTitle")
+        .textContent = activity.name;
+
 
     if (activity.mode === "up") {
-        document.getElementById("detailStartLabel").textContent =
-            "Iniziato il";
 
-        document.getElementById("detailStartDate").textContent =
-            formatDateTime(activity.startTimestamp);
+        document
+            .getElementById("detailDate")
+            .textContent =
+            "Iniziato il " +
+            formatExactDate(
+                activity.startTimestamp
+            );
 
-        document.getElementById("resetButton").textContent =
-            "Ricomincia da oggi";
     } else {
-        document.getElementById("detailStartLabel").textContent =
-            "Scadenza il";
 
-        document.getElementById("detailStartDate").textContent =
-            formatDateTime(activity.targetTimestamp);
+        document
+            .getElementById("detailDate")
+            .textContent =
+            "Scadenza: " +
+            formatExactDate(
+                activity.targetTimestamp
+            );
 
-        document.getElementById("resetButton").textContent =
-            "Imposta nuova scadenza";
     }
 
-    updateDetailCounter();
+    updateDetail();
 
-    document.getElementById("detailOverlay").classList.add("active");
-    document.body.style.overflow = "hidden";
 }
+
 
 function closeDetail() {
-    document.getElementById("detailOverlay").classList.remove("active");
-    document.body.style.overflow = "";
+
+    document
+        .getElementById("detailBackground")
+        .classList.remove("show");
+
     selectedActivityId = null;
+
 }
 
-function updateDetailCounter() {
+
+/* =========================
+   AGGIORNAMENTO DETTAGLIO
+========================= */
+
+function updateDetail() {
+
     if (!selectedActivityId) {
         return;
     }
 
-    const activity = activities.find(
-        item => item.id === selectedActivityId
-    );
+    const activity =
+        activities.find(
+            item => item.id === selectedActivityId
+        );
 
     if (!activity) {
         return;
     }
 
-    let elapsed;
-    let expired = false;
 
-    if (activity.mode === "down") {
-        elapsed = calculateRemaining(activity.targetTimestamp);
-        expired = elapsed.expired;
-    } else {
-        elapsed = calculateElapsed(activity.startTimestamp);
-    }
+    const milliseconds =
+        getCounterMilliseconds(activity);
 
-    const bigDays = document.getElementById("bigDays");
-    const bigDaysLabel = document.getElementById("bigDaysLabel");
 
-    if (expired) {
-        bigDays.textContent = "0";
-        bigDaysLabel.textContent = "scaduto";
-        bigDays.classList.add("expired");
-    } else {
-        bigDays.textContent = elapsed.days;
-        bigDaysLabel.textContent =
-            plural(elapsed.days, "giorno", "giorni");
+    const totalSeconds =
+        Math.floor(milliseconds / 1000);
 
-        bigDays.classList.remove("expired");
-    }
 
-    document.getElementById("fullDays").textContent =
-        `${elapsed.days} ${plural(elapsed.days, "giorno", "giorni")}`;
+    const days =
+        Math.floor(totalSeconds / 86400);
 
-    document.getElementById("fullHours").textContent =
-        `${elapsed.hours} ${plural(elapsed.hours, "ora", "ore")}`;
+    const hours =
+        Math.floor(
+            (totalSeconds % 86400) / 3600
+        );
 
-    document.getElementById("fullMinutes").textContent =
-        `${elapsed.minutes} ${plural(elapsed.minutes, "minuto", "minuti")}`;
+    const minutes =
+        Math.floor(
+            (totalSeconds % 3600) / 60
+        );
 
-    document.getElementById("fullSeconds").textContent =
-        `${elapsed.seconds} ${plural(elapsed.seconds, "secondo", "secondi")}`;
-}
+    const seconds =
+        totalSeconds % 60;
 
-function requestReset() {
-    if (!selectedActivityId) {
-        return;
-    }
 
-    const activity = activities.find(
-        item => item.id === selectedActivityId
-    );
+    document
+        .getElementById("detailMainNumber")
+        .textContent = days;
 
-    if (!activity) {
-        return;
-    }
 
-    confirmActionType = "reset";
+    document
+        .getElementById("detailPrecise")
+        .textContent =
+        `${days} giorni, ${hours} ore, ${minutes} minuti, ${seconds} secondi`;
 
-    if (activity.mode === "up") {
-        document.getElementById("confirmTitle").textContent =
-            "Ricominciare da oggi?";
-
-        document.getElementById("confirmText").textContent =
-            "Il conteggio attuale verrà sostituito e il nuovo inizio sarà registrato in questo momento.";
-
-        document.getElementById("confirmAction").textContent =
-            "Ricomincia";
-    } else {
-        document.getElementById("confirmTitle").textContent =
-            "Impostare una nuova scadenza?";
-
-        document.getElementById("confirmText").textContent =
-            "Potrai scegliere una nuova data e ora di scadenza.";
-
-        document.getElementById("confirmAction").textContent =
-            "Continua";
-    }
-
-    document.getElementById("confirmOverlay").classList.add("active");
-}
-
-function requestDelete() {
-    if (!selectedActivityId) {
-        return;
-    }
-
-    confirmActionType = "delete";
-
-    document.getElementById("confirmTitle").textContent =
-        "Eliminare attività?";
-
-    document.getElementById("confirmText").textContent =
-        "Questa attività e il relativo conteggio verranno eliminati definitivamente.";
-
-    document.getElementById("confirmAction").textContent =
-        "Elimina";
-
-    document.getElementById("confirmOverlay").classList.add("active");
-}
-
-function closeConfirm() {
-    document.getElementById("confirmOverlay").classList.remove("active");
-    confirmActionType = null;
-}
-
-function executeConfirm() {
-    if (!selectedActivityId || !confirmActionType) {
-        closeConfirm();
-        return;
-    }
-
-    const activityIndex = activities.findIndex(
-        item => item.id === selectedActivityId
-    );
-
-    if (activityIndex === -1) {
-        closeConfirm();
-        return;
-    }
-
-    const activity = activities[activityIndex];
-
-    if (confirmActionType === "reset") {
-        closeConfirm();
-
-        if (activity.mode === "up") {
-            activity.startTimestamp = new Date().toISOString();
-
-            saveActivities();
-
-            document.getElementById("detailStartDate").textContent =
-                formatDateTime(activity.startTimestamp);
-
-            updateDetailCounter();
-            renderList();
-        } else {
-            openNewTargetModal();
-        }
-
-        return;
-    }
-
-    if (confirmActionType === "delete") {
-        activities.splice(activityIndex, 1);
-
-        saveActivities();
-        closeConfirm();
-        closeDetail();
-        renderList();
-
-        return;
-    }
-
-    closeConfirm();
-}
-
-function openNewTargetModal() {
-    const activity = activities.find(
-        item => item.id === selectedActivityId
-    );
-
-    if (!activity) {
-        return;
-    }
-
-    const newDate = new Date();
-    newDate.setHours(newDate.getHours() + 1);
-
-    const dateValue = prompt(
-        "Inserisci la nuova data nel formato AAAA-MM-GG",
-        formatDateForInput(newDate)
-    );
-
-    if (!dateValue) {
-        return;
-    }
-
-    const timeValue = prompt(
-        "Inserisci la nuova ora nel formato HH:MM",
-        formatTimeForInput(newDate)
-    );
-
-    if (!timeValue) {
-        return;
-    }
-
-    const targetDate = new Date(
-        `${dateValue}T${timeValue}:00`
-    );
 
     if (
-        isNaN(targetDate.getTime()) ||
-        targetDate.getTime() <= Date.now()
+        activity.mode === "down" &&
+        milliseconds <= 0
     ) {
-        alert("La nuova scadenza deve essere nel futuro.");
+
+        document
+            .getElementById("detailMainNumber")
+            .textContent = "0";
+
+        document
+            .getElementById("detailPrecise")
+            .textContent =
+            "Scaduto";
+
+    }
+
+}
+
+
+/* =========================
+   DATA ESATTA
+========================= */
+
+function formatExactDate(timestamp) {
+
+    const date =
+        new Date(timestamp);
+
+    const day =
+        String(date.getDate()).padStart(2, "0");
+
+    const month =
+        String(date.getMonth() + 1).padStart(2, "0");
+
+    const year =
+        date.getFullYear();
+
+    const hours =
+        String(date.getHours()).padStart(2, "0");
+
+    const minutes =
+        String(date.getMinutes()).padStart(2, "0");
+
+    const seconds =
+        String(date.getSeconds()).padStart(2, "0");
+
+
+    return `${day}/${month}/${year} alle ${hours}:${minutes}:${seconds}`;
+
+}
+
+
+/* =========================
+   RESET DAL DETTAGLIO
+========================= */
+
+function requestReset() {
+
+    if (!selectedActivityId) {
         return;
     }
 
-    activity.targetTimestamp = targetDate.toISOString();
+    requestResetActivity(selectedActivityId);
+
+}
+
+
+/* =========================
+   RESET
+========================= */
+
+function requestResetActivity(id) {
+
+    const activity =
+        activities.find(
+            item => item.id === id
+        );
+
+    if (!activity) {
+        return;
+    }
+
+    selectedActivityId = id;
+
+    confirmationAction = "reset";
+
+    document
+        .getElementById("confirmationTitle")
+        .textContent =
+        "Ricominciare il contatore?";
+
+    document
+        .getElementById("confirmationText")
+        .textContent =
+        "Il contatore verrà azzerato e ripartirà da questo momento.";
+
+    document
+        .getElementById("confirmationButton")
+        .onclick =
+        confirmReset;
+
+    document
+        .getElementById("confirmationModal")
+        .classList.add("show");
+
+}
+
+
+/* =========================
+   CONFERMA RESET
+========================= */
+
+function confirmReset() {
+
+    const activity =
+        activities.find(
+            item => item.id === selectedActivityId
+        );
+
+    if (!activity) {
+        closeConfirmation();
+        return;
+    }
+
+
+    if (activity.mode === "up") {
+
+        activity.startTimestamp =
+            Date.now();
+
+    } else {
+
+        /*
+            Per un contatore "quanto manca",
+            il reset porta la scadenza a
+            un nuovo momento scelto dall'utente.
+        */
+
+        const newDate =
+            prompt(
+                "Inserisci la nuova data e ora della scadenza.\nFormato: AAAA-MM-GG HH:MM"
+            );
+
+        if (!newDate) {
+            closeConfirmation();
+            return;
+        }
+
+        const normalized =
+            newDate.replace(" ", "T");
+
+        const timestamp =
+            new Date(normalized).getTime();
+
+        if (isNaN(timestamp)) {
+
+            alert("Data non valida.");
+
+            closeConfirmation();
+
+            return;
+        }
+
+        activity.targetTimestamp =
+            timestamp;
+
+    }
+
 
     saveActivities();
 
-    document.getElementById("detailStartDate").textContent =
-        formatDateTime(activity.targetTimestamp);
+    closeConfirmation();
 
-    updateDetailCounter();
-    renderList();
+    renderActivities();
+
+    if (selectedActivityId) {
+        updateDetail();
+    }
+
 }
 
-document.getElementById("addButton").addEventListener(
-    "click",
-    openAddModal
-);
 
-document.getElementById("closeAddButton").addEventListener(
-    "click",
-    closeAddModal
-);
+/* =========================
+   ELIMINAZIONE
+========================= */
 
-document.getElementById("startButton").addEventListener(
-    "click",
-    createActivity
-);
+function requestDelete() {
 
-document.getElementById("countUpButton").addEventListener(
-    "click",
-    () => setMode("up")
-);
-
-document.getElementById("countDownButton").addEventListener(
-    "click",
-    () => setMode("down")
-);
-
-document.getElementById("activityInput").addEventListener(
-    "keydown",
-    event => {
-        if (event.key === "Enter") {
-            createActivity();
-        }
+    if (!selectedActivityId) {
+        return;
     }
+
+    confirmationAction = "delete";
+
+    document
+        .getElementById("confirmationTitle")
+        .textContent =
+        "Eliminare l'attività?";
+
+    document
+        .getElementById("confirmationText")
+        .textContent =
+        "L'attività e il relativo contatore verranno eliminati.";
+
+    document
+        .getElementById("confirmationButton")
+        .onclick =
+        confirmDelete;
+
+    document
+        .getElementById("confirmationModal")
+        .classList.add("show");
+
+}
+
+
+/* =========================
+   CONFERMA ELIMINAZIONE
+========================= */
+
+function confirmDelete() {
+
+    activities =
+        activities.filter(
+            item => item.id !== selectedActivityId
+        );
+
+    saveActivities();
+
+    closeConfirmation();
+
+    closeDetail();
+
+    renderActivities();
+
+}
+
+
+/* =========================
+   CHIUSURA CONFERMA
+========================= */
+
+function closeConfirmation() {
+
+    document
+        .getElementById("confirmationModal")
+        .classList.remove("show");
+
+    confirmationAction = null;
+
+}
+
+
+/* =========================
+   AVVIO
+========================= */
+
+loadActivities();
+
+
+/*
+    Aggiornamento ogni secondo.
+    In questo modo il contatore nella lista
+    è sempre aggiornato fino ai secondi.
+*/
+
+setInterval(
+    updateCounters,
+    1000
 );
 
-document.getElementById("backButton").addEventListener(
-    "click",
-    closeDetail
-);
-
-document.getElementById("resetButton").addEventListener(
-    "click",
-    requestReset
-);
-
-document.getElementById("deleteButton").addEventListener(
-    "click",
-    requestDelete
-);
-
-document.getElementById("cancelConfirm").addEventListener(
-    "click",
-    closeConfirm
-);
-
-document.getElementById("confirmAction").addEventListener(
-    "click",
-    executeConfirm
-);
-
-document.getElementById("addModal").addEventListener(
-    "click",
-    event => {
-        if (event.target === document.getElementById("addModal")) {
-            closeAddModal();
-        }
-    }
-);
-
-document.getElementById("confirmOverlay").addEventListener(
-    "click",
-    event => {
-        if (event.target === document.getElementById("confirmOverlay")) {
-            closeConfirm();
-        }
-    }
-);
-
-renderList();
-
-setInterval(() => {
-    renderList();
-    updateDetailCounter();
-}, 1000);
-
-document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) {
-        renderList();
-        updateDetailCounter();
-    }
-});
 </script>
 
 </body>
