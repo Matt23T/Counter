@@ -14,7 +14,6 @@
         --secondary: #8e8e93;
         --blue: #007aff;
         --countdown-blue: #5ac8fa;
-        --ochre: #b8860b;
         --red: #ff3b30;
         --border: rgba(60,60,67,0.18);
         --shadow: 0 4px 18px rgba(0,0,0,0.06);
@@ -166,14 +165,43 @@
         user-select: none;
         -webkit-user-select: none;
         -webkit-touch-callout: none;
+
+        /*
+           La riga deve essere completamente opaca
+           durante qualsiasi movimento.
+        */
+        opacity: 1;
     }
 
+    /*
+       INTERA SEZIONE "CONTA QUANTO MANCA":
+       tutta la riga diventa azzurro.
+    */
+    .activity-row.countdown {
+        background: var(--countdown-blue);
+        border-color: var(--countdown-blue);
+    }
+
+    /*
+       Durante il riordinamento NON rendiamo trasparente
+       la riga: in questo modo il pulsante "Elimina"
+       sottostante non può essere visto.
+    */
     .activity-row.reorder-active {
-        opacity: .78;
+        opacity: 1;
+        background: #ffffff;
         box-shadow: 0 10px 28px rgba(0,0,0,.18);
         transition: none;
         user-select: none;
         -webkit-user-select: none;
+    }
+
+    /*
+       Se la scheda è di tipo "quanto manca",
+       mantiene l'azzurro anche durante il trascinamento.
+    */
+    .activity-row.countdown.reorder-active {
+        background: var(--countdown-blue);
     }
 
     .activity-info {
@@ -203,7 +231,6 @@
     /*
        TUTTI I TASTI NOME HANNO ESATTAMENTE
        LA STESSA DIMENSIONE.
-       Il testo non modifica la larghezza del tasto.
     */
     .activity-name-button {
         flex: 0 0 190px;
@@ -236,8 +263,8 @@
     }
 
     /*
-       CONTA QUANTO MANCA:
-       sfondo blu-azzurro e testo bianco.
+       Il pulsante del nome, quando è un countdown,
+       rimane azzurro come tutta la sezione.
     */
     .activity-name-button.countdown {
         border-color: var(--countdown-blue);
@@ -271,8 +298,12 @@
         -webkit-touch-callout: none;
     }
 
+    /*
+       Anche il numero del countdown è bianco,
+       perché ora tutta la sezione è azzurra.
+    */
     .counter.countdown {
-        color: var(--countdown-blue);
+        color: white;
     }
 
     .counter.expired {
@@ -573,12 +604,6 @@
             padding-right: 10px;
         }
 
-        /*
-           Su schermi piccoli il tasto resta comunque
-           identico per tutte le attività, ma viene
-           ridotto a una misura fissa che entra bene
-           insieme al contatore.
-        */
         .activity-name-button {
             flex: 0 0 155px;
             width: 155px;
@@ -712,9 +737,7 @@
 
         </div>
 
-        <div
-            id="startField"
-        >
+        <div id="startField">
 
             <label class="field-label">
                 Data e ora di inizio
@@ -1637,6 +1660,19 @@ function renderActivities() {
             row.className =
                 "activity-row";
 
+            /*
+               Aggiunge la classe countdown direttamente
+               alla riga intera.
+            */
+            if (
+                activity.mode === "down"
+            ) {
+
+                row.classList.add(
+                    "countdown"
+                );
+            }
+
 
             const infoButton =
                 document.createElement(
@@ -1688,10 +1724,6 @@ function renderActivities() {
             );
 
 
-            /*
-               Il nome è sempre un tasto della stessa
-               identica dimensione per ogni attività.
-            */
             const nameButton =
                 document.createElement(
                     "button"
@@ -2056,15 +2088,6 @@ function enableSwipe(row) {
    RIORDINAMENTO MANUALE
    ======================================== */
 
-/*
-   Per evitare di confondere il riordinamento con
-   lo swipe laterale, il trascinamento verticale
-   parte con una pressione prolungata.
-
-   Tieni premuta una sezione per circa 0,35 secondi,
-   poi trascinala sopra o sotto le altre.
-*/
-
 function enableReorder(
     wrapper,
     row
@@ -2125,10 +2148,7 @@ function enableReorder(
         wrapper.dataset.reordering =
             "true";
 
-        /*
-           Impedisce esplicitamente la selezione
-           durante il trascinamento.
-        */
+
         document.body.style.userSelect =
             "none";
 
@@ -2165,9 +2185,7 @@ function enableReorder(
         wrapper.dataset.reordering =
             "false";
 
-        /*
-           Ripristina la normale selezione del documento.
-        */
+
         document.body.style.userSelect =
             "";
 
