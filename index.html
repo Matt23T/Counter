@@ -13,6 +13,7 @@
         --text: #1c1c1e;
         --secondary: #8e8e93;
         --blue: #007aff;
+        --ochre: #b8860b;
         --red: #ff3b30;
         --border: rgba(60,60,67,0.18);
         --shadow: 0 4px 18px rgba(0,0,0,0.06);
@@ -111,6 +112,10 @@
         background: var(--red);
     }
 
+    .activity-wrapper.reorder-active {
+        z-index: 20;
+    }
+
     .delete-reveal {
         position: absolute;
         top: 0;
@@ -151,6 +156,12 @@
         transform: translateX(0);
         transition: transform .22s cubic-bezier(.25,.8,.25,1);
         touch-action: pan-y;
+    }
+
+    .activity-row.reorder-active {
+        opacity: .78;
+        box-shadow: 0 10px 28px rgba(0,0,0,.18);
+        transition: none;
     }
 
     .activity-info {
@@ -204,9 +215,23 @@
             color .1s ease;
     }
 
+    /*
+       CONTA QUANTO MANCA:
+       giallo ocra.
+    */
+    .activity-name-button.countdown {
+        border-color: var(--ochre);
+        color: var(--ochre);
+    }
+
     .activity-name-button:active {
         transform: scale(.96);
         background: var(--blue);
+        color: white;
+    }
+
+    .activity-name-button.countdown:active {
+        background: var(--ochre);
         color: white;
     }
 
@@ -219,6 +244,10 @@
         letter-spacing: -0.2px;
         white-space: nowrap;
         color: var(--text);
+    }
+
+    .counter.countdown {
+        color: var(--ochre);
     }
 
     .counter.expired {
@@ -1582,6 +1611,20 @@ function renderActivities() {
                 function(event) {
 
                     if (
+                        row.dataset.justDragged ===
+                        "true"
+                    ) {
+
+                        row.dataset.justDragged =
+                            "false";
+
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        return;
+                    }
+
+                    if (
                         Math.abs(
                             getRowTranslateX(
                                 row
@@ -1616,6 +1659,15 @@ function renderActivities() {
             nameButton.className =
                 "activity-name-button";
 
+            if (
+                activity.mode === "down"
+            ) {
+
+                nameButton.classList.add(
+                    "countdown"
+                );
+            }
+
             nameButton.textContent =
                 activity.name;
 
@@ -1623,6 +1675,20 @@ function renderActivities() {
             nameButton.addEventListener(
                 "click",
                 function(event) {
+
+                    if (
+                        row.dataset.justDragged ===
+                        "true"
+                    ) {
+
+                        row.dataset.justDragged =
+                            "false";
+
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        return;
+                    }
 
                     event.preventDefault();
 
@@ -1647,6 +1713,15 @@ function renderActivities() {
 
             counter.className =
                 "counter";
+
+            if (
+                activity.mode === "down"
+            ) {
+
+                counter.classList.add(
+                    "countdown"
+                );
+            }
 
             counter.dataset.counterId =
                 activity.id;
@@ -1694,6 +1769,11 @@ function renderActivities() {
             enableSwipe(
                 row
             );
+
+            enableReorder(
+                wrapper,
+                row
+            );
         }
     );
 }
@@ -1720,6 +1800,11 @@ function updateSingleCounter(
         formatListCounter(
             activity
         );
+
+    counter.classList.toggle(
+        "countdown",
+        activity.mode === "down"
+    );
 
     counter.classList.toggle(
         "expired",
@@ -1923,6 +2008,373 @@ function enableSwipe(row) {
             passive: true
         }
     );
+}
+
+
+/* ========================================
+   RIORDINAMENTO MANUALE
+   ======================================== */
+
+/*
+   Per evitare di confondere il riordinamento con
+   lo swipe laterale, il trascinamento verticale
+   parte con una pressione prolungata.
+
+   Tieni premuta una sezione per circa 0,35 secondi,
+   poi trascinala sopra o sotto le altre.
+*/
+
+function enableReorder(
+    wrapper,
+    row
+) {
+
+    let pressTimer =
+        null;
+
+    let reorderActive =
+        false;
+
+    let startY =
+        0;
+
+    let currentY =
+        0;
+
+    let moved =
+        false;
+
+
+    function clearPressTimer() {
+
+        if (pressTimer) {
+
+            clearTimeout(
+                pressTimer
+            );
+
+            pressTimer =
+                null;
+        }
+    }
+
+
+    function startReorder() {
+
+        reorderActive =
+            true;
+
+        moved =
+            false;
+
+        wrapper.classList.add(
+            "reorder-active"
+        );
+
+        row.classList.add(
+            "reorder-active"
+        );
+
+        row.style.transition =
+            "none";
+
+        row.style.transform =
+            "translateX(0)";
+
+        wrapper.dataset.reordering =
+            "true";
+    }
+
+
+    function finishReorder() {
+
+        clearPressTimer();
+
+        if (!reorderActive) {
+            return;
+        }
+
+        reorderActive =
+            false;
+
+        wrapper.classList.remove(
+            "reorder-active"
+        );
+
+        row.classList.remove(
+            "reorder-active"
+        );
+
+        row.style.transition =
+            "transform .22s cubic-bezier(.25,.8,.25,1)";
+
+        row.style.transform =
+            "translateX(0)";
+
+        wrapper.dataset.reordering =
+            "false";
+
+
+        if (moved) {
+
+            row.dataset.justDragged =
+                "true";
+
+            updateActivitiesOrder();
+
+            setTimeout(
+                () => {
+
+                    if (
+                        row.dataset.justDragged ===
+                        "true"
+                    ) {
+
+                        row.dataset.justDragged =
+                            "false";
+                    }
+
+                },
+                400
+            );
+        }
+    }
+
+
+    row.addEventListener(
+        "touchstart",
+        function(event) {
+
+            if (
+                !event.touches ||
+                !event.touches.length
+            ) {
+                return;
+            }
+
+            startY =
+                event.touches[0].clientY;
+
+            currentY =
+                startY;
+
+            moved =
+                false;
+
+            clearPressTimer();
+
+            pressTimer =
+                setTimeout(
+                    startReorder,
+                    350
+                );
+        },
+        {
+            passive: true
+        }
+    );
+
+
+    row.addEventListener(
+        "touchmove",
+        function(event) {
+
+            if (
+                !event.touches ||
+                !event.touches.length
+            ) {
+                return;
+            }
+
+            currentY =
+                event.touches[0].clientY;
+
+
+            if (!reorderActive) {
+
+                const dy =
+                    currentY - startY;
+
+                if (
+                    Math.abs(dy) > 8
+                ) {
+
+                    clearPressTimer();
+                }
+
+                return;
+            }
+
+
+            event.preventDefault();
+
+            const dy =
+                currentY - startY;
+
+
+            if (
+                Math.abs(dy) > 8
+            ) {
+
+                moved =
+                    true;
+            }
+
+
+            if (!moved) {
+                return;
+            }
+
+
+            const container =
+                document.getElementById(
+                    "activitiesList"
+                );
+
+
+            const wrappers =
+                Array.from(
+                    container.children
+                ).filter(
+                    element =>
+                        element !== wrapper &&
+                        element.classList.contains(
+                            "activity-wrapper"
+                        )
+                );
+
+
+            let inserted =
+                false;
+
+
+            for (
+                const otherWrapper
+                of wrappers
+            ) {
+
+                const rect =
+                    otherWrapper.getBoundingClientRect();
+
+                const midpoint =
+                    rect.top +
+                    rect.height / 2;
+
+
+                if (
+                    currentY < midpoint
+                ) {
+
+                    container.insertBefore(
+                        wrapper,
+                        otherWrapper
+                    );
+
+                    inserted =
+                        true;
+
+                    break;
+                }
+            }
+
+
+            if (!inserted) {
+
+                container.appendChild(
+                    wrapper
+                );
+            }
+
+        },
+        {
+            passive: false
+        }
+    );
+
+
+    row.addEventListener(
+        "touchend",
+        function() {
+
+            finishReorder();
+        },
+        {
+            passive: true
+        }
+    );
+
+
+    row.addEventListener(
+        "touchcancel",
+        function() {
+
+            finishReorder();
+        },
+        {
+            passive: true
+        }
+    );
+}
+
+
+/* ========================================
+   SALVA NUOVO ORDINE
+   ======================================== */
+
+function updateActivitiesOrder() {
+
+    const container =
+        document.getElementById(
+            "activitiesList"
+        );
+
+    const wrappers =
+        Array.from(
+            container.children
+        ).filter(
+            element =>
+                element.classList.contains(
+                    "activity-wrapper"
+                )
+        );
+
+
+    const newOrder =
+        [];
+
+
+    wrappers.forEach(
+        wrapper => {
+
+            const id =
+                wrapper.dataset.id;
+
+            const activity =
+                activities.find(
+                    item =>
+                        item.id === id
+                );
+
+            if (activity) {
+
+                newOrder.push(
+                    activity
+                );
+            }
+        }
+    );
+
+
+    if (
+        newOrder.length ===
+        activities.length
+    ) {
+
+        activities =
+            newOrder;
+
+        saveActivities();
+    }
 }
 
 
