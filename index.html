@@ -14,6 +14,8 @@
         --secondary: #8e8e93;
         --blue: #007aff;
         --countdown-blue: #5ac8fa;
+        --countdown-bg: #eaf7fd;
+        --ochre: #b8860b;
         --red: #ff3b30;
         --border: rgba(60,60,67,0.18);
         --shadow: 0 4px 18px rgba(0,0,0,0.06);
@@ -111,10 +113,20 @@
         background: var(--red);
         user-select: none;
         -webkit-user-select: none;
+        -webkit-touch-callout: none;
     }
 
     .activity-wrapper.reorder-active {
         z-index: 20;
+        background: transparent;
+    }
+
+    /*
+       Durante il riordino il sottofondo "Elimina"
+       viene completamente nascosto.
+    */
+    .activity-wrapper.reorder-active .delete-reveal {
+        display: none;
     }
 
     .delete-reveal {
@@ -130,6 +142,7 @@
         z-index: 1;
         user-select: none;
         -webkit-user-select: none;
+        -webkit-touch-callout: none;
     }
 
     .delete-button {
@@ -143,6 +156,7 @@
         padding: 0;
         user-select: none;
         -webkit-user-select: none;
+        -webkit-touch-callout: none;
     }
 
     .activity-row {
@@ -158,50 +172,42 @@
         border: 1px solid rgba(60,60,67,0.08);
         border-radius: 18px;
         box-shadow: var(--shadow);
-        transform: translateX(0);
-        transition: transform .22s cubic-bezier(.25,.8,.25,1);
+        transform: translate3d(0, 0, 0);
+        transition: transform .22s cubic-bezier(.25,.8,.25,1),
+                    box-shadow .18s ease;
         touch-action: pan-y;
 
         user-select: none;
         -webkit-user-select: none;
         -webkit-touch-callout: none;
-
-        /*
-           La riga deve essere completamente opaca
-           durante qualsiasi movimento.
-        */
-        opacity: 1;
     }
 
     /*
-       INTERA SEZIONE "CONTA QUANTO MANCA":
-       tutta la riga diventa azzurro.
+       TUTTA LA SEZIONE "QUANTO MANCA"
+       è azzurra, non solo il pulsante.
     */
     .activity-row.countdown {
-        background: var(--countdown-blue);
-        border-color: var(--countdown-blue);
+        background: var(--countdown-bg);
     }
 
     /*
-       Durante il riordinamento NON rendiamo trasparente
-       la riga: in questo modo il pulsante "Elimina"
-       sottostante non può essere visto.
+       Stato durante il trascinamento:
+       la scheda diventa solida e si solleva visivamente.
     */
     .activity-row.reorder-active {
         opacity: 1;
-        background: #ffffff;
-        box-shadow: 0 10px 28px rgba(0,0,0,.18);
+        box-shadow:
+            0 14px 34px rgba(0,0,0,.18),
+            0 4px 10px rgba(0,0,0,.08);
         transition: none;
+        z-index: 30;
         user-select: none;
         -webkit-user-select: none;
+        -webkit-touch-callout: none;
     }
 
-    /*
-       Se la scheda è di tipo "quanto manca",
-       mantiene l'azzurro anche durante il trascinamento.
-    */
-    .activity-row.countdown.reorder-active {
-        background: var(--countdown-blue);
+    .activity-row.reorder-active.countdown {
+        background: var(--countdown-bg);
     }
 
     .activity-info {
@@ -263,13 +269,14 @@
     }
 
     /*
-       Il pulsante del nome, quando è un countdown,
-       rimane azzurro come tutta la sezione.
+       QUANTO MANCA:
+       il pulsante resta delimitato,
+       ma lascia vedere l'azzurro della sezione.
     */
     .activity-name-button.countdown {
-        border-color: var(--countdown-blue);
-        background: var(--countdown-blue);
-        color: white;
+        border-color: var(--ochre);
+        background: transparent;
+        color: var(--ochre);
     }
 
     .activity-name-button:active {
@@ -279,7 +286,7 @@
     }
 
     .activity-name-button.countdown:active {
-        background: #32b5ee;
+        background: var(--ochre);
         color: white;
     }
 
@@ -298,12 +305,8 @@
         -webkit-touch-callout: none;
     }
 
-    /*
-       Anche il numero del countdown è bianco,
-       perché ora tutta la sezione è azzurra.
-    */
     .counter.countdown {
-        color: white;
+        color: var(--ochre);
     }
 
     .counter.expired {
@@ -1660,10 +1663,7 @@ function renderActivities() {
             row.className =
                 "activity-row";
 
-            /*
-               Aggiunge la classe countdown direttamente
-               alla riga intera.
-            */
+
             if (
                 activity.mode === "down"
             ) {
@@ -1712,7 +1712,7 @@ function renderActivities() {
                         event.stopPropagation();
 
                         row.style.transform =
-                            "translateX(0)";
+                            "translate3d(0,0,0)";
 
                         return;
                     }
@@ -1732,6 +1732,7 @@ function renderActivities() {
             nameButton.className =
                 "activity-name-button";
 
+
             if (
                 activity.mode === "down"
             ) {
@@ -1740,6 +1741,7 @@ function renderActivities() {
                     "countdown"
                 );
             }
+
 
             nameButton.textContent =
                 activity.name;
@@ -1787,6 +1789,7 @@ function renderActivities() {
             counter.className =
                 "counter";
 
+
             if (
                 activity.mode === "down"
             ) {
@@ -1795,6 +1798,7 @@ function renderActivities() {
                     "countdown"
                 );
             }
+
 
             counter.dataset.counterId =
                 activity.id;
@@ -1916,6 +1920,14 @@ function enableSwipe(row) {
         function(event) {
 
             if (
+                row.classList.contains(
+                    "reorder-active"
+                )
+            ) {
+                return;
+            }
+
+            if (
                 !event.touches ||
                 !event.touches.length
             ) {
@@ -1953,7 +1965,12 @@ function enableSwipe(row) {
         "touchmove",
         function(event) {
 
-            if (!dragging) {
+            if (
+                !dragging ||
+                row.classList.contains(
+                    "reorder-active"
+                )
+            ) {
                 return;
             }
 
@@ -2025,7 +2042,7 @@ function enableSwipe(row) {
 
 
             row.style.transform =
-                `translateX(${translate}px)`;
+                `translate3d(${translate}px,0,0)`;
 
         },
         {
@@ -2060,20 +2077,20 @@ function enableSwipe(row) {
                 if (finalX < -45) {
 
                     row.style.transform =
-                        "translateX(-88px)";
+                        "translate3d(-88px,0,0)";
 
                 } else {
 
                     row.style.transform =
-                        "translateX(0)";
+                        "translate3d(0,0,0)";
                 }
 
             } else {
 
                 row.style.transform =
                     finalX < -45
-                        ? "translateX(-88px)"
-                        : "translateX(0)";
+                        ? "translate3d(-88px,0,0)"
+                        : "translate3d(0,0,0)";
             }
 
         },
@@ -2108,6 +2125,12 @@ function enableReorder(
     let moved =
         false;
 
+    let originalTop =
+        0;
+
+    let originalHeight =
+        0;
+
 
     function clearPressTimer() {
 
@@ -2131,6 +2154,15 @@ function enableReorder(
         moved =
             false;
 
+        const rect =
+            wrapper.getBoundingClientRect();
+
+        originalTop =
+            rect.top;
+
+        originalHeight =
+            rect.height;
+
         wrapper.classList.add(
             "reorder-active"
         );
@@ -2143,16 +2175,18 @@ function enableReorder(
             "none";
 
         row.style.transform =
-            "translateX(0)";
+            "translate3d(0,0,0)";
 
         wrapper.dataset.reordering =
             "true";
-
 
         document.body.style.userSelect =
             "none";
 
         document.body.style.webkitUserSelect =
+            "none";
+
+        document.body.style.webkitTouchCallout =
             "none";
     }
 
@@ -2180,16 +2214,18 @@ function enableReorder(
             "transform .22s cubic-bezier(.25,.8,.25,1)";
 
         row.style.transform =
-            "translateX(0)";
+            "translate3d(0,0,0)";
 
         wrapper.dataset.reordering =
             "false";
-
 
         document.body.style.userSelect =
             "";
 
         document.body.style.webkitUserSelect =
+            "";
+
+        document.body.style.webkitTouchCallout =
             "";
 
 
@@ -2286,12 +2322,13 @@ function enableReorder(
 
             event.preventDefault();
 
+
             const dy =
                 currentY - startY;
 
 
             if (
-                Math.abs(dy) > 8
+                Math.abs(dy) > 6
             ) {
 
                 moved =
@@ -2299,11 +2336,20 @@ function enableReorder(
             }
 
 
-            if (!moved) {
-                return;
-            }
+            /*
+               Il centro della scheda segue il dito.
+            */
+            const draggedCenter =
+                originalTop +
+                originalHeight / 2 +
+                dy;
 
 
+            /*
+               Cerchiamo la posizione corretta
+               confrontando il centro della scheda
+               con il centro delle altre sezioni.
+            */
             const container =
                 document.getElementById(
                     "activitiesList"
@@ -2322,8 +2368,8 @@ function enableReorder(
                 );
 
 
-            let inserted =
-                false;
+            let insertedBefore =
+                null;
 
 
             for (
@@ -2340,28 +2386,52 @@ function enableReorder(
 
 
                 if (
-                    currentY < midpoint
+                    draggedCenter < midpoint
                 ) {
 
-                    container.insertBefore(
-                        wrapper,
-                        otherWrapper
-                    );
-
-                    inserted =
-                        true;
+                    insertedBefore =
+                        otherWrapper;
 
                     break;
                 }
             }
 
 
-            if (!inserted) {
+            if (insertedBefore) {
+
+                container.insertBefore(
+                    wrapper,
+                    insertedBefore
+                );
+
+            } else {
 
                 container.appendChild(
                     wrapper
                 );
             }
+
+
+            /*
+               Dopo lo spostamento nel DOM,
+               ricalcoliamo la posizione visuale
+               necessaria per tenere la scheda
+               esattamente sotto al dito.
+            */
+            const newRect =
+                wrapper.getBoundingClientRect();
+
+            const newCenter =
+                newRect.top +
+                newRect.height / 2;
+
+            const visualOffset =
+                draggedCenter -
+                newCenter;
+
+
+            row.style.transform =
+                `translate3d(0,${visualOffset}px,0)`;
 
         },
         {
@@ -2375,6 +2445,7 @@ function enableReorder(
         function() {
 
             finishReorder();
+
         },
         {
             passive: true
@@ -2387,6 +2458,7 @@ function enableReorder(
         function() {
 
             finishReorder();
+
         },
         {
             passive: true
@@ -2457,7 +2529,7 @@ function updateActivitiesOrder() {
 
 
 /* ========================================
-   LEGGI TRASLAZIONE
+   LEGGI TRASLAZIONE ORIZZONTALE
    ======================================== */
 
 function getRowTranslateX(
@@ -2479,17 +2551,36 @@ function getRowTranslateX(
 
     const match =
         transform.match(
+            /matrix3d\(([^)]+)\)/
+        );
+
+
+    if (match) {
+
+        const values =
+            match[1].split(",");
+
+        return (
+            parseFloat(
+                values[12]
+            ) || 0
+        );
+    }
+
+
+    const matrix2d =
+        transform.match(
             /matrix\(([^)]+)\)/
         );
 
 
-    if (!match) {
+    if (!matrix2d) {
         return 0;
     }
 
 
     const values =
-        match[1].split(",");
+        matrix2d[1].split(",");
 
 
     return (
@@ -2536,7 +2627,7 @@ document.addEventListener(
                     ) {
 
                         row.style.transform =
-                            "translateX(0)";
+                            "translate3d(0,0,0)";
                     }
                 }
             }
