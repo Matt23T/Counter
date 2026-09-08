@@ -16,10 +16,6 @@
         --red: #ff3b30;
         --border: rgba(60,60,67,0.18);
         --shadow: 0 4px 18px rgba(0,0,0,0.06);
-
-        /* Colori distinti per i due tipi */
-        --up-bg: #eef6ff;
-        --down-bg: #f2fbed;
     }
 
     * {
@@ -70,21 +66,7 @@
     .header-left {
         display: flex;
         align-items: center;
-        min-width: 0;
-    }
-
-    .edit-button {
-        border: none;
-        background: transparent;
-        color: var(--blue);
-        font-size: 17px;
-        font-weight: 500;
-        padding: 8px 8px 8px 0;
-        white-space: nowrap;
-    }
-
-    .edit-button:active {
-        opacity: .55;
+        gap: 12px;
     }
 
     .title {
@@ -93,8 +75,13 @@
         letter-spacing: -1.2px;
     }
 
-    .edit-mode .title {
-        margin-left: 8px;
+    .edit-button {
+        border: none;
+        background: transparent;
+        color: var(--blue);
+        font-size: 17px;
+        font-weight: 500;
+        padding: 7px 0;
     }
 
     .add-button {
@@ -112,7 +99,6 @@
         justify-content: center;
         box-shadow: 0 4px 12px rgba(0,122,255,0.22);
         transition: transform .12s ease, opacity .12s ease;
-        flex-shrink: 0;
     }
 
     .add-button:active {
@@ -128,6 +114,62 @@
     }
 
     /* ========================================
+       MODALITÀ RIORDINO
+       ======================================== */
+
+    .reorder-info {
+        display: none;
+        text-align: center;
+        color: var(--secondary);
+        font-size: 14px;
+        margin: -7px 0 15px;
+    }
+
+    body.reorder-mode .reorder-info {
+        display: block;
+    }
+
+    body.reorder-mode .activity-wrapper {
+        cursor: grab;
+    }
+
+    body.reorder-mode .activity-wrapper:active {
+        cursor: grabbing;
+    }
+
+    body.reorder-mode .activity-row {
+        touch-action: none;
+        transition:
+            transform .18s ease,
+            box-shadow .18s ease,
+            opacity .18s ease;
+    }
+
+    body.reorder-mode .activity-row.dragging {
+        transition: none !important;
+        box-shadow:
+            0 14px 30px rgba(0,0,0,.16);
+        z-index: 20;
+        opacity: .96;
+    }
+
+    body.reorder-mode .activity-wrapper.drag-placeholder {
+        opacity: .35;
+    }
+
+    body.reorder-mode .delete-reveal {
+        display: none;
+    }
+
+    body.reorder-mode .activity-info {
+        pointer-events: none;
+    }
+
+    body.reorder-mode .activity-name-button {
+        pointer-events: none;
+    }
+
+    /* ========================================
        RIGA ATTIVITÀ
        ======================================== */
 
@@ -135,16 +177,8 @@
         position: relative;
         width: 100%;
         margin-bottom: 10px;
-        overflow: hidden;
         border-radius: 18px;
         background: var(--red);
-        transition: transform .2s ease, opacity .2s ease;
-    }
-
-    .activity-wrapper.dragging {
-        opacity: .85;
-        z-index: 50;
-        box-shadow: 0 10px 30px rgba(0,0,0,.16);
     }
 
     .delete-reveal {
@@ -158,6 +192,8 @@
         align-items: center;
         justify-content: center;
         z-index: 1;
+        border-radius: 18px;
+        overflow: hidden;
     }
 
     .delete-button {
@@ -185,19 +221,31 @@
         border-radius: 18px;
         box-shadow: var(--shadow);
         transform: translateX(0);
-        transition:
-            transform .22s cubic-bezier(.25,.8,.25,1),
-            background .18s ease;
+        transition: transform .22s cubic-bezier(.25,.8,.25,1);
         touch-action: pan-y;
     }
 
-    /* Sfondo diverso in base al tipo di contatore */
-    .activity-row.mode-up {
-        background: var(--up-bg);
+    /* ========================================
+       COLORI IN BASE AL TIPO
+       ======================================== */
+
+    .activity-row.countdown {
+        background: #007aff;
+        border-color: rgba(0,122,255,.35);
     }
 
-    .activity-row.mode-down {
-        background: var(--down-bg);
+    .activity-row.countdown .activity-name-button {
+        background: rgba(255,255,255,.96);
+        color: var(--blue);
+        border-color: rgba(255,255,255,.9);
+    }
+
+    .activity-row.countdown .counter {
+        color: white;
+    }
+
+    .activity-row.countdown .counter.expired {
+        color: white;
     }
 
     .activity-info {
@@ -265,73 +313,6 @@
 
     .counter.expired {
         color: var(--red);
-    }
-
-    /* ========================================
-       MODALITÀ RIORDINO
-       ======================================== */
-
-    .reorder-handle {
-        display: none;
-        flex: 0 0 30px;
-        width: 30px;
-        height: 44px;
-        align-items: center;
-        justify-content: center;
-        color: var(--secondary);
-        font-size: 23px;
-        font-weight: 700;
-        letter-spacing: -5px;
-        line-height: 1;
-        touch-action: none;
-        user-select: none;
-        -webkit-user-select: none;
-    }
-
-    .reorder-handle::before {
-        content: "⠿";
-        display: block;
-        transform: rotate(90deg);
-    }
-
-    .edit-mode .reorder-handle {
-        display: flex;
-    }
-
-    .edit-mode .activity-wrapper {
-        overflow: visible;
-        background: transparent;
-    }
-
-    .edit-mode .activity-row {
-        transform: translateX(0) !important;
-        touch-action: none;
-        transition:
-            transform .18s ease,
-            box-shadow .18s ease,
-            opacity .18s ease;
-    }
-
-    .edit-mode .delete-reveal {
-        display: none;
-    }
-
-    .edit-mode .activity-info {
-        pointer-events: none;
-    }
-
-    .edit-mode .activity-name-button {
-        border-color: rgba(60,60,67,.18);
-        color: var(--text);
-        pointer-events: none;
-    }
-
-    .edit-mode .counter {
-        pointer-events: none;
-    }
-
-    .activity-wrapper.drag-placeholder {
-        opacity: .25;
     }
 
     /* ========================================
@@ -599,6 +580,10 @@
         flex: 1;
     }
 
+    /* ========================================
+       RESPONSIVE
+       ======================================== */
+
     @media (max-width: 500px) {
 
         .app {
@@ -649,11 +634,6 @@
             height: 52px;
             min-height: 52px;
         }
-
-        .edit-mode .reorder-handle {
-            flex-basis: 26px;
-            width: 26px;
-        }
     }
 
     @media (max-width: 370px) {
@@ -676,23 +656,23 @@
 
 <body>
 
-<div class="app" id="app">
+<div class="app">
 
     <div class="header">
 
         <div class="header-left">
 
-            <button
-                id="editButton"
-                class="edit-button"
-                onclick="toggleEditMode()"
-            >
-                Modifica
-            </button>
-
             <div class="title">
                 Contatori
             </div>
+
+            <button
+                id="editButton"
+                class="edit-button"
+                onclick="toggleReorderMode()"
+            >
+                Modifica
+            </button>
 
         </div>
 
@@ -704,6 +684,13 @@
             +
         </button>
 
+    </div>
+
+    <div
+        id="reorderInfo"
+        class="reorder-info"
+    >
+        Trascina le attività per cambiarne l'ordine
     </div>
 
     <div id="activitiesList"></div>
@@ -962,23 +949,11 @@ let pendingAction =
 let pendingActionId =
     null;
 
-let editMode =
+let reorderMode =
     false;
 
-let draggingActivityId =
+let dragState =
     null;
-
-let dragStartY =
-    0;
-
-let dragCurrentY =
-    0;
-
-let draggedWrapper =
-    null;
-
-let dragMoved =
-    false;
 
 /* ========================================
    CARICAMENTO
@@ -1034,39 +1009,33 @@ function saveActivities() {
    MODALITÀ MODIFICA / RIORDINO
    ======================================== */
 
-function toggleEditMode() {
+function toggleReorderMode() {
 
-    editMode =
-        !editMode;
+    reorderMode =
+        !reorderMode;
 
-    const app =
-        document.getElementById(
-            "app"
-        );
+    document.body.classList.toggle(
+        "reorder-mode",
+        reorderMode
+    );
 
-    const editButton =
+    const button =
         document.getElementById(
             "editButton"
         );
 
-    app.classList.toggle(
-        "edit-mode",
-        editMode
-    );
+    button.textContent =
+        reorderMode
+            ? "Fine"
+            : "Modifica";
 
-    if (editMode) {
+    if (!reorderMode) {
 
-        editButton.textContent =
-            "Fine";
-
-        closeAllSwipes();
-
-    } else {
-
-        editButton.textContent =
-            "Modifica";
+        dragState =
+            null;
 
         saveActivities();
+
         renderActivities();
     }
 }
@@ -1077,8 +1046,8 @@ function toggleEditMode() {
 
 function openAddModal() {
 
-    if (editMode) {
-        return;
+    if (reorderMode) {
+        toggleReorderMode();
     }
 
     editingId =
@@ -1718,39 +1687,16 @@ function renderActivities() {
                 );
 
             row.className =
-                "activity-row " +
-                (
-                    activity.mode === "up"
-                        ? "mode-up"
-                        : "mode-down"
+                "activity-row";
+
+            if (
+                activity.mode === "down"
+            ) {
+
+                row.classList.add(
+                    "countdown"
                 );
-
-            /* ========================================
-               MANIGLIA RIORDINO
-               ======================================== */
-
-            const reorderHandle =
-                document.createElement(
-                    "div"
-                );
-
-            reorderHandle.className =
-                "reorder-handle";
-
-            reorderHandle.setAttribute(
-                "aria-label",
-                "Sposta attività"
-            );
-
-            enableReorder(
-                reorderHandle,
-                wrapper,
-                activity.id
-            );
-
-            /* ========================================
-               INFORMAZIONI
-               ======================================== */
+            }
 
             const infoButton =
                 document.createElement(
@@ -1764,7 +1710,7 @@ function renderActivities() {
                 "click",
                 function(event) {
 
-                    if (editMode) {
+                    if (reorderMode) {
                         return;
                     }
 
@@ -1792,7 +1738,7 @@ function renderActivities() {
 
             const nameButton =
                 document.createElement(
-                    "div"
+                    "button"
                 );
 
             nameButton.className =
@@ -1805,7 +1751,7 @@ function renderActivities() {
                 "click",
                 function(event) {
 
-                    if (editMode) {
+                    if (reorderMode) {
                         return;
                     }
 
@@ -1852,10 +1798,6 @@ function renderActivities() {
             }
 
             row.appendChild(
-                reorderHandle
-            );
-
-            row.appendChild(
                 infoButton
             );
 
@@ -1875,33 +1817,45 @@ function renderActivities() {
                 wrapper
             );
 
-            enableSwipe(
-                row
-            );
+            if (reorderMode) {
+
+                enableReorderDrag(
+                    wrapper
+                );
+
+            } else {
+
+                enableSwipe(
+                    row
+                );
+            }
         }
     );
 }
 
 /* ========================================
-   RIORDINAMENTO TOUCH
+   RIORDINO VERTICALE PULITO
    ======================================== */
 
-function enableReorder(
-    handle,
-    wrapper,
-    activityId
-) {
+function enableReorderDrag(wrapper) {
 
     let startY = 0;
     let currentY = 0;
-    let active = false;
+    let startTop = 0;
+    let originalIndex = -1;
+    let dragging = false;
     let moved = false;
 
-    handle.addEventListener(
+    const row =
+        wrapper.querySelector(
+            ".activity-row"
+        );
+
+    row.addEventListener(
         "touchstart",
         function(event) {
 
-            if (!editMode) {
+            if (!reorderMode) {
                 return;
             }
 
@@ -1912,48 +1866,58 @@ function enableReorder(
                 return;
             }
 
-            event.stopPropagation();
+            const touch =
+                event.touches[0];
 
             startY =
-                event.touches[0].clientY;
+                touch.clientY;
 
             currentY =
                 startY;
 
-            active =
+            const rect =
+                wrapper.getBoundingClientRect();
+
+            startTop =
+                rect.top;
+
+            originalIndex =
+                Array.from(
+                    wrapper.parentElement.children
+                ).indexOf(
+                    wrapper
+                );
+
+            dragging =
                 true;
 
             moved =
                 false;
 
-            draggingActivityId =
-                activityId;
+            dragState = {
+                wrapper: wrapper
+            };
 
-            draggedWrapper =
-                wrapper;
-
-            dragMoved =
-                false;
-
-            wrapper.classList.add(
+            row.classList.add(
                 "dragging"
             );
 
-            document.body.style.overflow =
-                "hidden";
+            wrapper.style.zIndex =
+                "20";
+
         },
         {
             passive: true
         }
     );
 
-    handle.addEventListener(
+    row.addEventListener(
         "touchmove",
         function(event) {
 
             if (
-                !active ||
-                !editMode
+                !dragging ||
+                !reorderMode
             ) {
                 return;
             }
@@ -1965,20 +1929,21 @@ function enableReorder(
                 return;
             }
 
+            const touch =
+                event.touches[0];
+
             currentY =
-                event.touches[0].clientY;
+                touch.clientY;
 
             const dy =
-                currentY - startY;
+                currentY -
+                startY;
 
             if (
                 Math.abs(dy) > 6
             ) {
 
                 moved =
-                    true;
-
-                dragMoved =
                     true;
             }
 
@@ -1988,13 +1953,84 @@ function enableReorder(
 
             event.preventDefault();
 
-            wrapper.style.transform =
+            /*
+               Solo movimento verticale.
+               Nessun translateX:
+               questo evita lo "sballamento" laterale.
+            */
+            row.style.transform =
                 `translateY(${dy}px)`;
 
-            moveActivityByTouch(
-                wrapper,
-                currentY
-            );
+            const siblings =
+                Array.from(
+                    wrapper.parentElement.children
+                ).filter(
+                    el =>
+                        el !== wrapper
+                );
+
+            let newIndex =
+                originalIndex;
+
+            for (
+                let i = 0;
+                i < siblings.length;
+                i++
+            ) {
+
+                const sibling =
+                    siblings[i];
+
+                const rect =
+                    sibling.getBoundingClientRect();
+
+                const middle =
+                    rect.top +
+                    rect.height / 2;
+
+                if (
+                    currentY > middle
+                ) {
+
+                    newIndex =
+                        i + 1;
+                }
+            }
+
+            const currentDomIndex =
+                Array.from(
+                    wrapper.parentElement.children
+                ).indexOf(
+                    wrapper
+                );
+
+            if (
+                newIndex !==
+                currentDomIndex
+            ) {
+
+                const children =
+                    Array.from(
+                        wrapper.parentElement.children
+                    );
+
+                const reference =
+                    children[newIndex];
+
+                if (reference) {
+
+                    wrapper.parentElement.insertBefore(
+                        wrapper,
+                        reference
+                    );
+
+                } else {
+
+                    wrapper.parentElement.appendChild(
+                        wrapper
+                    );
+                }
+            }
 
         },
         {
@@ -2002,38 +2038,35 @@ function enableReorder(
         }
     );
 
-    handle.addEventListener(
+    row.addEventListener(
         "touchend",
         function() {
 
-            if (!active) {
+            if (!dragging) {
                 return;
             }
 
-            active =
+            dragging =
                 false;
 
-            wrapper.classList.remove(
+            row.classList.remove(
                 "dragging"
             );
 
-            wrapper.style.transform =
+            row.style.transform =
                 "";
 
-            document.body.style.overflow =
+            wrapper.style.zIndex =
                 "";
 
             if (moved) {
 
-                saveActivities();
+                updateActivitiesOrder();
 
-                renderActivities();
+                saveActivities();
             }
 
-            draggingActivityId =
-                null;
-
-            draggedWrapper =
+            dragState =
                 null;
         },
         {
@@ -2041,27 +2074,24 @@ function enableReorder(
         }
     );
 
-    handle.addEventListener(
+    row.addEventListener(
         "touchcancel",
         function() {
 
-            active =
+            dragging =
                 false;
 
-            wrapper.classList.remove(
+            row.classList.remove(
                 "dragging"
             );
 
-            wrapper.style.transform =
+            row.style.transform =
                 "";
 
-            document.body.style.overflow =
+            wrapper.style.zIndex =
                 "";
 
-            draggingActivityId =
-                null;
-
-            draggedWrapper =
+            dragState =
                 null;
 
             renderActivities();
@@ -2073,126 +2103,25 @@ function enableReorder(
 }
 
 /* ========================================
-   SPOSTA ATTIVITÀ IN BASE ALLA POSIZIONE
+   SALVA ORDINE CORRENTE
    ======================================== */
 
-function moveActivityByTouch(
-    dragged,
-    touchY
-) {
-
-    const container =
-        document.getElementById(
-            "activitiesList"
-        );
+function updateActivitiesOrder() {
 
     const wrappers =
         Array.from(
-            container.querySelectorAll(
+            document.querySelectorAll(
                 ".activity-wrapper"
             )
-        ).filter(
-            wrapper =>
-                wrapper !== dragged
         );
 
-    let target =
-        null;
-
-    let closestDistance =
-        Infinity;
+    const newOrder = [];
 
     wrappers.forEach(
         wrapper => {
 
-            const rect =
-                wrapper.getBoundingClientRect();
-
-            const center =
-                rect.top +
-                rect.height / 2;
-
-            const distance =
-                Math.abs(
-                    touchY - center
-                );
-
-            if (
-                touchY < center &&
-                distance < closestDistance
-            ) {
-
-                closestDistance =
-                    distance;
-
-                target =
-                    wrapper;
-            }
-        }
-    );
-
-    if (target) {
-
-        container.insertBefore(
-            dragged,
-            target
-        );
-
-        updateActivityArrayFromDOM();
-
-        return;
-    }
-
-    const last =
-        wrappers[
-            wrappers.length - 1
-        ];
-
-    if (last) {
-
-        const rect =
-            last.getBoundingClientRect();
-
-        if (
-            touchY >
-            rect.top +
-            rect.height / 2
-        ) {
-
-            container.appendChild(
-                dragged
-            );
-
-            updateActivityArrayFromDOM();
-        }
-    }
-}
-
-/* ========================================
-   AGGIORNA ARRAY SECONDO ORDINE DOM
-   ======================================== */
-
-function updateActivityArrayFromDOM() {
-
-    const container =
-        document.getElementById(
-            "activitiesList"
-        );
-
-    const ids =
-        Array.from(
-            container.querySelectorAll(
-                ".activity-wrapper"
-            )
-        ).map(
-            wrapper =>
-                wrapper.dataset.id
-        );
-
-    const reordered = [];
-
-    ids.forEach(
-        id => {
+            const id =
+                wrapper.dataset.id;
 
             const activity =
                 activities.find(
@@ -2200,7 +2129,8 @@ function updateActivityArrayFromDOM() {
                 );
 
             if (activity) {
-                reordered.push(
+
+                newOrder.push(
                     activity
                 );
             }
@@ -2208,48 +2138,17 @@ function updateActivityArrayFromDOM() {
     );
 
     if (
-        reordered.length ===
+        newOrder.length ===
         activities.length
     ) {
 
         activities =
-            reordered;
+            newOrder;
     }
 }
 
 /* ========================================
-   AGGIORNA SINGOLO CONTATORE
-   ======================================== */
-
-function updateSingleCounter(
-    activity
-) {
-
-    const counter =
-        document.querySelector(
-            `[data-counter-id="${activity.id}"]`
-        );
-
-    if (!counter) {
-        return;
-    }
-
-    counter.textContent =
-        formatListCounter(
-            activity
-        );
-
-    counter.classList.toggle(
-        "expired",
-        activity.mode === "down" &&
-        getCounterMilliseconds(
-            activity
-        ) <= 0
-    );
-}
-
-/* ========================================
-   SWIPE
+   SWIPE ELIMINA
    ======================================== */
 
 function enableSwipe(row) {
@@ -2273,7 +2172,7 @@ function enableSwipe(row) {
         "touchstart",
         function(event) {
 
-            if (editMode) {
+            if (reorderMode) {
                 return;
             }
 
@@ -2316,7 +2215,7 @@ function enableSwipe(row) {
 
             if (
                 !dragging ||
-                editMode
+                reorderMode
             ) {
                 return;
             }
@@ -2480,27 +2379,11 @@ function getRowTranslateX(
    CHIUDI SWIPE APERTI
    ======================================== */
 
-function closeAllSwipes() {
-
-    const openRows =
-        document.querySelectorAll(
-            ".activity-row"
-        );
-
-    openRows.forEach(
-        row => {
-
-            row.style.transform =
-                "translateX(0)";
-        }
-    );
-}
-
 document.addEventListener(
     "touchstart",
     function(event) {
 
-        if (editMode) {
+        if (reorderMode) {
             return;
         }
 
@@ -2564,14 +2447,41 @@ function updateCounters() {
 }
 
 /* ========================================
+   AGGIORNA SINGOLO CONTATORE
+   ======================================== */
+
+function updateSingleCounter(
+    activity
+) {
+
+    const counter =
+        document.querySelector(
+            `[data-counter-id="${activity.id}"]`
+        );
+
+    if (!counter) {
+        return;
+    }
+
+    counter.textContent =
+        formatListCounter(
+            activity
+        );
+
+    counter.classList.toggle(
+        "expired",
+        activity.mode === "down" &&
+        getCounterMilliseconds(
+            activity
+        ) <= 0
+    );
+}
+
+/* ========================================
    APRI DETTAGLIO
    ======================================== */
 
 function openDetail(id) {
-
-    if (editMode) {
-        return;
-    }
 
     const activity =
         activities.find(
