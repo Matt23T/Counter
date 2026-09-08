@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Contatore Giorni</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f5f5f7;
+    color: #111;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+.app {
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 24px 18px 40px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 750;
+    letter-spacing: -0.7px;
+}
+
+.add-button {
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 50%;
+    background: #111;
+    color: white;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: #777;
+}
+
+.empty-icon {
+    font-size: 52px;
+    margin-bottom: 18px;
+}
+
+.empty-title {
+    font-size: 21px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 8px;
+}
+
+.empty-text {
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.counter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.counter-card {
+    background: white;
+    border-radius: 20px;
+    padding: 19px 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: transform 0.12s ease;
+}
+
+.counter-card:active {
+    transform: scale(0.98);
+}
+
+.counter-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.counter-name {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+.counter-type {
+    display: inline-block;
+    margin-top: 7px;
+    padding: 4px 8px;
+    border-radius: 7px;
+    background: #f0f0f2;
+    color: #666;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.counter-date {
+    margin-top: 6px;
+    color: #888;
+    font-size: 13px;
+}
+
+.counter-time {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.counter-days {
+    font-size: 27px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.5px;
+}
+
+.counter-hours {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #777;
+    font-weight: 600;
+}
+
+.expired {
+    color: #c33;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.42);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 100;
+    padding: 0;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal {
+    width: 100%;
+    max-width: 650px;
+    background: white;
+    border-radius: 28px 28px 0 0;
+    padding: 24px 20px 30px;
+    animation: slideUp 0.2s ease-out;
+    max-height: 92vh;
+    overflow-y: auto;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 750;
+}
+
+.close-button {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    background: #eee;
+    color: #333;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.input-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 650;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.activity-input {
+    width: 100%;
+    border: 1px solid #ddd;
+    background: #f7f7f8;
+    border-radius: 14px;
+    padding: 15px;
+    font-size: 17px;
+    outline: none;
+}
+
+.activity-input:focus {
+    border-color: #999;
+    background: white;
+}
+
+.mode-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 18px 0;
+}
+
+.mode-button {
+    border: 1px solid #ddd;
+    background: #f5f5f7;
+    border-radius: 13px;
+    padding: 13px 8px;
+    font-size: 14px;
+    font-weight: 650;
+    color: #555;
+    cursor: pointer;
+}
+
+.mode-button.active {
+    background: #111;
+    color: white;
+    border-color: #111;
+}
+
+.date-input,
+.time-input {
+    width: 100%;
+    border: 1px solid #ddd;
+    background: #f7f7f8;
+    border-radius: 14px;
+    padding: 14px;
+    font-size: 17px;
+    outline: none;
+    color: #111;
+}
+
+.datetime-fields {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 10px;
+}
+
+.start-button {
+    width: 100%;
+    border: none;
+    border-radius: 15px;
+    padding: 16px;
+    margin-top: 18px;
+    background: #111;
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.detail-overlay {
+    position: fixed;
+    inset: 0;
+    background: #f5f5f7;
+    display: none;
+    z-index: 200;
+    overflow-y: auto;
+}
+
+.detail-overlay.active {
+    display: block;
+}
+
+.detail {
+    width: 100%;
+    max-width: 650px;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 24px 18px 45px;
+}
+
+.detail-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 34px;
+}
+
+.back-button {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: white;
+    font-size: 25px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.detail-title {
+    margin: 0;
+    font-size: 25px;
+    font-weight: 750;
+    word-break: break-word;
+}
+
+.detail-start {
+    text-align: center;
+    color: #777;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 35px;
+}
+
+.detail-start strong {
+    display: block;
+    color: #222;
+    font-size: 17px;
+    font-weight: 650;
+}
+
+.big-counter {
+    background: white;
+    border-radius: 25px;
+    padding: 35px 20px;
+    text-align: center;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+}
+
+.big-days {
+    font-size: 64px;
+    line-height: 1;
+    font-weight: 850;
+    letter-spacing: -2px;
+}
+
+.big-days-label {
+    margin-top: 8px;
+    color: #777;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.full-counter {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 28px;
+    font-size: 18px;
+    font-weight: 650;
+}
+
+.full-counter span {
+    color: #222;
+}
+
+.full-counter .separator {
+    color: #aaa;
+}
+
+.detail-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.reset-button,
+.delete-button {
+    width: 100%;
+    border: none;
+    border-radius: 15px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.reset-button {
+    background: white;
+    color: #222;
+}
+
+.delete-button {
+    background: #eee;
+    color: #d22;
+}
+
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.42);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    padding: 20px;
+}
+
+.confirm-overlay.active {
+    display: flex;
+}
+
+.confirm-box {
+    width: 100%;
+    max-width: 380px;
+    background: white;
+    border-radius: 22px;
+    padding: 24px;
+}
+
+.confirm-title {
+    font-size: 20px;
+    font-weight: 750;
+    margin-bottom: 9px;
+}
+
+.confirm-text {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.45;
+    margin-bottom: 22px;
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.confirm-buttons button {
+    flex: 1;
+    border: none;
+    border-radius: 13px;
+    padding: 13px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.cancel-button {
+    background: #eee;
+    color: #222;
+}
+
+.confirm-action {
+    background: #111;
+    color: white;
+}
+
+@media (min-width: 651px) {
+    .modal-overlay {
+        align-items: center;
+        padding: 20px;
+    }
+
+    .modal {
+        border-radius: 28px;
+        max-width: 500px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app" id="mainApp">
+    <div class="header">
+        <h1>Contatore Giorni</h1>
+        <button class="add-button" id="addButton" aria-label="Aggiungi attività">+</button>
+    </div>
+
+    <div id="counterList"></div>
+</div>
+
+<div class="modal-overlay" id="addModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 class="modal-title">Nuova attività</h2>
+            <button class="close-button" id="closeAddButton">×</button>
+        </div>
+
+        <label class="input-label" for="activityInput">Cosa vuoi contare?</label>
+
+        <input
+            class="activity-input"
+            id="activityInput"
+            type="text"
+            placeholder="Es. Non bevo alcol"
+            maxlength="100"
+            autocomplete="off"
+        >
+
+        <div class="mode-selector">
+            <button class="mode-button active" id="countUpButton" type="button">
+                Conta da quando
+            </button>
+
+            <button class="mode-button" id="countDownButton" type="button">
+                Conta quanto manca
+            </button>
+        </div>
+
+        <div id="countUpOptions">
+            <label class="input-label">
+                Il conteggio inizierà nel momento in cui premi "Inizia oggi".
+            </label>
+        </div>
+
+        <div id="countDownOptions" style="display:none;">
+            <label class="input-label">Data e ora di scadenza</label>
+
+            <div class="datetime-fields">
+                <input
+                    class="date-input"
+                    id="targetDate"
+                    type="date"
+                >
+
+                <input
+                    class="time-input"
+                    id="targetTime"
+                    type="time"
+                >
+            </div>
+        </div>
+
+        <button class="start-button" id="startButton">
+            Inizia oggi
+        </button>
+    </div>
+</div>
+
+<div class="detail-overlay" id="detailOverlay">
+    <div class="detail">
+        <div class="detail-header">
+            <button class="back-button" id="backButton">‹</button>
+            <h2 class="detail-title" id="detailTitle"></h2>
+        </div>
+
+        <div class="detail-start">
+            <span id="detailStartLabel"></span>
+            <strong id="detailStartDate"></strong>
+        </div>
+
+        <div class="big-counter">
+            <div class="big-days" id="bigDays">0</div>
+            <div class="big-days-label" id="bigDaysLabel">giorni</div>
+
+            <div class="full-counter">
+                <span id="fullDays">0 giorni</span>
+                <span class="separator">·</span>
+                <span id="fullHours">0 ore</span>
+                <span class="separator">·</span>
+                <span id="fullMinutes">0 minuti</span>
+                <span class="separator">·</span>
+                <span id="fullSeconds">0 secondi</span>
+            </div>
+        </div>
+
+        <div class="detail-actions">
+            <button class="reset-button" id="resetButton"></button>
+            <button class="delete-button" id="deleteButton">Elimina attività</button>
+        </div>
+    </div>
+</div>
+
+<div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+        <div class="confirm-title" id="confirmTitle">Sei sicuro?</div>
+        <div class="confirm-text" id="confirmText"></div>
+
+        <div class="confirm-buttons">
+            <button class="cancel-button" id="cancelConfirm">Annulla</button>
+            <button class="confirm-action" id="confirmAction">Conferma</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const STORAGE_KEY = "contatore_giorni_attivita";
+
+let activities = loadActivities();
+let selectedActivityId = null;
+let confirmActionType = null;
+let selectedMode = "up";
+
+function loadActivities() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+
+        if (!saved) {
+            return [];
+        }
+
+        const parsed = JSON.parse(saved);
+
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function saveActivities() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(activities));
+}
+
+function generateId() {
+    return Date.now().toString() + Math.random().toString(36).slice(2);
+}
+
+function calculateElapsed(startTimestamp) {
+    const now = Date.now();
+    const start = new Date(startTimestamp).getTime();
+
+    let difference = now - start;
+
+    if (difference < 0) {
+        difference = 0;
+    }
+
+    return convertMilliseconds(difference);
+}
+
+function calculateRemaining(targetTimestamp) {
+    const now = Date.now();
+    const target = new Date(targetTimestamp).getTime();
+
+    const difference = target - now;
+
+    if (difference <= 0) {
+        return {
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            expired: true
+        };
+    }
+
+    const result = convertMilliseconds(difference);
+    result.expired = false;
+
+    return result;
+}
+
+function convertMilliseconds(milliseconds) {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return {
+        days,
+        hours,
+        minutes,
+        seconds
+    };
+}
+
+function formatDateTime(timestamp) {
+    const date = new Date(timestamp);
+
+    return date.toLocaleDateString("it-IT", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+    }) + " alle " +
+    date.toLocaleTimeString("it-IT", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    });
+}
+
+function formatDateOnly(timestamp) {
+    const date = new Date(timestamp);
+
+    return date.toLocaleDateString("it-IT", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+    });
+}
+
+function plural(value, singular, pluralForm) {
+    return value === 1 ? singular : pluralForm;
+}
+
+function renderList() {
+    const container = document.getElementById("counterList");
+
+    if (activities.length === 0) {
+        container.innerHTML = `
+            <div class="empty">
+                <div class="empty-icon">⏳</div>
+                <div class="empty-title">Nessun contatore</div>
+                <div class="empty-text">
+                    Premi + per iniziare a contare.
+                </div>
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="counter-list">
+            ${activities.map(activity => {
+                let elapsed;
+
+                if (activity.mode === "down") {
+                    elapsed = calculateRemaining(activity.targetTimestamp);
+                } else {
+                    elapsed = calculateElapsed(activity.startTimestamp);
+                }
+
+                const expiredClass =
+                    activity.mode === "down" && elapsed.expired
+                        ? "expired"
+                        : "";
+
+                const mainLabel =
+                    activity.mode === "down"
+                        ? (elapsed.expired
+                            ? "Scaduto"
+                            : `${elapsed.days} ${plural(elapsed.days, "giorno", "giorni")}`)
+                        : `${elapsed.days} ${plural(elapsed.days, "giorno", "giorni")}`;
+
+                const hoursLabel =
+                    activity.mode === "down"
+                        ? (elapsed.expired
+                            ? ""
+                            : `${elapsed.hours} ${plural(elapsed.hours, "ora", "ore")}`)
+                        : `${elapsed.hours} ${plural(elapsed.hours, "ora", "ore")}`;
+
+                const dateLabel =
+                    activity.mode === "down"
+                        ? `Fino al ${formatDateTime(activity.targetTimestamp)}`
+                        : `Dal ${formatDateOnly(activity.startTimestamp)}`;
+
+                return `
+                    <div class="counter-card" data-id="${activity.id}">
+                        <div class="counter-card-top">
+                            <div>
+                                <div class="counter-name">
+                                    ${escapeHtml(activity.name)}
+                                </div>
+
+                                <div class="counter-type">
+                                    ${activity.mode === "down"
+                                        ? "conto alla rovescia"
+                                        : "conteggio"}
+                                </div>
+
+                                <div class="counter-date">
+                                    ${dateLabel}
+                                </div>
+                            </div>
+
+                            <div class="counter-time ${expiredClass}">
+                                <div class="counter-days">
+                                    ${mainLabel}
+                                </div>
+
+                                <div class="counter-hours">
+                                    ${hoursLabel}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join("")}
+        </div>
+    `;
+
+    document.querySelectorAll(".counter-card").forEach(card => {
+        card.addEventListener("click", () => {
+            openDetail(card.dataset.id);
+        });
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function openAddModal() {
+    document.getElementById("activityInput").value = "";
+
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 1);
+
+    document.getElementById("targetDate").value =
+        formatDateForInput(now);
+
+    document.getElementById("targetTime").value =
+        formatTimeForInput(now);
+
+    setMode("up");
+
+    document.getElementById("addModal").classList.add("active");
+
+    setTimeout(() => {
+        document.getElementById("activityInput").focus();
+    }, 100);
+}
+
+function closeAddModal() {
+    document.getElementById("addModal").classList.remove("active");
+    document.getElementById("activityInput").blur();
+}
+
+function formatDateForInput(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+function formatTimeForInput(date) {
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${hours}:${minutes}`;
+}
+
+function setMode(mode) {
+    selectedMode = mode;
+
+    const countUpButton = document.getElementById("countUpButton");
+    const countDownButton = document.getElementById("countDownButton");
+
+    const countUpOptions = document.getElementById("countUpOptions");
+    const countDownOptions = document.getElementById("countDownOptions");
+
+    const startButton = document.getElementById("startButton");
+
+    if (mode === "up") {
+        countUpButton.classList.add("active");
+        countDownButton.classList.remove("active");
+
+        countUpOptions.style.display = "block";
+        countDownOptions.style.display = "none";
+
+        startButton.textContent = "Inizia oggi";
+    } else {
+        countUpButton.classList.remove("active");
+        countDownButton.classList.add("active");
+
+        countUpOptions.style.display = "none";
+        countDownOptions.style.display = "block";
+
+        startButton.textContent = "Inizia conto alla rovescia";
+    }
+}
+
+function createActivity() {
+    const input = document.getElementById("activityInput");
+    const name = input.value.trim();
+
+    if (!name) {
+        input.focus();
+        return;
+    }
+
+    if (selectedMode === "up") {
+        const activity = {
+            id: generateId(),
+            name: name,
+            mode: "up",
+            startTimestamp: new Date().toISOString()
+        };
+
+        activities.push(activity);
+    } else {
+        const dateValue = document.getElementById("targetDate").value;
+        const timeValue = document.getElementById("targetTime").value;
+
+        if (!dateValue || !timeValue) {
+            return;
+        }
+
+        const targetDate = new Date(
+            `${dateValue}T${timeValue}:00`
+        );
+
+        if (isNaN(targetDate.getTime())) {
+            return;
+        }
+
+        if (targetDate.getTime() <= Date.now()) {
+            alert("La data e l'ora devono essere nel futuro.");
+            return;
+        }
+
+        const activity = {
+            id: generateId(),
+            name: name,
+            mode: "down",
+            targetTimestamp: targetDate.toISOString()
+        };
+
+        activities.push(activity);
+    }
+
+    saveActivities();
+    closeAddModal();
+    renderList();
+}
+
+function openDetail(id) {
+    const activity = activities.find(item => item.id === id);
+
+    if (!activity) {
+        return;
+    }
+
+    selectedActivityId = id;
+
+    document.getElementById("detailTitle").textContent =
+        activity.name;
+
+    if (activity.mode === "up") {
+        document.getElementById("detailStartLabel").textContent =
+            "Iniziato il";
+
+        document.getElementById("detailStartDate").textContent =
+            formatDateTime(activity.startTimestamp);
+
+        document.getElementById("resetButton").textContent =
+            "Ricomincia da oggi";
+    } else {
+        document.getElementById("detailStartLabel").textContent =
+            "Scadenza il";
+
+        document.getElementById("detailStartDate").textContent =
+            formatDateTime(activity.targetTimestamp);
+
+        document.getElementById("resetButton").textContent =
+            "Imposta nuova scadenza";
+    }
+
+    updateDetailCounter();
+
+    document.getElementById("detailOverlay").classList.add("active");
+    document.body.style.overflow = "hidden";
+}
+
+function closeDetail() {
+    document.getElementById("detailOverlay").classList.remove("active");
+    document.body.style.overflow = "";
+    selectedActivityId = null;
+}
+
+function updateDetailCounter() {
+    if (!selectedActivityId) {
+        return;
+    }
+
+    const activity = activities.find(
+        item => item.id === selectedActivityId
+    );
+
+    if (!activity) {
+        return;
+    }
+
+    let elapsed;
+    let expired = false;
+
+    if (activity.mode === "down") {
+        elapsed = calculateRemaining(activity.targetTimestamp);
+        expired = elapsed.expired;
+    } else {
+        elapsed = calculateElapsed(activity.startTimestamp);
+    }
+
+    const bigDays = document.getElementById("bigDays");
+    const bigDaysLabel = document.getElementById("bigDaysLabel");
+
+    if (expired) {
+        bigDays.textContent = "0";
+        bigDaysLabel.textContent = "scaduto";
+        bigDays.classList.add("expired");
+    } else {
+        bigDays.textContent = elapsed.days;
+        bigDaysLabel.textContent =
+            plural(elapsed.days, "giorno", "giorni");
+
+        bigDays.classList.remove("expired");
+    }
+
+    document.getElementById("fullDays").textContent =
+        `${elapsed.days} ${plural(elapsed.days, "giorno", "giorni")}`;
+
+    document.getElementById("fullHours").textContent =
+        `${elapsed.hours} ${plural(elapsed.hours, "ora", "ore")}`;
+
+    document.getElementById("fullMinutes").textContent =
+        `${elapsed.minutes} ${plural(elapsed.minutes, "minuto", "minuti")}`;
+
+    document.getElementById("fullSeconds").textContent =
+        `${elapsed.seconds} ${plural(elapsed.seconds, "secondo", "secondi")}`;
+}
+
+function requestReset() {
+    if (!selectedActivityId) {
+        return;
+    }
+
+    const activity = activities.find(
+        item => item.id === selectedActivityId
+    );
+
+    if (!activity) {
+        return;
+    }
+
+    confirmActionType = "reset";
+
+    if (activity.mode === "up") {
+        document.getElementById("confirmTitle").textContent =
+            "Ricominciare da oggi?";
+
+        document.getElementById("confirmText").textContent =
+            "Il conteggio attuale verrà sostituito e il nuovo inizio sarà registrato in questo momento.";
+
+        document.getElementById("confirmAction").textContent =
+            "Ricomincia";
+    } else {
+        document.getElementById("confirmTitle").textContent =
+            "Impostare una nuova scadenza?";
+
+        document.getElementById("confirmText").textContent =
+            "Potrai scegliere una nuova data e ora di scadenza.";
+
+        document.getElementById("confirmAction").textContent =
+            "Continua";
+    }
+
+    document.getElementById("confirmOverlay").classList.add("active");
+}
+
+function requestDelete() {
+    if (!selectedActivityId) {
+        return;
+    }
+
+    confirmActionType = "delete";
+
+    document.getElementById("confirmTitle").textContent =
+        "Eliminare attività?";
+
+    document.getElementById("confirmText").textContent =
+        "Questa attività e il relativo conteggio verranno eliminati definitivamente.";
+
+    document.getElementById("confirmAction").textContent =
+        "Elimina";
+
+    document.getElementById("confirmOverlay").classList.add("active");
+}
+
+function closeConfirm() {
+    document.getElementById("confirmOverlay").classList.remove("active");
+    confirmActionType = null;
+}
+
+function executeConfirm() {
+    if (!selectedActivityId || !confirmActionType) {
+        closeConfirm();
+        return;
+    }
+
+    const activityIndex = activities.findIndex(
+        item => item.id === selectedActivityId
+    );
+
+    if (activityIndex === -1) {
+        closeConfirm();
+        return;
+    }
+
+    const activity = activities[activityIndex];
+
+    if (confirmActionType === "reset") {
+        closeConfirm();
+
+        if (activity.mode === "up") {
+            activity.startTimestamp = new Date().toISOString();
+
+            saveActivities();
+
+            document.getElementById("detailStartDate").textContent =
+                formatDateTime(activity.startTimestamp);
+
+            updateDetailCounter();
+            renderList();
+        } else {
+            openNewTargetModal();
+        }
+
+        return;
+    }
+
+    if (confirmActionType === "delete") {
+        activities.splice(activityIndex, 1);
+
+        saveActivities();
+        closeConfirm();
+        closeDetail();
+        renderList();
+
+        return;
+    }
+
+    closeConfirm();
+}
+
+function openNewTargetModal() {
+    const activity = activities.find(
+        item => item.id === selectedActivityId
+    );
+
+    if (!activity) {
+        return;
+    }
+
+    const newDate = new Date();
+    newDate.setHours(newDate.getHours() + 1);
+
+    const dateValue = prompt(
+        "Inserisci la nuova data nel formato AAAA-MM-GG",
+        formatDateForInput(newDate)
+    );
+
+    if (!dateValue) {
+        return;
+    }
+
+    const timeValue = prompt(
+        "Inserisci la nuova ora nel formato HH:MM",
+        formatTimeForInput(newDate)
+    );
+
+    if (!timeValue) {
+        return;
+    }
+
+    const targetDate = new Date(
+        `${dateValue}T${timeValue}:00`
+    );
+
+    if (
+        isNaN(targetDate.getTime()) ||
+        targetDate.getTime() <= Date.now()
+    ) {
+        alert("La nuova scadenza deve essere nel futuro.");
+        return;
+    }
+
+    activity.targetTimestamp = targetDate.toISOString();
+
+    saveActivities();
+
+    document.getElementById("detailStartDate").textContent =
+        formatDateTime(activity.targetTimestamp);
+
+    updateDetailCounter();
+    renderList();
+}
+
+document.getElementById("addButton").addEventListener(
+    "click",
+    openAddModal
+);
+
+document.getElementById("closeAddButton").addEventListener(
+    "click",
+    closeAddModal
+);
+
+document.getElementById("startButton").addEventListener(
+    "click",
+    createActivity
+);
+
+document.getElementById("countUpButton").addEventListener(
+    "click",
+    () => setMode("up")
+);
+
+document.getElementById("countDownButton").addEventListener(
+    "click",
+    () => setMode("down")
+);
+
+document.getElementById("activityInput").addEventListener(
+    "keydown",
+    event => {
+        if (event.key === "Enter") {
+            createActivity();
+        }
+    }
+);
+
+document.getElementById("backButton").addEventListener(
+    "click",
+    closeDetail
+);
+
+document.getElementById("resetButton").addEventListener(
+    "click",
+    requestReset
+);
+
+document.getElementById("deleteButton").addEventListener(
+    "click",
+    requestDelete
+);
+
+document.getElementById("cancelConfirm").addEventListener(
+    "click",
+    closeConfirm
+);
+
+document.getElementById("confirmAction").addEventListener(
+    "click",
+    executeConfirm
+);
+
+document.getElementById("addModal").addEventListener(
+    "click",
+    event => {
+        if (event.target === document.getElementById("addModal")) {
+            closeAddModal();
+        }
+    }
+);
+
+document.getElementById("confirmOverlay").addEventListener(
+    "click",
+    event => {
+        if (event.target === document.getElementById("confirmOverlay")) {
+            closeConfirm();
+        }
+    }
+);
+
+renderList();
+
+setInterval(() => {
+    renderList();
+    updateDetailCounter();
+}, 1000);
+
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+        renderList();
+        updateDetailCounter();
+    }
+});
+</script>
+
+</body>
+</html>
