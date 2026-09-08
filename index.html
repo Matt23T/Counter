@@ -1,4 +1,4 @@
-l<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
@@ -153,6 +153,11 @@ l<!DOCTYPE html>
         touch-action: pan-y;
     }
 
+    /*
+       AREA DEL DETTAGLIO.
+       NON È PIÙ UN BUTTON CHE CONTIENE
+       UN ALTRO BUTTON.
+    */
     .activity-info {
         flex: 0 0 190px;
         width: 190px;
@@ -168,6 +173,7 @@ l<!DOCTYPE html>
         color: var(--text);
         border-radius: 12px;
         transition: background .12s ease;
+        cursor: pointer;
     }
 
     .activity-info:active {
@@ -212,7 +218,7 @@ l<!DOCTYPE html>
 
     /*
        TIMER PRINCIPALE:
-       mostra sempre giorni, ore, minuti e secondi.
+       MOSTRA SOLO LE UNITÀ NECESSARIE.
     */
     .counter {
         flex: 1;
@@ -651,7 +657,6 @@ l<!DOCTYPE html>
 
         </div>
 
-        <!-- DATA DI INIZIO -->
         <div id="startField">
 
             <label class="field-label">
@@ -666,7 +671,6 @@ l<!DOCTYPE html>
 
         </div>
 
-        <!-- DATA DI SCADENZA -->
         <div
             id="targetField"
             style="display:none;"
@@ -741,7 +745,7 @@ l<!DOCTYPE html>
                 id="detailExact"
                 class="detail-exact"
             >
-                0 giorni · 0 ore · 0 minuti · 0 secondi
+                0s
             </div>
 
             <div
@@ -930,10 +934,6 @@ function openAddModal() {
     ).value =
         "";
 
-    /*
-       Per una nuova attività "Conta da quando"
-       parte automaticamente da questo momento.
-    */
     document.getElementById(
         "startDate"
     ).value =
@@ -994,11 +994,6 @@ function openEditModal(id) {
         activity.mode
     );
 
-
-    /*
-       Ora anche la data di inizio
-       può essere modificata.
-    */
     if (
         activity.mode === "up"
     ) {
@@ -1029,7 +1024,6 @@ function openEditModal(id) {
         ).value =
             "";
     }
-
 
     document.getElementById(
         "activityModal"
@@ -1110,12 +1104,6 @@ function selectMode(mode) {
         mode === "down"
     );
 
-
-    /*
-       Conta da quando → data di inizio.
-       Conta quanto manca → data di scadenza.
-    */
-
     startField.style.display =
         mode === "up"
             ? "block"
@@ -1152,7 +1140,6 @@ function saveActivity() {
     const name =
         nameInput.value.trim();
 
-
     if (!name) {
 
         alert(
@@ -1180,12 +1167,10 @@ function saveActivity() {
             return;
         }
 
-
         const startTimestamp =
             new Date(
                 startInput.value
             ).getTime();
-
 
         if (
             isNaN(startTimestamp)
@@ -1197,13 +1182,6 @@ function saveActivity() {
 
             return;
         }
-
-
-        /*
-           La data può essere anche nel passato,
-           perché il senso del contatore è proprio
-           contare da quella data fino a oggi.
-        */
 
         if (editingId) {
 
@@ -1244,7 +1222,6 @@ function saveActivity() {
             });
         }
 
-
         saveActivities();
 
         closeActivityModal();
@@ -1272,12 +1249,10 @@ function saveActivity() {
         return;
     }
 
-
     const targetTimestamp =
         new Date(
             targetInput.value
         ).getTime();
-
 
     if (
         isNaN(targetTimestamp)
@@ -1290,7 +1265,6 @@ function saveActivity() {
         return;
     }
 
-
     if (
         targetTimestamp <= Date.now()
     ) {
@@ -1301,7 +1275,6 @@ function saveActivity() {
 
         return;
     }
-
 
     if (editingId) {
 
@@ -1341,7 +1314,6 @@ function saveActivity() {
                 targetTimestamp
         });
     }
-
 
     saveActivities();
 
@@ -1383,6 +1355,97 @@ function getCounterMilliseconds(
 
 
 /* ========================================
+   FORMATTA TIMER
+   MOSTRA SOLO LE UNITÀ NECESSARIE
+   ======================================== */
+
+function formatCounter(
+    milliseconds
+) {
+
+    const totalSeconds =
+        Math.floor(
+            milliseconds / 1000
+        );
+
+    const seconds =
+        totalSeconds % 60;
+
+    const totalMinutes =
+        Math.floor(
+            totalSeconds / 60
+        );
+
+    const minutes =
+        totalMinutes % 60;
+
+    const totalHours =
+        Math.floor(
+            totalMinutes / 60
+        );
+
+    const hours =
+        totalHours % 24;
+
+    const days =
+        Math.floor(
+            totalHours / 24
+        );
+
+
+    const parts = [];
+
+
+    if (days > 0) {
+
+        parts.push(
+            `${days}g`
+        );
+    }
+
+
+    if (hours > 0) {
+
+        parts.push(
+            `${hours}h`
+        );
+    }
+
+
+    if (minutes > 0) {
+
+        parts.push(
+            `${minutes}m`
+        );
+    }
+
+
+    if (seconds > 0) {
+
+        parts.push(
+            `${seconds}s`
+        );
+    }
+
+
+    /*
+       Se il tempo è esattamente zero,
+       mostriamo comunque 0s.
+    */
+
+    if (
+        parts.length === 0
+    ) {
+
+        return "0s";
+    }
+
+
+    return parts.join(" ");
+}
+
+
+/* ========================================
    FORMATTA TIMER PRINCIPALE
    ======================================== */
 
@@ -1405,52 +1468,8 @@ function formatListCounter(
     }
 
 
-    const totalSeconds =
-        Math.floor(
-            milliseconds / 1000
-        );
-
-
-    const seconds =
-        totalSeconds % 60;
-
-
-    const totalMinutes =
-        Math.floor(
-            totalSeconds / 60
-        );
-
-
-    const minutes =
-        totalMinutes % 60;
-
-
-    const totalHours =
-        Math.floor(
-            totalMinutes / 60
-        );
-
-
-    const hours =
-        totalHours % 24;
-
-
-    const days =
-        Math.floor(
-            totalHours / 24
-        );
-
-
-    /*
-       ORA VENGONO MOSTRATI SEMPRE
-       TUTTI E QUATTRO I DATI.
-    */
-
-    return (
-        `${days}g ` +
-        `${hours}h ` +
-        `${minutes}m ` +
-        `${seconds}s`
+    return formatCounter(
+        milliseconds
     );
 }
 
@@ -1568,16 +1587,16 @@ function renderActivities() {
                AREA DETTAGLIO
                ========================== */
 
-            const infoButton =
+            const infoArea =
                 document.createElement(
-                    "button"
+                    "div"
                 );
 
-            infoButton.className =
+            infoArea.className =
                 "activity-info";
 
 
-            infoButton.addEventListener(
+            infoArea.addEventListener(
                 "click",
                 function(event) {
 
@@ -1635,7 +1654,7 @@ function renderActivities() {
             );
 
 
-            infoButton.appendChild(
+            infoArea.appendChild(
                 nameButton
             );
 
@@ -1675,7 +1694,7 @@ function renderActivities() {
 
 
             row.appendChild(
-                infoButton
+                infoArea
             );
 
             row.appendChild(
@@ -2139,49 +2158,12 @@ function updateDetail() {
     }
 
 
-    const totalSeconds =
-        Math.floor(
-            milliseconds / 1000
-        );
-
-
-    const seconds =
-        totalSeconds % 60;
-
-
-    const totalMinutes =
-        Math.floor(
-            totalSeconds / 60
-        );
-
-
-    const minutes =
-        totalMinutes % 60;
-
-
-    const totalHours =
-        Math.floor(
-            totalMinutes / 60
-        );
-
-
-    const hours =
-        totalHours % 24;
-
-
-    const days =
-        Math.floor(
-            totalHours / 24
-        );
-
-
     document.getElementById(
         "detailExact"
     ).textContent =
-        `${days} giorni · ` +
-        `${hours} ore · ` +
-        `${minutes} minuti · ` +
-        `${seconds} secondi`;
+        formatCounter(
+            milliseconds
+        );
 
 
     if (
