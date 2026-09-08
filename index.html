@@ -13,6 +13,7 @@
         --text: #1c1c1e;
         --secondary: #8e8e93;
         --blue: #007aff;
+        --countdown-blue: #5ac8fa;
         --ochre: #b8860b;
         --red: #ff3b30;
         --border: rgba(60,60,67,0.18);
@@ -60,14 +61,9 @@
     .header {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-end;
         margin-bottom: 20px;
-    }
-
-    .title {
-        font-size: 34px;
-        font-weight: 700;
-        letter-spacing: -1.2px;
+        min-height: 42px;
     }
 
     .add-button {
@@ -85,6 +81,8 @@
         justify-content: center;
         box-shadow: 0 4px 12px rgba(0,122,255,0.22);
         transition: transform .12s ease, opacity .12s ease;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .add-button:active {
@@ -97,6 +95,8 @@
         color: var(--secondary);
         padding: 70px 20px;
         font-size: 17px;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     /* ========================================
@@ -110,6 +110,8 @@
         overflow: hidden;
         border-radius: 18px;
         background: var(--red);
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .activity-wrapper.reorder-active {
@@ -127,6 +129,8 @@
         align-items: center;
         justify-content: center;
         z-index: 1;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .delete-button {
@@ -138,6 +142,8 @@
         font-size: 15px;
         font-weight: 600;
         padding: 0;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .activity-row {
@@ -156,12 +162,18 @@
         transform: translateX(0);
         transition: transform .22s cubic-bezier(.25,.8,.25,1);
         touch-action: pan-y;
+
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
     }
 
     .activity-row.reorder-active {
         opacity: .78;
         box-shadow: 0 10px 28px rgba(0,0,0,.18);
         transition: none;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .activity-info {
@@ -178,6 +190,10 @@
         color: var(--text);
         border-radius: 12px;
         transition: background .12s ease;
+
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
     }
 
     .activity-info:active {
@@ -213,15 +229,20 @@
             transform .1s ease,
             background .1s ease,
             color .1s ease;
+
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
     }
 
     /*
        CONTA QUANTO MANCA:
-       giallo ocra.
+       sfondo blu-azzurro e testo bianco.
     */
     .activity-name-button.countdown {
-        border-color: var(--ochre);
-        color: var(--ochre);
+        border-color: var(--countdown-blue);
+        background: var(--countdown-blue);
+        color: white;
     }
 
     .activity-name-button:active {
@@ -231,7 +252,7 @@
     }
 
     .activity-name-button.countdown:active {
-        background: var(--ochre);
+        background: #32b5ee;
         color: white;
     }
 
@@ -244,10 +265,14 @@
         letter-spacing: -0.2px;
         white-space: nowrap;
         color: var(--text);
+
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
     }
 
     .counter.countdown {
-        color: var(--ochre);
+        color: var(--countdown-blue);
     }
 
     .counter.expired {
@@ -348,6 +373,8 @@
         font-size: 14px;
         font-weight: 600;
         transition: .12s ease;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .mode-button.selected {
@@ -372,6 +399,8 @@
         font-size: 16px;
         font-weight: 600;
         transition: .1s ease;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .outline-button:active {
@@ -432,6 +461,8 @@
         font-size: 17px;
         font-weight: 500;
         padding: 8px 4px;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .detail-title {
@@ -442,6 +473,8 @@
         letter-spacing: -0.9px;
         margin: 10px 8px 28px;
         word-break: break-word;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .detail-card {
@@ -463,12 +496,16 @@
         letter-spacing: -0.45px;
         white-space: nowrap;
         margin: 0 0 27px;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .detail-date {
         color: var(--secondary);
         font-size: 15px;
         line-height: 1.5;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .detail-actions {
@@ -501,6 +538,8 @@
         font-size: 22px;
         font-weight: 700;
         margin-bottom: 10px;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .confirmation-text {
@@ -508,6 +547,8 @@
         font-size: 15px;
         line-height: 1.4;
         margin-bottom: 22px;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
     .confirmation-actions {
@@ -600,7 +641,6 @@
 <div class="app">
 
     <div class="header">
-        <div class="title">Contatori</div>
 
         <button
             class="add-button"
@@ -609,6 +649,7 @@
         >
             +
         </button>
+
     </div>
 
     <div id="activitiesList"></div>
@@ -2083,6 +2124,16 @@ function enableReorder(
 
         wrapper.dataset.reordering =
             "true";
+
+        /*
+           Impedisce esplicitamente la selezione
+           durante il trascinamento.
+        */
+        document.body.style.userSelect =
+            "none";
+
+        document.body.style.webkitUserSelect =
+            "none";
     }
 
 
@@ -2113,6 +2164,15 @@ function enableReorder(
 
         wrapper.dataset.reordering =
             "false";
+
+        /*
+           Ripristina la normale selezione del documento.
+        */
+        document.body.style.userSelect =
+            "";
+
+        document.body.style.webkitUserSelect =
+            "";
 
 
         if (moved) {
