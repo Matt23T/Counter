@@ -57,17 +57,39 @@
         padding: 24px 16px 40px;
     }
 
+    /* ========================================
+       HEADER
+       ======================================== */
+
     .header {
-        display: flex;
+        display: grid;
+        grid-template-columns: 80px 1fr 42px;
         align-items: center;
-        justify-content: space-between;
         margin-bottom: 20px;
+        min-height: 42px;
     }
 
     .title {
         font-size: 34px;
         font-weight: 700;
         letter-spacing: -1.2px;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .edit-button {
+        border: none;
+        background: transparent;
+        color: var(--blue);
+        font-size: 17px;
+        font-weight: 500;
+        padding: 6px 0;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .edit-button:active {
+        opacity: .55;
     }
 
     .add-button {
@@ -118,12 +140,13 @@
     .activity-wrapper.dragging {
         z-index: 50;
         opacity: .96;
-        transform: scale(1.035);
         box-shadow: 0 14px 35px rgba(0,0,0,.16);
     }
 
     .activity-wrapper.drag-placeholder {
-        opacity: .35;
+        opacity: .28;
+        background: rgba(0,122,255,.08);
+        border: 1px solid rgba(0,122,255,.15);
     }
 
     .delete-reveal {
@@ -170,19 +193,81 @@
         touch-action: pan-y;
     }
 
-    /*
-       Il timer "Conta da quando" resta bianco.
-    */
     .activity-row.mode-up {
         background: #ffffff;
     }
 
-    /*
-       Il conto alla rovescia ha uno sfondo
-       differente, mentre la scritta rimane normale.
-    */
     .activity-row.mode-down {
         background: var(--countdown-bg);
+    }
+
+    /* ========================================
+       MANIGLIA RIORDINAMENTO
+       ======================================== */
+
+    .reorder-handle {
+        flex: 0 0 24px;
+        width: 24px;
+        height: 42px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        color: var(--secondary);
+        font-size: 23px;
+        font-weight: 600;
+        letter-spacing: -5px;
+        line-height: 1;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: none;
+        cursor: grab;
+    }
+
+    .reorder-handle:active {
+        cursor: grabbing;
+    }
+
+    .edit-mode .reorder-handle {
+        display: flex;
+    }
+
+    .edit-mode .activity-row {
+        gap: 8px;
+        touch-action: none;
+    }
+
+    .edit-mode .activity-info {
+        pointer-events: none;
+    }
+
+    .edit-mode .activity-name-button {
+        pointer-events: none;
+    }
+
+    .edit-mode .counter {
+        pointer-events: none;
+    }
+
+    /* ========================================
+       ANIMAZIONE TIPO IPHONE
+       ======================================== */
+
+    .edit-mode .activity-wrapper:not(.dragging) {
+        animation: iphoneWiggle .14s ease-in-out infinite alternate;
+    }
+
+    .edit-mode .activity-wrapper:nth-child(2n):not(.dragging) {
+        animation-delay: -.07s;
+    }
+
+    @keyframes iphoneWiggle {
+        from {
+            transform: rotate(-0.55deg);
+        }
+
+        to {
+            transform: rotate(0.55deg);
+        }
     }
 
     .activity-info {
@@ -518,41 +603,26 @@
     }
 
     /* ========================================
-       TRASCINAMENTO ORDINE
-       Stile morbido tipo riordinamento iPhone
+       RESPONSIVE
        ======================================== */
-
-    .reorder-hint {
-        position: fixed;
-        left: 50%;
-        bottom: 18px;
-        transform: translateX(-50%) translateY(15px);
-        z-index: 200;
-        padding: 9px 15px;
-        border-radius: 18px;
-        background: rgba(28,28,30,.88);
-        color: white;
-        font-size: 13px;
-        font-weight: 600;
-        opacity: 0;
-        pointer-events: none;
-        transition:
-            opacity .2s ease,
-            transform .2s ease;
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-    }
-
-    .reorder-hint.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
 
     @media (max-width: 500px) {
 
         .app {
             padding-left: 12px;
             padding-right: 12px;
+        }
+
+        .header {
+            grid-template-columns: 70px 1fr 42px;
+        }
+
+        .title {
+            font-size: 31px;
+        }
+
+        .edit-button {
+            font-size: 16px;
         }
 
         .activity-row {
@@ -602,6 +672,18 @@
 
     @media (max-width: 370px) {
 
+        .header {
+            grid-template-columns: 62px 1fr 42px;
+        }
+
+        .title {
+            font-size: 28px;
+        }
+
+        .edit-button {
+            font-size: 15px;
+        }
+
         .activity-name-button {
             flex: 0 0 135px;
             width: 135px;
@@ -620,10 +702,21 @@
 
 <body>
 
-<div class="app">
+<div class="app" id="app">
 
     <div class="header">
-        <div class="title">Contatori</div>
+
+        <button
+            id="editButton"
+            class="edit-button"
+            onclick="toggleEditMode()"
+        >
+            Modifica
+        </button>
+
+        <div class="title">
+            Contatori
+        </div>
 
         <button
             class="add-button"
@@ -632,17 +725,11 @@
         >
             +
         </button>
+
     </div>
 
     <div id="activitiesList"></div>
 
-</div>
-
-<div
-    id="reorderHint"
-    class="reorder-hint"
->
-    Trascina per riordinare
 </div>
 
 <!-- ========================================
@@ -897,24 +984,24 @@ let pendingAction =
 let pendingActionId =
     null;
 
+let editMode =
+    false;
+
 /* ========================================
-   VARIABILI RIORDINAMENTO
+   STATO RIORDINAMENTO
    ======================================== */
 
 let reorderState = {
     active: false,
     id: null,
     wrapper: null,
+    handle: null,
     startY: 0,
     currentY: 0,
     offsetY: 0,
-    originalIndex: -1,
     placeholder: null,
-    pointerId: null
+    originalIndex: -1
 };
-
-let reorderLongPressTimer =
-    null;
 
 /* ========================================
    CARICAMENTO
@@ -967,10 +1054,73 @@ function saveActivities() {
 }
 
 /* ========================================
+   MODALITÀ MODIFICA
+   ======================================== */
+
+function toggleEditMode() {
+
+    if (
+        reorderState.active
+    ) {
+        return;
+    }
+
+    editMode =
+        !editMode;
+
+    const app =
+        document.getElementById(
+            "app"
+        );
+
+    const editButton =
+        document.getElementById(
+            "editButton"
+        );
+
+    app.classList.toggle(
+        "edit-mode",
+        editMode
+    );
+
+    editButton.textContent =
+        editMode
+            ? "Fine"
+            : "Modifica";
+
+    /*
+       In modalità modifica eliminiamo
+       eventuali swipe aperti.
+    */
+    if (
+        editMode
+    ) {
+
+        document.querySelectorAll(
+            ".activity-row"
+        ).forEach(
+            row => {
+
+                row.style.transform =
+                    "translateX(0)";
+            }
+        );
+    }
+
+    renderActivities();
+}
+
+/* ========================================
    AGGIUNGI ATTIVITÀ
    ======================================== */
 
 function openAddModal() {
+
+    if (
+        editMode
+    ) {
+        return;
+    }
 
     editingId =
         null;
@@ -1593,6 +1743,12 @@ function renderActivities() {
 
                     event.stopPropagation();
 
+                    if (
+                        editMode
+                    ) {
+                        return;
+                    }
+
                     requestDeleteActivity(
                         activity.id
                     );
@@ -1616,6 +1772,30 @@ function renderActivities() {
                         : "mode-up"
                 );
 
+            /* ========================================
+               MANIGLIA
+               ======================================== */
+
+            const handle =
+                document.createElement(
+                    "div"
+                );
+
+            handle.className =
+                "reorder-handle";
+
+            handle.innerHTML =
+                "≡";
+
+            handle.setAttribute(
+                "aria-label",
+                "Trascina per riordinare"
+            );
+
+            /* ========================================
+               INFO
+               ======================================== */
+
             const infoButton =
                 document.createElement(
                     "button"
@@ -1627,6 +1807,12 @@ function renderActivities() {
             infoButton.addEventListener(
                 "click",
                 function(event) {
+
+                    if (
+                        editMode
+                    ) {
+                        return;
+                    }
 
                     if (
                         Math.abs(
@@ -1669,6 +1855,12 @@ function renderActivities() {
 
                     event.stopPropagation();
 
+                    if (
+                        editMode
+                    ) {
+                        return;
+                    }
+
                     requestResetActivity(
                         activity.id
                     );
@@ -1708,6 +1900,10 @@ function renderActivities() {
             }
 
             row.appendChild(
+                handle
+            );
+
+            row.appendChild(
                 infoButton
             );
 
@@ -1727,15 +1923,552 @@ function renderActivities() {
                 wrapper
             );
 
-            enableSwipe(
-                row
-            );
+            if (
+                !editMode
+            ) {
+
+                enableSwipe(
+                    row
+                );
+            }
 
             enableReorder(
                 wrapper,
+                handle,
                 activity.id
             );
         }
+    );
+}
+
+/* ========================================
+   RIORDINAMENTO
+   ======================================== */
+
+function enableReorder(
+    wrapper,
+    handle,
+    id
+) {
+
+    let longPressTimer =
+        null;
+
+    let startY =
+        0;
+
+    handle.addEventListener(
+        "touchstart",
+        function(event) {
+
+            if (
+                !editMode
+            ) {
+                return;
+            }
+
+            if (
+                event.touches.length !== 1
+            ) {
+                return;
+            }
+
+            startY =
+                event.touches[0].clientY;
+
+            longPressTimer =
+                setTimeout(
+                    function() {
+
+                        startReorder(
+                            wrapper,
+                            handle,
+                            id,
+                            startY
+                        );
+
+                    },
+                    180
+                );
+
+        },
+        {
+            passive: true
+        }
+    );
+
+    handle.addEventListener(
+        "touchmove",
+        function(event) {
+
+            if (
+                !editMode
+            ) {
+                return;
+            }
+
+            if (
+                !reorderState.active
+            ) {
+
+                if (
+                    event.touches.length
+                ) {
+
+                    const currentY =
+                        event.touches[0].clientY;
+
+                    if (
+                        Math.abs(
+                            currentY -
+                            startY
+                        ) > 10
+                    ) {
+
+                        clearTimeout(
+                            longPressTimer
+                        );
+
+                        longPressTimer =
+                            null;
+                    }
+                }
+
+                return;
+            }
+
+            if (
+                event.touches.length !== 1
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+
+            moveReorder(
+                event.touches[0].clientY
+            );
+
+        },
+        {
+            passive: false
+        }
+    );
+
+    handle.addEventListener(
+        "touchend",
+        function() {
+
+            if (
+                longPressTimer
+            ) {
+
+                clearTimeout(
+                    longPressTimer
+                );
+
+                longPressTimer =
+                    null;
+            }
+
+            if (
+                reorderState.active
+            ) {
+
+                finishReorder();
+            }
+
+        },
+        {
+            passive: true
+        }
+    );
+
+    handle.addEventListener(
+        "touchcancel",
+        function() {
+
+            if (
+                longPressTimer
+            ) {
+
+                clearTimeout(
+                    longPressTimer
+                );
+
+                longPressTimer =
+                    null;
+            }
+
+            if (
+                reorderState.active
+            ) {
+
+                finishReorder();
+            }
+
+        },
+        {
+            passive: true
+        }
+    );
+}
+
+/* ========================================
+   INIZIA RIORDINAMENTO
+   ======================================== */
+
+function startReorder(
+    wrapper,
+    handle,
+    id,
+    clientY
+) {
+
+    if (
+        !editMode ||
+        reorderState.active
+    ) {
+        return;
+    }
+
+    const rect =
+        wrapper.getBoundingClientRect();
+
+    const index =
+        activities.findIndex(
+            activity =>
+                activity.id === id
+        );
+
+    if (
+        index === -1
+    ) {
+        return;
+    }
+
+    reorderState.active =
+        true;
+
+    reorderState.id =
+        id;
+
+    reorderState.wrapper =
+        wrapper;
+
+    reorderState.handle =
+        handle;
+
+    reorderState.startY =
+        clientY;
+
+    reorderState.currentY =
+        clientY;
+
+    reorderState.offsetY =
+        clientY -
+        rect.top;
+
+    reorderState.originalIndex =
+        index;
+
+    const placeholder =
+        document.createElement(
+            "div"
+        );
+
+    placeholder.className =
+        "activity-wrapper drag-placeholder";
+
+    placeholder.style.height =
+        rect.height + "px";
+
+    placeholder.style.marginBottom =
+        "10px";
+
+    reorderState.placeholder =
+        placeholder;
+
+    wrapper.parentNode.insertBefore(
+        placeholder,
+        wrapper
+    );
+
+    wrapper.classList.add(
+        "dragging"
+    );
+
+    wrapper.style.position =
+        "relative";
+
+    wrapper.style.width =
+        rect.width + "px";
+
+    wrapper.style.transform =
+        "translateY(0) scale(1.035)";
+
+    wrapper.style.transition =
+        "none";
+
+    wrapper.style.touchAction =
+        "none";
+
+    /*
+       Blocchiamo temporaneamente lo scroll
+       durante il trascinamento.
+    */
+    document.body.style.overflow =
+        "hidden";
+
+    if (
+        navigator.vibrate
+    ) {
+
+        navigator.vibrate(
+            20
+        );
+    }
+}
+
+/* ========================================
+   MUOVI ELEMENTO
+   ======================================== */
+
+function moveReorder(
+    clientY
+) {
+
+    if (
+        !reorderState.active
+    ) {
+        return;
+    }
+
+    const wrapper =
+        reorderState.wrapper;
+
+    reorderState.currentY =
+        clientY;
+
+    /*
+       Il punto centrale della sezione segue
+       il dito, dando l'effetto di trascinamento
+       tipico dell'iPhone.
+    */
+
+    const newTop =
+        clientY -
+        reorderState.offsetY;
+
+    const originalTop =
+        wrapper.getBoundingClientRect().top;
+
+    const delta =
+        newTop -
+        originalTop;
+
+    wrapper.style.transform =
+        `translateY(${delta}px) scale(1.035)`;
+
+    const container =
+        document.getElementById(
+            "activitiesList"
+        );
+
+    const items =
+        Array.from(
+            container.children
+        ).filter(
+            element =>
+                element !== wrapper &&
+                element !== reorderState.placeholder &&
+                element.classList.contains(
+                    "activity-wrapper"
+                )
+        );
+
+    let inserted =
+        false;
+
+    for (
+        const item of items
+    ) {
+
+        const rect =
+            item.getBoundingClientRect();
+
+        const midpoint =
+            rect.top +
+            rect.height / 2;
+
+        if (
+            clientY < midpoint
+        ) {
+
+            if (
+                reorderState.placeholder.nextSibling !== item
+            ) {
+
+                container.insertBefore(
+                    reorderState.placeholder,
+                    item
+                );
+            }
+
+            inserted =
+                true;
+
+            break;
+        }
+    }
+
+    if (!inserted) {
+
+        container.appendChild(
+            reorderState.placeholder
+        );
+    }
+}
+
+/* ========================================
+   TERMINA RIORDINAMENTO
+   ======================================== */
+
+function finishReorder() {
+
+    if (
+        !reorderState.active
+    ) {
+        return;
+    }
+
+    const wrapper =
+        reorderState.wrapper;
+
+    const placeholder =
+        reorderState.placeholder;
+
+    const container =
+        document.getElementById(
+            "activitiesList"
+        );
+
+    const placeholderIndex =
+        Array.from(
+            container.children
+        ).indexOf(
+            placeholder
+        );
+
+    const activity =
+        activities.find(
+            a =>
+                a.id ===
+                reorderState.id
+        );
+
+    if (
+        activity
+    ) {
+
+        const oldIndex =
+            activities.findIndex(
+                a =>
+                    a.id ===
+                    reorderState.id
+            );
+
+        if (
+            oldIndex !== -1
+        ) {
+
+            activities.splice(
+                oldIndex,
+                1
+            );
+
+            let targetIndex =
+                placeholderIndex;
+
+            /*
+               Dopo aver rimosso l'elemento
+               originale, gli indici successivi
+               scalano di uno.
+            */
+            if (
+                targetIndex > oldIndex
+            ) {
+
+                targetIndex--;
+            }
+
+            if (
+                targetIndex < 0
+            ) {
+                targetIndex = 0;
+            }
+
+            if (
+                targetIndex >
+                activities.length
+            ) {
+
+                targetIndex =
+                    activities.length;
+            }
+
+            activities.splice(
+                targetIndex,
+                0,
+                activity
+            );
+        }
+    }
+
+    saveActivities();
+
+    /*
+       Animazione di rilascio.
+    */
+
+    wrapper.style.transition =
+        "transform .28s cubic-bezier(.25,.8,.25,1)";
+
+    wrapper.style.transform =
+        "translateY(0) scale(1)";
+
+    setTimeout(
+        function() {
+
+            if (
+                placeholder &&
+                placeholder.parentNode
+            ) {
+
+                placeholder.parentNode.removeChild(
+                    placeholder
+                );
+            }
+
+            document.body.style.overflow =
+                "";
+
+            reorderState = {
+                active: false,
+                id: null,
+                wrapper: null,
+                handle: null,
+                startY: 0,
+                currentY: 0,
+                offsetY: 0,
+                placeholder: null,
+                originalIndex: -1
+            };
+
+            renderActivities();
+
+        },
+        120
     );
 }
 
@@ -1796,6 +2529,7 @@ function enableSwipe(row) {
         function(event) {
 
             if (
+                editMode ||
                 reorderState.active
             ) {
                 return;
@@ -1838,14 +2572,10 @@ function enableSwipe(row) {
         "touchmove",
         function(event) {
 
-            if (!dragging) {
-                return;
-            }
-
             if (
-                reorderState.active
+                !dragging ||
+                editMode
             ) {
-                dragging = false;
                 return;
             }
 
@@ -1966,542 +2696,6 @@ function enableSwipe(row) {
 }
 
 /* ========================================
-   RIORDINAMENTO
-   Pressione prolungata + trascinamento
-   ======================================== */
-
-function enableReorder(
-    wrapper,
-    id
-) {
-
-    wrapper.addEventListener(
-        "touchstart",
-        function(event) {
-
-            if (
-                event.touches.length !== 1
-            ) {
-                return;
-            }
-
-            if (
-                event.target.closest(
-                    "button"
-                )
-            ) {
-                return;
-            }
-
-            const touch =
-                event.touches[0];
-
-            reorderLongPressTimer =
-                setTimeout(
-                    function() {
-
-                        startReorder(
-                            wrapper,
-                            id,
-                            touch.clientY
-                        );
-
-                    },
-                    420
-                );
-
-        },
-        {
-            passive: true
-        }
-    );
-
-    wrapper.addEventListener(
-        "touchmove",
-        function(event) {
-
-            if (
-                reorderLongPressTimer &&
-                !reorderState.active
-            ) {
-
-                const touch =
-                    event.touches[0];
-
-                const delta =
-                    Math.abs(
-                        touch.clientY -
-                        reorderState.startY
-                    );
-
-                /*
-                   Se l'utente inizia a muovere
-                   molto prima del long press,
-                   lasciamo il normale scroll.
-                */
-                if (
-                    delta > 12
-                ) {
-
-                    clearTimeout(
-                        reorderLongPressTimer
-                    );
-
-                    reorderLongPressTimer =
-                        null;
-                }
-            }
-
-            if (
-                !reorderState.active
-            ) {
-                return;
-            }
-
-            if (
-                event.touches.length !== 1
-            ) {
-                return;
-            }
-
-            event.preventDefault();
-
-            const touch =
-                event.touches[0];
-
-            moveReorder(
-                touch.clientY
-            );
-
-        },
-        {
-            passive: false
-        }
-    );
-
-    wrapper.addEventListener(
-        "touchend",
-        function() {
-
-            if (
-                reorderLongPressTimer
-            ) {
-
-                clearTimeout(
-                    reorderLongPressTimer
-                );
-
-                reorderLongPressTimer =
-                    null;
-            }
-
-            if (
-                reorderState.active
-            ) {
-
-                finishReorder();
-            }
-
-        },
-        {
-            passive: true
-        }
-    );
-
-    wrapper.addEventListener(
-        "touchcancel",
-        function() {
-
-            if (
-                reorderLongPressTimer
-            ) {
-
-                clearTimeout(
-                    reorderLongPressTimer
-                );
-
-                reorderLongPressTimer =
-                    null;
-            }
-
-            if (
-                reorderState.active
-            ) {
-
-                finishReorder();
-            }
-
-        },
-        {
-            passive: true
-        }
-    );
-}
-
-/* ========================================
-   INIZIA RIORDINAMENTO
-   ======================================== */
-
-function startReorder(
-    wrapper,
-    id,
-    clientY
-) {
-
-    if (
-        reorderState.active
-    ) {
-        return;
-    }
-
-    const rect =
-        wrapper.getBoundingClientRect();
-
-    const index =
-        activities.findIndex(
-            activity =>
-                activity.id === id
-        );
-
-    if (
-        index === -1
-    ) {
-        return;
-    }
-
-    reorderState.active =
-        true;
-
-    reorderState.id =
-        id;
-
-    reorderState.wrapper =
-        wrapper;
-
-    reorderState.startY =
-        clientY;
-
-    reorderState.currentY =
-        clientY;
-
-    reorderState.offsetY =
-        clientY -
-        rect.top;
-
-    reorderState.originalIndex =
-        index;
-
-    /*
-       Creiamo uno spazio della stessa altezza.
-       In questo modo le altre sezioni si
-       spostano morbidamente come nell'ordinamento
-       delle app Apple.
-    */
-    const placeholder =
-        document.createElement(
-            "div"
-        );
-
-    placeholder.className =
-        "activity-wrapper drag-placeholder";
-
-    placeholder.style.height =
-        rect.height + "px";
-
-    placeholder.style.marginBottom =
-        "10px";
-
-    reorderState.placeholder =
-        placeholder;
-
-    wrapper.parentNode.insertBefore(
-        placeholder,
-        wrapper
-    );
-
-    wrapper.classList.add(
-        "dragging"
-    );
-
-    wrapper.style.position =
-        "relative";
-
-    wrapper.style.width =
-        rect.width + "px";
-
-    wrapper.style.transform =
-        "translateY(0) scale(1.035)";
-
-    wrapper.style.transition =
-        "none";
-
-    wrapper.style.touchAction =
-        "none";
-
-    const hint =
-        document.getElementById(
-            "reorderHint"
-        );
-
-    hint.classList.add(
-        "show"
-    );
-
-    if (
-        navigator.vibrate
-    ) {
-
-        navigator.vibrate(
-            20
-        );
-    }
-}
-
-/* ========================================
-   MUOVI ELEMENTO
-   ======================================== */
-
-function moveReorder(
-    clientY
-) {
-
-    if (
-        !reorderState.active
-    ) {
-        return;
-    }
-
-    const wrapper =
-        reorderState.wrapper;
-
-    reorderState.currentY =
-        clientY;
-
-    const newTop =
-        clientY -
-        reorderState.offsetY;
-
-    const originalTop =
-        wrapper.getBoundingClientRect().top;
-
-    /*
-       Il placeholder rimane nella posizione
-       originale e l'elemento viene sollevato.
-    */
-    const delta =
-        newTop -
-        originalTop;
-
-    wrapper.style.transform =
-        `translateY(${delta}px) scale(1.035)`;
-
-    const container =
-        document.getElementById(
-            "activitiesList"
-        );
-
-    const items =
-        Array.from(
-            container.children
-        ).filter(
-            element =>
-                element !== wrapper &&
-                element !== reorderState.placeholder &&
-                element.classList.contains(
-                    "activity-wrapper"
-                )
-        );
-
-    let inserted =
-        false;
-
-    for (
-        const item of items
-    ) {
-
-        const rect =
-            item.getBoundingClientRect();
-
-        const midpoint =
-            rect.top +
-            rect.height / 2;
-
-        if (
-            clientY < midpoint
-        ) {
-
-            if (
-                reorderState.placeholder.nextSibling !== item
-            ) {
-
-                container.insertBefore(
-                    reorderState.placeholder,
-                    item
-                );
-            }
-
-            inserted =
-                true;
-
-            break;
-        }
-    }
-
-    if (!inserted) {
-
-        container.appendChild(
-            reorderState.placeholder
-        );
-    }
-}
-
-/* ========================================
-   TERMINA RIORDINAMENTO
-   ======================================== */
-
-function finishReorder() {
-
-    if (
-        !reorderState.active
-    ) {
-        return;
-    }
-
-    const wrapper =
-        reorderState.wrapper;
-
-    const placeholder =
-        reorderState.placeholder;
-
-    const container =
-        document.getElementById(
-            "activitiesList"
-        );
-
-    const newIndex =
-        Array.from(
-            container.children
-        ).indexOf(
-            placeholder
-        );
-
-    const activity =
-        activities.find(
-            a =>
-                a.id ===
-                reorderState.id
-        );
-
-    if (
-        activity
-    ) {
-
-        const oldIndex =
-            activities.findIndex(
-                a =>
-                    a.id ===
-                    reorderState.id
-            );
-
-        if (
-            oldIndex !== -1
-        ) {
-
-            activities.splice(
-                oldIndex,
-                1
-            );
-
-            let targetIndex =
-                newIndex;
-
-            if (
-                targetIndex > oldIndex
-            ) {
-
-                targetIndex--;
-            }
-
-            if (
-                targetIndex < 0
-            ) {
-                targetIndex = 0;
-            }
-
-            if (
-                targetIndex >
-                activities.length
-            ) {
-
-                targetIndex =
-                    activities.length;
-            }
-
-            activities.splice(
-                targetIndex,
-                0,
-                activity
-            );
-        }
-    }
-
-    saveActivities();
-
-    /*
-       Piccola animazione di rientro prima
-       del render definitivo.
-    */
-    wrapper.style.transition =
-        "transform .28s cubic-bezier(.25,.8,.25,1)";
-
-    wrapper.style.transform =
-        "translateY(0) scale(1)";
-
-    setTimeout(
-        function() {
-
-            reorderState.active =
-                false;
-
-            if (
-                placeholder &&
-                placeholder.parentNode
-            ) {
-
-                placeholder.parentNode.removeChild(
-                    placeholder
-                );
-            }
-
-            renderActivities();
-
-            const hint =
-                document.getElementById(
-                    "reorderHint"
-                );
-
-            hint.classList.remove(
-                "show"
-            );
-
-            reorderState = {
-                active: false,
-                id: null,
-                wrapper: null,
-                startY: 0,
-                currentY: 0,
-                offsetY: 0,
-                originalIndex: -1,
-                placeholder: null,
-                pointerId: null
-            };
-
-        },
-        120
-    );
-}
-
-/* ========================================
    LEGGI TRASLAZIONE
    ======================================== */
 
@@ -2549,6 +2743,7 @@ document.addEventListener(
     function(event) {
 
         if (
+            editMode ||
             reorderState.active
         ) {
             return;
@@ -2618,6 +2813,12 @@ function updateCounters() {
    ======================================== */
 
 function openDetail(id) {
+
+    if (
+        editMode
+    ) {
+        return;
+    }
 
     const activity =
         activities.find(
